@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="System," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="ElasticSearch 有 两种备份方法  ES 快照备份 ElasticDump 备份  ES 快照备份 ElasticSearch 自带备份的方法，数据量大的时候，通常推荐这种方法。集群的环境下，需要依赖 共享文件系统 NFS，AWS S3， HDFS 文件系统等，以下用HDFS 为例。 备份到 HDFS 需要 repository-hdfs 插件的支持。下载下来放在了 /tmp 并安装，">
+<meta name="keywords" content="System">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ElasticSearch 备份">
+<meta property="og:url" content="http://yoursite.com/2019/06/13/2019-06-13-es-backup/index.html">
+<meta property="og:site_name" content="织网">
+<meta property="og:description" content="ElasticSearch 有 两种备份方法  ES 快照备份 ElasticDump 备份  ES 快照备份 ElasticSearch 自带备份的方法，数据量大的时候，通常推荐这种方法。集群的环境下，需要依赖 共享文件系统 NFS，AWS S3， HDFS 文件系统等，以下用HDFS 为例。 备份到 HDFS 需要 repository-hdfs 插件的支持。下载下来放在了 /tmp 并安装，">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-06-13T12:41:30.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ElasticSearch 备份">
+<meta name="twitter:description" content="ElasticSearch 有 两种备份方法  ES 快照备份 ElasticDump 备份  ES 快照备份 ElasticSearch 自带备份的方法，数据量大的时候，通常推荐这种方法。集群的环境下，需要依赖 共享文件系统 NFS，AWS S3， HDFS 文件系统等，以下用HDFS 为例。 备份到 HDFS 需要 repository-hdfs 插件的支持。下载下来放在了 /tmp 并安装，">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/06/13/2019-06-13-es-backup/"/>
+
+
+
+
+
+  <title>ElasticSearch 备份 | 织网</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">织网</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/13/2019-06-13-es-backup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zheng-ji">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="织网">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ElasticSearch 备份</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-13T20:11:42+08:00">
+                2019-06-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Program/" itemprop="url" rel="index">
+                    <span itemprop="name">Program</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>ElasticSearch 有 两种备份方法</p>
+<ul>
+<li>ES 快照备份</li>
+<li>ElasticDump 备份</li>
+</ul>
+<h3 id="ES-快照备份"><a href="#ES-快照备份" class="headerlink" title="ES 快照备份"></a>ES 快照备份</h3><p> ElasticSearch 自带备份的<a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/backing-up-your-cluster.html" target="_blank" rel="noopener">方法</a>，数据量大的时候，通常推荐这种方法。<br>集群的环境下，需要依赖 共享文件系统 NFS，AWS S3， HDFS 文件系统等，以下用HDFS 为例。</p>
+<p>备份到 HDFS 需要 <a href="https://artifacts.elastic.co/downloads/elasticsearch-plugins/repository-hdfs/repository-hdfs-6.6.1.zip" target="_blank" rel="noopener">repository-hdfs</a> 插件的支持。下载下来放在了 <code>/tmp</code> 并安装，重启 ES，变可享用了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./elasticsearch-plugin install file:///tmp/repository-hdfs-6.2.1.zip</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>构建仓库，以下创建一个名为 hdfs_backup 的仓库, 我们计划将数据备份到 <code>hdfs://&lt;hadoop-domain.com&gt;:9000/data/es_backup</code> 下面，如无意外会返回 <code>{&quot;acknowlege&quot;:&quot;true&quot;}</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">curl -XPUT http://&lt;Port:IP&gt;/_snapshot/hdfs_backup -H &apos;Content-Type:application/json&apos; -d&apos;</span><br><span class="line">&#123;  </span><br><span class="line">  &quot;type&quot;: &quot;hdfs&quot;,  </span><br><span class="line">  &quot;settings&quot;: &#123;</span><br><span class="line">    &quot;uri&quot;: &quot;hdfs://&lt;hadoop-domain.com&gt;:9000&quot;,</span><br><span class="line">    &quot;path&quot;: &quot;/data/es_backup&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;&apos;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>选定索引备份，例如选择了 <code>student</code>索引，如无意外会返回 <code>{&quot;acknowlege&quot;:&quot;true&quot;}</code>，如果你希望命令阻塞直到备份完成。可以在 URL 尾部加上 wait_for_completion=true</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl -XPUT http://&lt;Port:IP&gt;/_snapshot/hdfs_backup/snapshot_1 -H &apos;ContentType:application/json&apos; -d&apos;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;indices&quot;: &quot;student&quot;</span><br><span class="line">&#125;&apos;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>可使用以下命令查看备份的进度:</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">curl -XGET &quot;http://&lt;Port:IP&gt;/_snapshot/hdfs_backup/*&quot; &apos;</span><br><span class="line">&#123;</span><br><span class="line">  &quot;snapshots&quot; : [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;snapshot&quot; : &quot;snapshot_1&quot;,</span><br><span class="line">      &quot;uuid&quot; : &quot;kTdQRNs6RbO9LZ0LCfXLYg&quot;,</span><br><span class="line">      &quot;version_id&quot; : 6060199,</span><br><span class="line">      &quot;version&quot; : &quot;6.6.1&quot;,</span><br><span class="line">      &quot;indices&quot; : [</span><br><span class="line">        &quot;student&quot;</span><br><span class="line">      ],</span><br><span class="line">      &quot;include_global_state&quot; : true,</span><br><span class="line">      &quot;state&quot; : &quot;IN_PROGRESS&quot;,</span><br><span class="line">      &quot;start_time&quot; : &quot;2019-06-13T07:41:47.556Z&quot;,</span><br><span class="line">      &quot;start_time_in_millis&quot; : 1560411707556,</span><br><span class="line">      &quot;end_time&quot; : &quot;1970-01-01T00:00:00.000Z&quot;,</span><br><span class="line">      &quot;end_time_in_millis&quot; : 0,</span><br><span class="line">      &quot;duration_in_millis&quot; : -1560411707556,</span><br><span class="line">      &quot;failures&quot; : [ ],</span><br><span class="line">      &quot;shards&quot; : &#123;</span><br><span class="line">        &quot;total&quot; : 0,</span><br><span class="line">        &quot;failed&quot; : 0,</span><br><span class="line">        &quot;successful&quot; : 0</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>如何使用快照来恢复</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl -XPOST &quot;http://&lt;Port:IP&gt;/_snapshot/hdfs_backup/snapshot_1/_restore?wait_for_completion=true&quot; -H &apos;Content-Type: application/json&apos; -d&apos;</span><br><span class="line">&#123;</span><br><span class="line">	&quot;indices&quot;: &quot;student&quot;,&quot;rename_replacement&quot;: &quot;student&quot;</span><br><span class="line">&#125;&apos;</span><br></pre></td></tr></table></figure>
+<h3 id="使用-ElasticDump-来备份"><a href="#使用-ElasticDump-来备份" class="headerlink" title="使用 ElasticDump 来备份"></a>使用 ElasticDump 来备份</h3><p>  <a href="https://github.com/taskrabbit/elasticsearch-dump" target="_blank" rel="noopener">elasticdump</a> 需要 nodeJs 的环境，适用于小数量的备份。其原理是用了 ES 的 <a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/scroll.html" target="_blank" rel="noopener">Scroll</a> 接口</p>
+<ul>
+<li>将 mapping 和 数据备份，并 gzip 到本地盘</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">elasticdump --input=http://&lt;Port:IP&gt;/student  --type=data --limit=10000  --output=$ | gzip &gt; student.json.gz</span><br><span class="line">elasticdump --input=http://&lt;Port:IP&gt;/student --output=stduent_mapping.json --type=mapping</span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建好mapping 之后，恢复数据， 如果是 gzip 格式的，需要先解压</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">elasticdump --input=./student.json --output=http://&lt;Port:IP&gt;/student</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/System/" rel="tag"># System</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/04/2019-05-04-groupcache-source-note/" rel="next" title="groupCache 源码阅读">
+                <i class="fa fa-chevron-left"></i> groupCache 源码阅读
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/03/2019-08-03-protobuffer-extension/" rel="prev" title="ProtoBuffer 自定义 option 扩展">
+                ProtoBuffer 自定义 option 扩展 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">zheng-ji</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/zheng-ji" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/1906320835/" target="_blank" title="微博">
+                      
+                        <i class="fa fa-fw fa-globe"></i>微博</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ES-快照备份"><span class="nav-number">1.</span> <span class="nav-text">ES 快照备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-ElasticDump-来备份"><span class="nav-number">2.</span> <span class="nav-text">使用 ElasticDump 来备份</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zheng-ji</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
