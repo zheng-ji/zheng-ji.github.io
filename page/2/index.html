@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>织网</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="织网">
+<meta property="og:url" content="http://yoursite.com/page/2/index.html">
+<meta property="og:site_name" content="织网">
+<meta property="og:locale">
+<meta property="article:author" content="zheng-ji">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="织网" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">织网</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-2021-09-26-k8s-deployment" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/26/2021-09-26-k8s-deployment/" class="article-date">
+  <time datetime="2021-09-26T04:11:42.000Z" itemprop="datePublished">2021-09-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/k8s/">k8s</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/09/26/2021-09-26-k8s-deployment/">K8S Deployment</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Deployment集成了上线部署、滚动升级、创建副本、恢复上线的功能，在某种程度上，Deployment实现无人值守的上线，大大降低了上线过程的复杂性和操作风险。</p>
+<h3 id="创建Deployment"><a href="#创建Deployment" class="headerlink" title="创建Deployment"></a>创建Deployment</h3><p>创建一个名为nginx的Deployment负载，使用nginx:latest镜像创建两个Pod，每个Pod占用100m core CPU、200Mi内存。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1      # 注意这里与Pod的区别，Deployment是apps/v1而不是v1</span><br><span class="line">kind: Deployment         # 资源类型为Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx            # Deployment的名称</span><br><span class="line">spec:</span><br><span class="line">  replicas: 2            # Pod的数量，Deployment会确保一直有2个Pod运行         </span><br><span class="line">  selector:              # Label Selector</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx</span><br><span class="line">  template:              # Pod的定义，用于创建Pod，也称为Pod template</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - image: nginx:latest</span><br><span class="line">        name: container-0</span><br><span class="line">        resources:</span><br><span class="line">          limits:</span><br><span class="line">            cpu: 100m</span><br><span class="line">            memory: 200Mi</span><br><span class="line">          requests:</span><br><span class="line">            cpu: 100m</span><br><span class="line">            memory: 200Mi</span><br></pre></td></tr></table></figure>
+
+<p>从这个定义中可以看到Deployment的名称为nginx，spec.replicas定义了Pod的数量，即这个Deployment控制2个Pod；spec.selector是Label Selector（标签选择器），表示这个Deployment会选择Label为app&#x3D;nginx的Pod；spec.template是Pod的定义，内容与Pod中的定义完全一致。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f deployment.yaml</span><br><span class="line">deployment.apps/nginx created</span><br><span class="line"></span><br><span class="line">$ kubectl get deploy</span><br><span class="line">NAME           READY     UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">nginx          2/2       2            2           4m5s</span><br></pre></td></tr></table></figure>
+
+<p>Deployment不是直接控制Pod的，Deployment是通过一种名为ReplicaSet的控制器控制Pod，通过如下命令可以查询ReplicaSet，其中rs是ReplicaSet的缩写。 Deployment控制ReplicaSet，ReplicaSet控制Pod。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get rs</span><br><span class="line">NAME               DESIRED   CURRENT   READY     AGE</span><br><span class="line">nginx-7f98958cdf   2         2         2         1m</span><br></pre></td></tr></table></figure>
+
+<p>如果使用kubectl describe命令查看Deployment的详情，您就可以看到ReplicaSet，如下所示，可以看到有一行NewReplicaSet: nginx-7f98958cdf (2&#x2F;2 replicas created)，而且Events里面事件确是把ReplicaSet的实例扩容到2个。在实际使用中您也许不会直接操作ReplicaSet</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl describe deploy nginx</span><br><span class="line">Name:                   nginx</span><br><span class="line">Namespace:              default</span><br><span class="line">CreationTimestamp:      Sun, 16 Dec 2018 19:21:58 +0800</span><br><span class="line">Labels:                 app=nginx</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">NewReplicaSet:   nginx-7f98958cdf (2/2 replicas created)</span><br><span class="line">Events:</span><br><span class="line">  Type    Reason             Age   From                   Message</span><br><span class="line">  ----    ------             ----  ----                   -------</span><br><span class="line">  Normal  ScalingReplicaSet  5m    deployment-controller  Scaled up replica set nginx-7f98958cdf to 2</span><br></pre></td></tr></table></figure>
+
+<h3 id="升级"><a href="#升级" class="headerlink" title="升级"></a>升级</h3><p>在实际应用中，升级是一个常见的场景，Deployment能够很方便的支撑应用升级。</p>
+<p>Deployment可以设置不同的升级策略，有如下两种。</p>
+<ul>
+<li>RollingUpdate：滚动升级，即逐步创建新Pod再删除旧Pod，为默认策略。</li>
+<li>Recreate：替换升级，即先把当前Pod删掉再重新创建Pod。<br>Deployment的升级可以是声明式的，也就是说只需要修改Deployment的YAML定义即可，比如使用kubectl edit命令将上面Deployment中的镜像修改为nginx:alpine。修改完成后再查询ReplicaSet和Pod，发现创建了一个新的ReplicaSet，Pod也重新创建了。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl edit deploy nginx</span><br><span class="line"></span><br><span class="line">$ kubectl get rs</span><br><span class="line">NAME               DESIRED   CURRENT   READY     AGE</span><br><span class="line">nginx-6f9f58dffd   2         2         2         1m</span><br><span class="line">nginx-7f98958cdf   0         0         0         48m</span><br><span class="line"></span><br><span class="line">$ kubectl get pods</span><br><span class="line">NAME                     READY     STATUS    RESTARTS   AGE</span><br><span class="line">nginx-6f9f58dffd-tdmqk   1/1       Running   0          21s</span><br><span class="line">nginx-6f9f58dffd-tesqr   1/1       Running   0          21s</span><br></pre></td></tr></table></figure>
+
+<p>Deployment可以通过maxSurge和maxUnavailable两个参数控制升级过程中同时重新创建Pod的比例，这在很多时候是非常有用，配置如下所示。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">spec:</span><br><span class="line">  strategy:</span><br><span class="line">    rollingUpdate:</span><br><span class="line">      maxSurge: 1</span><br><span class="line">      maxUnavailable: 0</span><br><span class="line">    type: RollingUpdate</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>maxSurge：与Deployment中spec.replicas相比，可以有多少个Pod存在，默认值是25%，比如spec.replicas为 4，那升级过程中就不能超过5个Pod存在，即按1个的步伐升级，实际升级过程中会换算成数字，且换算会向上取整。这个值也可以直接设置成数字。</li>
+<li>maxUnavailable：与Deployment中spec.replicas相比，可以有多少个Pod失效，也就是删除的比例，默认值是25%，比如spec.replicas为4，那升级过程中就至少有3个Pod存在，即删除Pod的步伐是1。同样这个值也可以设置成数字。<br>在前面的例子中，由于spec.replicas是2，如果maxSurge和maxUnavailable都为默认值25%，那实际升级过程中，maxSurge允许最多3个Pod存在（向上取整，2<em>1.25&#x3D;2.5，取整为3），而maxUnavailable则不允许有Pod Unavailable（向上取整，2</em>0.75&#x3D;1.5，取整为2），也就是说在升级过程中，一直会有2个Pod处于运行状态，每次新建一个Pod，等这个Pod创建成功后再删掉一个旧Pod，直至Pod全部为新Pod。</li>
+</ul>
+<h3 id="回滚"><a href="#回滚" class="headerlink" title="回滚"></a>回滚</h3><p>回滚也称为回退，即当发现升级出现问题时，让应用回到老的版本。Deployment可以非常方便的回滚到老版本。 例如上面升级的新版镜像有问题，可以执行kubectl rollout undo命令进行回滚。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl rollout undo deployment nginx</span><br><span class="line">deployment.apps/nginx rolled back</span><br></pre></td></tr></table></figure>
+
+<p>Deployment之所以能如此容易的做到回滚，是因为Deployment是通过ReplicaSet控制Pod的，升级后之前ReplicaSet都一直存在，Deployment回滚做的就是使用之前的ReplicaSet再次把Pod创建出来。Deployment中保存ReplicaSet的数量可以使用revisionHistoryLimit参数限制，默认值为10。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/09/26/2021-09-26-k8s-deployment/" data-id="clnfj559f006n7eqxgjsb0qpi" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-09-26-k8s-ingress" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/26/2021-09-26-k8s-ingress/" class="article-date">
+  <time datetime="2021-09-26T04:11:42.000Z" itemprop="datePublished">2021-09-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/k8s/">k8s</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/09/26/2021-09-26-k8s-ingress/">K8S Ingress</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Ingress是什么"><a href="#Ingress是什么" class="headerlink" title="Ingress是什么"></a>Ingress是什么</h3><p>Service是基于四层TCP和UDP协议转发的，而Ingress可以基于七层的HTTP和HTTPS协议转发，可以通过域名和路径做到更细粒度的划分<br>要想使用Ingress功能，必须在Kubernetes集群上安装Ingress Controller。Ingress Controller有很多种实现，最常见的就是Kubernetes官方维护的NGINX Ingress Controller</p>
+<p><img src="/images/k8s/ingress.png" alt="Ingress"></p>
+<p>外部请求首先到达Ingress Controller，Ingress Controller根据Ingress的路由规则，查找到对应的Service，进而通过Endpoint查询到Pod的IP地址，然后将请求转发给Pod。</p>
+<h3 id="创建Ingress"><a href="#创建Ingress" class="headerlink" title="创建Ingress"></a>创建Ingress</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: networking.k8s.io/v1beta1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: test-ingress</span><br><span class="line">spec:</span><br><span class="line">  rules:</span><br><span class="line">  - host: www.example.com       # 域名</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: nginx</span><br><span class="line">          servicePort: 80</span><br></pre></td></tr></table></figure>
+
+<p>Ingress中还可以设置外部域名，这样您就可以通过域名来访问到ELB，进而访问到后端服务。</p>
+<p>域名访问依赖于域名解析，需要您将域名解析指向ELB实例的IP地址，例如您可以使用云解析服务 DNS来实现域名解析。</p>
+<h3 id="路由到多个服务"><a href="#路由到多个服务" class="headerlink" title="路由到多个服务"></a>路由到多个服务</h3><p>Ingress可以同时路由到多个服务，配置如下所示。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">spec:</span><br><span class="line">  rules:</span><br><span class="line">  - host: foo.bar.com          # host地址</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: &quot;/foo&quot;</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: s1</span><br><span class="line">          servicePort: 80</span><br><span class="line">      - path: &quot;/bar&quot;</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: s2</span><br><span class="line">          servicePort: 80</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/09/26/2021-09-26-k8s-ingress/" data-id="clnfj559f006q7eqxcy05gd9c" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-09-26-k8s-pod" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/26/2021-09-26-k8s-pod/" class="article-date">
+  <time datetime="2021-09-26T04:11:42.000Z" itemprop="datePublished">2021-09-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/k8s/">k8s</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/09/26/2021-09-26-k8s-pod/">K8S Pod</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Pod是Kubernetes创建或部署的最小单位。一个Pod封装一个或多个容器（container）、存储资源（volume）、一个独立的网络IP以及管理控制容器运行方式的策略选项。</p>
+<p>Pod使用主要分为两种方式：</p>
+<ul>
+<li>Pod中运行一个容器。这是Kubernetes最常见的用法，Kubernetes是直接管理Pod而不是容器。</li>
+<li>Pod中运行多个需要耦合在一起工作、需要共享资源的容器。通常这种场景下应用包含一个主容器和几个辅助容器（SideCar Container），例如主容器为一个web服务器，从一个固定目录下对外提供文件服务，而辅助容器周期性的从外部下载文件存到这个固定目录下。</li>
+</ul>
+<p>实际很少直接创建Pod，而是使用Kubernetes中称为Controller的抽象层来管理Pod实例，例如Deployment和Job。Controller可以创建和管理多个Pod，提供副本管理、滚动升级和自愈能力。通常，Controller 会使用Pod Template来创建相应的Pod。</p>
+<h3 id="创建Pod"><a href="#创建Pod" class="headerlink" title="创建Pod"></a>创建Pod</h3><p>如下示例描述了一个名为nginx的Pod，这个Pod中包含一个名为container-0的容器，使用nginx:alpine镜像，使用的资源为100m core CPU、200Mi内存。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1                      # Kubernetes的API Version</span><br><span class="line">kind: Pod                           # Kubernetes的资源类型</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx                       # Pod的名称</span><br><span class="line">spec:                               # Pod的具体规格（specification）</span><br><span class="line">  containers:</span><br><span class="line">  - image: nginx:alpine             # 使用的镜像为 nginx:alpine</span><br><span class="line">    name: container-0               # 容器的名称</span><br><span class="line">    resources:                      # 申请容器所需的资源</span><br><span class="line">      limits:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">      requests:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br></pre></td></tr></table></figure>
+
+<p>YAML描述文件主要为如下部分：</p>
+<ol>
+<li>metadata：一些名称&#x2F;标签&#x2F;namespace等信息。</li>
+<li>spec：Pod实际的配置信息，包括使用什么镜像，volume等。</li>
+</ol>
+<p>Pod定义好后就可以使用kubectl创建，如果上面YAML文件名称为nginx.yaml，则创建命令如下所示，-f表示使用文件方式创建。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f nginx.yaml</span><br><span class="line">pod/nginx created</span><br><span class="line"></span><br><span class="line">Pod创建完成后，可以使用kubectl get pods命令查询Pod的状态，如下所示。</span><br><span class="line"></span><br><span class="line">$ kubectl get pods</span><br><span class="line">NAME           READY   STATUS    RESTARTS   AGE</span><br><span class="line">nginx          1/1     Running   0          40s</span><br></pre></td></tr></table></figure>
+
+<p>使用kubectl get命令查询具体Pod的配置信息，如下所示，-o yaml表示以YAML格式返回，还可以使用-o json，以JSON格式返回。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get pod nginx -o yaml</span><br></pre></td></tr></table></figure>
+
+<p>您还可以使用kubectl describe命令查看Pod的详情。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl describe pod nginx</span><br></pre></td></tr></table></figure>
+
+<p>删除pod时，Kubernetes终止Pod中所有容器。 Kubernetes向进程发送SIGTERM信号并等待一定的秒数（默认为30）让容器正常关闭。如果它没有在这个时间内关闭，Kubernetes会发送一个SIGKILL信号杀死该进程。 Pod的停止与删除有多种方法，比如按名称删除，如下所示。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl delete po nginx</span><br><span class="line">pod &quot;nginx&quot; deleted</span><br></pre></td></tr></table></figure>
+
+<p>同时删除多个Pod。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl delete po pod1 pod2</span><br></pre></td></tr></table></figure>
+
+<p>删除所有Pod。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl delete po --all</span><br><span class="line">pod &quot;nginx&quot; deleted</span><br></pre></td></tr></table></figure>
+
+<p>根据Label删除Pod，Label详细内容将会在下一个章节介绍。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl delete po -l app=nginx</span><br><span class="line">pod &quot;nginx&quot; deleted</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用环境变量"><a href="#使用环境变量" class="headerlink" title="使用环境变量"></a>使用环境变量</h3><p>环境变量是容器运行环境中设定的一个变量。 环境变量的使用方法如下所示，配置spec.containers.env字段即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">    containers:</span><br><span class="line">    - image: nginx:alpine</span><br><span class="line">      name: container-0</span><br><span class="line">      resources:</span><br><span class="line">        limits:</span><br><span class="line">          cpu: 100m</span><br><span class="line">          memory: 200Mi</span><br><span class="line">        requests:</span><br><span class="line">          cpu: 100m</span><br><span class="line">          memory: 200Mi</span><br><span class="line">      env:                            # 环境变量</span><br><span class="line">      - name: env_key</span><br><span class="line">        value: env_value</span><br></pre></td></tr></table></figure>
+
+<p>执行如下命令查看容器中的环境变量，可以看到env_key这个环境变量，其值为env_value。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl exec -it nginx -- env</span><br><span class="line">PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</span><br><span class="line">HOSTNAME=nginx</span><br><span class="line">TERM=xterm</span><br><span class="line">env_key=env_value</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="容器启动命令"><a href="#容器启动命令" class="headerlink" title="容器启动命令"></a>容器启动命令</h3><p>启动容器就是启动主进程，但有些时候，启动主进程前，需要一些准备工作。比如MySQL类的数据库，可能需要一些数据库配置、初始化的工作，这些工作要在最终的MySQL服务器运行之前做完。这些操作，可以在制作镜像时通过在Dockerfile文件中设置ENTRYPOINT或CMD来完成，如下所示的Dockerfile中设置了ENTRYPOINT [“top”, “-b”]命令，其将会在容器启动时执行。<br>实际使用时，只需配置Pod的containers.command参数，该参数是list类型，第一个参数为执行命令，后面均为命令的参数。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - image: nginx:alpine</span><br><span class="line">    name: container-0</span><br><span class="line">    resources:</span><br><span class="line">      limits:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">      requests:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">    command:                     # 启动命令</span><br><span class="line">    - top</span><br><span class="line">    - &quot;-b&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="容器的生命周期"><a href="#容器的生命周期" class="headerlink" title="容器的生命周期"></a>容器的生命周期</h3><p>Kubernetes提供了容器生命周期钩子，在容器的生命周期的特定阶段执行调用，比如容器在停止前希望执行某项操作，就可以注册相应的钩子函数。目前提供的生命周期钩子函数如下所示。</p>
+<p>启动后处理（PostStart）：容器启动后触发。<br>停止前处理（PreStop）：容器停止前触发。<br>实际使用时，只需配置Pod的lifecycle.postStart或lifecycle.preStop参数，如下所示。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - image: nginx:alpine</span><br><span class="line">    name: container-0</span><br><span class="line">    resources:</span><br><span class="line">      limits:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">      requests:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">    lifecycle:</span><br><span class="line">      postStart:                 # 启动后处理</span><br><span class="line">        exec:</span><br><span class="line">          command:</span><br><span class="line">          - &quot;/postStart.sh&quot;</span><br><span class="line">      preStop:                   # 停止前处理</span><br><span class="line">        exec:</span><br><span class="line">          command:</span><br><span class="line">          - &quot;/preStop.sh&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Label"><a href="#Label" class="headerlink" title="Label"></a>Label</h3><p>Label的具体形式是key-value的标记对，可以在创建资源的时候设置，也可以在后期添加和修改。</p>
+<ul>
+<li>添加Label<br>Label的形式为key-value形式，使用非常简单，如下，为Pod设置了app&#x3D;nginx和env&#x3D;prod两个Label。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">  labels:                     # 为Pod设置两个Label    </span><br><span class="line">    app: nginx    </span><br><span class="line">    env: prod</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - image: nginx:alpine</span><br><span class="line">    name: container-0</span><br><span class="line">    resources:</span><br><span class="line">      limits:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">      requests:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">  imagePullSecrets:</span><br><span class="line">  - name: default-secret</span><br></pre></td></tr></table></figure>
+
+<p>Pod有了Label后，在查询Pod的时候带上–show-labels就可以看到Pod的Label。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get pod --show-labels</span><br><span class="line">NAME              READY   STATUS    RESTARTS   AGE   LABELS</span><br><span class="line">nginx             1/1     Running   0          50s   app=nginx,env=prod</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>修改Label</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl label pod nginx env=debug --overwrite</span><br></pre></td></tr></table></figure>
+<p>pod&#x2F;nginx labeled</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/09/26/2021-09-26-k8s-pod/" data-id="clnfj559g006u7eqxbe5zc51j" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-09-26-k8s-service" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/26/2021-09-26-k8s-service/" class="article-date">
+  <time datetime="2021-09-26T04:11:42.000Z" itemprop="datePublished">2021-09-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/k8s/">k8s</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/09/26/2021-09-26-k8s-service/">K8S Service</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Pod的IP地址是在Pod启动后才被分配，在启动前并不知道Pod的IP地址。 应用往往都是由多个运行相同镜像的一组Pod组成，逐个访问Pod也变得不现实。Kubernetes中的Service对象就是用来解决上述Pod访问问题的。Service有一个固定IP地址，Service将访问它的流量转发给Pod，具体转发给哪些Pod通过Label来选择，而且Service可以给这些Pod做负载均衡。</p>
+<h3 id="创建-Deployment"><a href="#创建-Deployment" class="headerlink" title="创建 Deployment"></a>创建 Deployment</h3><p>创建后台Pod首先创建一个3副本的Deployment，即3个Pod，且Pod上带有标签“app: nginx”，具体如下所示。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1      </span><br><span class="line">kind: Deployment         </span><br><span class="line">metadata:</span><br><span class="line">  name: nginx            </span><br><span class="line">spec:</span><br><span class="line">  replicas: 3                    </span><br><span class="line">  selector:              </span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx</span><br><span class="line">  template:              </span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - image: nginx:latest</span><br><span class="line">        name: container-0</span><br><span class="line">        resources:</span><br><span class="line">          limits:</span><br><span class="line">            cpu: 100m</span><br><span class="line">            memory: 200Mi</span><br><span class="line">          requests:</span><br><span class="line">            cpu: 100m</span><br><span class="line">            memory: 200Mi</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建-Service"><a href="#创建-Service" class="headerlink" title="创建 Service"></a>创建 Service</h3><p>创建一个名为“nginx”的Service，通过selector选择到标签“app:nginx”的Pod，目标Pod的端口为80，Service对外暴露的端口为8080。</p>
+<p>访问服务只需要通过“服务名称:对外暴露的端口”接口，对应本例即“nginx:8080”。这样，在其他Pod中，只需要通过“nginx:8080”就可以访问到“nginx”关联的Pod。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx        # Service的名称</span><br><span class="line">spec:</span><br><span class="line">  selector:          # Label Selector，选择包含app=nginx标签的Pod</span><br><span class="line">    app: nginx</span><br><span class="line">  ports:</span><br><span class="line">  - name: service0</span><br><span class="line">    targetPort: 80   # Pod的端口</span><br><span class="line">    port: 8080       # Service对外暴露的端口</span><br><span class="line">    protocol: TCP    # 转发协议类型，支持TCP和UDP</span><br><span class="line">  type: ClusterIP    # Service的类型</span><br></pre></td></tr></table></figure>
+
+<p>将上面Service的定义保存到nginx-svc.yaml文件中，使用kubectl创建这个Service。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f nginx-svc.yaml</span><br><span class="line">service/nginx created</span><br><span class="line"></span><br><span class="line">$ kubectl get svc</span><br><span class="line">NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE</span><br><span class="line">kubernetes   ClusterIP   10.247.0.1       &lt;none&gt;        443/TCP    7h19m</span><br><span class="line">nginx        ClusterIP   10.247.124.252   &lt;none&gt;        8080/TCP   5h48m</span><br></pre></td></tr></table></figure>
+
+<p>可以看到Service有个Cluster IP，这个IP是固定不变的，除非Service被删除，所以您也可以使用ClusterIP在集群内部访问Service。</p>
+<p>下面创建一个Pod并进入容器，使用ClusterIP访问Pod，可以看到能直接返回内容。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl run -i --tty --image nginx:alpine test --rm /bin/sh</span><br><span class="line">If you don&#x27;t see a command prompt, try pressing enter.</span><br><span class="line"> # curl 10.247.124.252:8080</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用ServiceName访问Service"><a href="#使用ServiceName访问Service" class="headerlink" title="使用ServiceName访问Service"></a>使用ServiceName访问Service</h3><p>通过DNS进行域名解析后，可以使用“ServiceName:Port”访问Service，这也是Kubernetes中最常用的一种使用方式。向K8s 内部 DNS查询Service的名称获得Service的IP地址。<br>访问时通过 <code>ServiceName.namespace.svc.cluster.local</code>访问，其中nginx为 Service的名称，namespace 为命名空间名称，svc.cluster.local为域名后缀，在实际使用中，在同一个命名空间下可以省略 namespace.svc.cluster.local，直接使用ServiceName即可。</p>
+<p>例如上面创建的名为nginx的Service，直接通过“nginx:8080”就可以访问到Service，进而访问后台Pod。<br>使用ServiceName的方式有个主要的优点就是可以在开发应用程序时可以将ServiceName写在程序中，这样无需感知具体Service的IP地址。</p>
+<h3 id="Service是如何做到服务发现的"><a href="#Service是如何做到服务发现的" class="headerlink" title="Service是如何做到服务发现的"></a>Service是如何做到服务发现的</h3><p>前面说到有了Service后，无论Pod如何变化，Service都能够发现到Pod。</p>
+<p>如果调用kubectl describe命令查看Service的信息，您会看下如下信息。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl describe svc nginx</span><br><span class="line">Name:              nginx</span><br><span class="line">......</span><br><span class="line">Endpoints:         172.16.2.132:80,172.16.3.6:80,172.16.3.7:80</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<p>可以看到一个Endpoints，Endpoints同样也是Kubernetes的一种资源对象，可以查询得到。Kubernetes正是通过Endpoints监控到Pod的IP，从而让Service能够发现Pod。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get endpoints</span><br><span class="line">NAME         ENDPOINTS                                     AGE</span><br><span class="line">kubernetes   192.168.0.127:5444                            7h19m</span><br><span class="line">nginx        172.16.2.132:80,172.16.3.6:80,172.16.3.7:80   5h48m</span><br></pre></td></tr></table></figure>
+
+<p>实际上Service相关的事情都由节点上的kube-proxy处理。在Service创建时Kubernetes会分配IP给Service，同时通过API Server通知所有kube-proxy有新Service创建了，kube-proxy收到通知后通过iptables记录Service和IP&#x2F;端口对的关系，从而让Service在节点上可以被查询到。</p>
+<h3 id="Service的类型与使用场景"><a href="#Service的类型与使用场景" class="headerlink" title="Service的类型与使用场景"></a>Service的类型与使用场景</h3><p>Service的类型除了ClusterIP还有NodePort、LoadBalancer和None，这几种类型的Service有着不同的用途。</p>
+<ul>
+<li>ClusterIP：用于在集群内部互相访问的场景，通过ClusterIP访问Service。</li>
+<li>NodePort：用于从集群外部访问的场景，通过节点上的端口访问Service，详细介绍请参见NodePort类型的Service。</li>
+<li>LoadBalancer：用于从集群外部访问的场景，其实是NodePort的扩展，通过一个特定的LoadBalancer访问Service，这个LoadBalancer将请求转发到节点的NodePort</li>
+<li>None：用于Pod间的互相发现，这种类型的Service又叫Headless Service</li>
+</ul>
+<h4 id="NodePort类型的Service"><a href="#NodePort类型的Service" class="headerlink" title="NodePort类型的Service"></a>NodePort类型的Service</h4><p>NodePort类型的Service可以让Kubemetes集群每个节点上保留一个相同的端口， 外部访问连接首先访问节点IP:Port，然后将这些连接转发给服务对应的Pod。如下图所示。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: nodeport-service</span><br><span class="line">spec:</span><br><span class="line">  type: NodePort</span><br><span class="line">  ports:</span><br><span class="line">  - port: 8080</span><br><span class="line">    targetPort: 80</span><br><span class="line">    nodePort: 30120</span><br><span class="line">  selector:</span><br><span class="line">    app: nginx</span><br></pre></td></tr></table></figure>
+
+<p>创建并查看，可以看到PORT这一列为8080:30120&#x2F;TCP，说明Service的8080端口是映射到节点的30120端口。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f nodeport.yaml </span><br><span class="line">service/nodeport-service created</span><br><span class="line"></span><br><span class="line">$ kubectl get svc -o wide</span><br><span class="line">NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE    SELECTOR</span><br><span class="line">kubernetes         ClusterIP   10.247.0.1       &lt;none&gt;        443/TCP          107m   &lt;none&gt;</span><br><span class="line">nginx              ClusterIP   10.247.124.252   &lt;none&gt;        8080/TCP         16m    app=nginx</span><br><span class="line">nodeport-service   NodePort    10.247.210.174   &lt;none&gt;        8080:30120/TCP   17s    app=nginx</span><br></pre></td></tr></table></figure>
+
+<h4 id="LoadBalancer类型的Service"><a href="#LoadBalancer类型的Service" class="headerlink" title="LoadBalancer类型的Service"></a>LoadBalancer类型的Service</h4><p>LoadBalancer类型的Service其实是NodePort类型Service的扩展，通过一个特定的LoadBalancer访问Service，这个LoadBalancer将请求转发到节点的NodePort。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1 </span><br><span class="line">kind: Service </span><br><span class="line">metadata: </span><br><span class="line">  annotations:   </span><br><span class="line">    kubernetes.io/elb.id: 3c7caa5a-a641-4bff-801a-feace27424b6</span><br><span class="line">  labels: </span><br><span class="line">    app: nginx </span><br><span class="line">  name: nginx </span><br><span class="line">spec: </span><br><span class="line">  loadBalancerIP: 10.78.42.242     #  ELB实例的IP地址</span><br><span class="line">  ports: </span><br><span class="line">  - name: service0 </span><br><span class="line">    port: 80</span><br><span class="line">    protocol: TCP </span><br><span class="line">    targetPort: 80</span><br><span class="line">    nodePort: 30120</span><br><span class="line">  selector: </span><br><span class="line">    app: nginx </span><br><span class="line">  type: LoadBalancer    # 类型为LoadBalancer </span><br><span class="line"></span><br><span class="line">#### Headless Service</span><br><span class="line">Service解决了Pod的内外部访问问题，但还有下面这些问题没解决。</span><br><span class="line"></span><br><span class="line">* 同时访问所有Pod</span><br><span class="line">* 一个Service内部的Pod互相访问</span><br><span class="line"></span><br><span class="line">Headless Service正是解决这个问题的，Headless Service不会创建ClusterIP，并且查询会返回所有Pod的DNS记录，这样就可查询到所有Pod的IP地址。</span><br><span class="line">StatefulSet中StatefulSet正是使用Headless Service解决Pod间互相访问的问题。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>apiVersion: v1<br>kind: Service       # 对象类型为Service<br>metadata:<br>  name: nginx-headless<br>  labels:<br>    app: nginx<br>spec:<br>  ports:<br>    - name: nginx     # Pod间通信的端口名称<br>      port: 80        # Pod间通信的端口号<br>  selector:<br>    app: nginx        # 选择标签为app:nginx的Pod<br>  clusterIP: None     # 必须设置为None，表示Headless Service</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">执行如下命令创建Headless Service。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="kubectl-create-f-headless-yaml"><a href="#kubectl-create-f-headless-yaml" class="headerlink" title="kubectl create -f headless.yaml"></a>kubectl create -f headless.yaml</h1><p>service&#x2F;nginx-headless created</p>
+<p>创建完成后可以查询Service。</p>
+<h1 id="kubectl-get-svc"><a href="#kubectl-get-svc" class="headerlink" title="kubectl get svc"></a>kubectl get svc</h1><p>NAME             TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE<br>nginx-headless   ClusterIP   None         <none>        80&#x2F;TCP    5s</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">创建一个Pod来查询DNS，可以看到能返回所有Pod的记录，这就解决了访问所有Pod的问题了。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>$ kubectl run -i –tty –image tutum&#x2F;dnsutils dnsutils –restart&#x3D;Never –rm &#x2F;bin&#x2F;sh<br>If you don’t see a command prompt, try pressing enter.<br>&#x2F; # nslookup nginx-0.nginx<br>Server:         10.247.3.10<br>Address:        10.247.3.10#53<br>Name:   nginx-0.nginx.default.svc.cluster.local<br>Address: 172.16.0.31</p>
+<p>&#x2F; # nslookup nginx-1.nginx<br>Server:         10.247.3.10<br>Address:        10.247.3.10#53<br>Name:   nginx-1.nginx.default.svc.cluster.local<br>Address: 172.16.0.18</p>
+<p>&#x2F; # nslookup nginx-2.nginx<br>Server:         10.247.3.10<br>Address:        10.247.3.10#53<br>Name:   nginx-2.nginx.default.svc.cluster.local<br>Address: 172.16.0.19</p>
+<pre><code>
+</code></pre>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/09/26/2021-09-26-k8s-service/" data-id="clnfj559g006w7eqxamaib3do" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-09-27-go-grpc" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/26/2021-09-27-go-grpc/" class="article-date">
+  <time datetime="2021-09-26T04:11:42.000Z" itemprop="datePublished">2021-09-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/grpc/">grpc</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/09/26/2021-09-27-go-grpc/">Go GRPC 入门</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="安装准备工作"><a href="#安装准备工作" class="headerlink" title="安装准备工作"></a>安装准备工作</h3><ol>
+<li>安装protoc go相关的编译器:</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install protoc</span><br><span class="line">$ go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.26</span><br><span class="line">$ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>更新环境变量:</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ export PATH=&quot;$PATH:$(go env GOPATH)/bin&quot;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>下载 grpc-go, 因为众所周知的原因, 需要从 Github 下载, 再放到 google.golang.org</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd /home/levizheng/go/src/google.golang.org</span><br><span class="line">$ git clone -b v1.41.0 https://github.com/grpc/grpc-go grpc-go</span><br></pre></td></tr></table></figure>
+
+<h3 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h3><p>实现一个 mygrpc 的 项目, 目录树如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$:~/go/src/mygrpc&gt;tree</span><br><span class="line">.</span><br><span class="line">├── client</span><br><span class="line">│   ├── main</span><br><span class="line">│   └── main.go</span><br><span class="line">├── go.mod</span><br><span class="line">├── go.sum</span><br><span class="line">├── helloworld</span><br><span class="line">│   ├── helloworld_grpc.pb.go</span><br><span class="line">│   ├── helloworld.pb.go</span><br><span class="line">│   └── helloworld.proto</span><br><span class="line">├── helloworld.bak</span><br><span class="line">└── svr</span><br><span class="line">    ├── main</span><br><span class="line">    └── main.go</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>写 Proto &amp; 生成代码</li>
+</ul>
+<p>在 mygrpc 目录下 生成 proto.go, proto_grpc.pb.go</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir helloworld;</span><br><span class="line">touch helloworld.proto</span><br><span class="line">$ protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative  helloworld/helloworld.proto</span><br></pre></td></tr></table></figure>
+
+<p>需要修改 helloworld_grpc.pb.go 的 package 为 helloworld, 不然后面编译不过</p>
+<ul>
+<li>server &amp; client 的代码</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line">import (</span><br><span class="line">    &quot;context&quot;</span><br><span class="line">    &quot;log&quot;</span><br><span class="line">    &quot;net&quot;</span><br><span class="line">    &quot;google.golang.org/grpc&quot;</span><br><span class="line">    pb &quot;mygrpc/helloworld&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">const (</span><br><span class="line">    port = &quot;:50051&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// server is used to implement helloworld.GreeterServer.</span><br><span class="line">type server struct &#123;</span><br><span class="line">    pb.UnimplementedGreeterServer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// SayHello implements helloworld.GreeterServer</span><br><span class="line">func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) &#123;</span><br><span class="line">    log.Printf(&quot;Received: %v&quot;, in.GetName())</span><br><span class="line">    return &amp;pb.HelloReply&#123;Message: &quot;Hello &quot; + in.GetName()&#125;, nil</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">    lis, err := net.Listen(&quot;tcp&quot;, port)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        log.Fatalf(&quot;failed to listen: %v&quot;, err)</span><br><span class="line">    &#125;</span><br><span class="line">    s := grpc.NewServer()</span><br><span class="line">    pb.RegisterGreeterServer(s, &amp;server&#123;&#125;)</span><br><span class="line">    log.Printf(&quot;server listening at %v&quot;, lis.Addr())</span><br><span class="line">    if err := s.Serve(lis); err != nil &#123;</span><br><span class="line">        log.Fatalf(&quot;failed to serve: %v&quot;, err)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">    &quot;context&quot;</span><br><span class="line">    &quot;log&quot;</span><br><span class="line">    &quot;os&quot;</span><br><span class="line">    &quot;time&quot;</span><br><span class="line">    &quot;google.golang.org/grpc&quot;</span><br><span class="line">    pb &quot;mygrpc/helloworld&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">const (</span><br><span class="line">    address     = &quot;localhost:50051&quot;</span><br><span class="line">    defaultName = &quot;world&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">    // Set up a connection to the server.</span><br><span class="line">    conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        log.Fatalf(&quot;did not connect: %v&quot;, err)</span><br><span class="line">    &#125;</span><br><span class="line">    defer conn.Close()</span><br><span class="line">    c := pb.NewGreeterClient(conn)</span><br><span class="line"></span><br><span class="line">    // Contact the server and print out its response.</span><br><span class="line">    name := defaultName</span><br><span class="line">    if len(os.Args) &gt; 1 &#123;</span><br><span class="line">        name = os.Args[1]</span><br><span class="line">    &#125;</span><br><span class="line">    ctx, cancel := context.WithTimeout(context.Background(), time.Second)</span><br><span class="line">    defer cancel()</span><br><span class="line">    r, err := c.SayHello(ctx, &amp;pb.HelloRequest&#123;Name: name&#125;)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        log.Fatalf(&quot;could not greet: %v&quot;, err)</span><br><span class="line">    &#125;</span><br><span class="line">    log.Printf(&quot;Greeting: %s&quot;, r.GetMessage())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在 mygrpc 目录下生成 go.mod , 使其顺利编译</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cd ~/go/src/mygrpc;</span><br><span class="line">go mod init mygrpc</span><br><span class="line">go mod tidy</span><br><span class="line"></span><br><span class="line">go build svr/main.go</span><br><span class="line">go build svr/client.go</span><br></pre></td></tr></table></figure>
+
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/09/26/2021-09-27-go-grpc/" data-id="clnfj559h00717eqx5drpaz9h" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/grpc/" rel="tag">grpc</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-09-23-lru-summary" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/23/2021-09-23-lru-summary/" class="article-date">
+  <time datetime="2021-09-23T04:11:42.000Z" itemprop="datePublished">2021-09-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/09/23/2021-09-23-lru-summary/">LRU Cache 及变种</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>偶然在学习LRU Cache的时候，发现他原来有挺多亲戚，好奇驱动下，就一并学习,记录下来做总结。</p>
+<h3 id="LRU"><a href="#LRU" class="headerlink" title="LRU"></a>LRU</h3><ul>
+<li>其核心思想是:假设刚visit的item, 很有可能在未来被revisit</li>
+<li>丢弃最近最少访问的items</li>
+<li>通常用双链表实现</li>
+<li>缺点:忽略了 frequency, 不适合大规模扫描等情况</li>
+<li>LRU 有一系列变种，比如LRU2, 2Q, LIRS等。</li>
+</ul>
+<h3 id="LRU-K算法"><a href="#LRU-K算法" class="headerlink" title="LRU-K算法"></a>LRU-K算法</h3><ul>
+<li>算法思想: LRU-K中的K代表最近使用的次数，因此LRU可以认为是LRU-1。LRU-K的主要目的是为了解决LRU算法“缓存污染”的问题，其核心思想是将“最近使用过1次”的判断标准扩展为“最近使用过K次”。</li>
+<li>工作原理相比LRU，LRU-K需要多维护一个队列，用于记录所有缓存数据被访问的历史。只有当数据的访问次数达到K次的时候，才将数据放入缓存。当需要淘汰数据时，LRU-K会淘汰第K次访问时间距当前时间最大的数据。</li>
+</ul>
+<p>详细实现如下<br>(1). 数据第一次被访问，加入到访问历史列表；<br>(2). 如果数据在访问历史列表里后没有达到K次访问，则按照一定规则（FIFO，LRU）淘汰；<br>(3). 当访问历史队列中的数据访问次数达到K次后，将数据索引从历史队列删除，将数据移到缓存队列中，并缓存此数据，缓存队列重新按照时间排序；<br>(4). 缓存数据队列中被再次访问后，重新排序；<br>(5). 需要淘汰数据时，淘汰缓存队列中排在末尾的数据，即：淘汰“倒数第K次访问离现在最久”的数据。<br>LRU-K具有LRU的优点，同时能够避免LRU的缺点，实际应用中LRU-2是综合各种因素后最优的选择，LRU-3或者更大的K值命中率会高，但适应性差，需要大量的数据访问才能将历史访问记录清除掉。</p>
+<h3 id="Two-queues（2Q）"><a href="#Two-queues（2Q）" class="headerlink" title="Two queues（2Q）"></a>Two queues（2Q）</h3><ul>
+<li>算法思想该算法类似于LRU-2，</li>
+<li>不同点在于2Q 将 LRU-2 算法中的访问历史队列（注意这不是缓存数据的）改为一个FIFO缓存队列，即：2Q算法有两个缓存队列，一个是FIFO队列，一个是LRU队列。</li>
+</ul>
+<p>工作原理当数据第一次访问时，2Q算法将数据缓存在FIFO队列里面，当数据第二次被访问时，则将数据从FIFO队列移到LRU队列里面，两个队列各自按照自己的方法淘汰数据。详细实现如下<br>(1). 新访问的数据插入到FIFO队列；<br>(2). 如果数据在FIFO队列中一直没有被再次访问，则最终按照FIFO规则淘汰；<br>(3). 如果数据在FIFO队列中被再次访问，则将数据移到LRU队列头部<br>(4). 如果数据在LRU队列再次被访问，则将数据移到LRU队列头部；<br>(5). LRU队列淘汰末尾的数据。</p>
+<h3 id="ARC（Adaptive-Replacement-Cache）"><a href="#ARC（Adaptive-Replacement-Cache）" class="headerlink" title="ARC（Adaptive Replacement Cache）"></a>ARC（Adaptive Replacement Cache）</h3><p>是一种适应性Cache算法, 它结合了LRU与LFU。</p>
+<ul>
+<li>整个 Cache 分成两部分，起始 LRU 和 LFU 各占一半，后续会动态适应调整 partion 位置（记为p）</li>
+<li>除此，LRU 和 LFU 各自有一个 ghost list(因此，一共4个list)</li>
+<li>每次，被淘汰的 item 放到对应的 ghost list中（ghost list只存key）, 例如：如果被 evicted 的 item 来自LRU的部分， 则该 item 对应的key会被放入 LRU 对应的 ghost list</li>
+<li>第一次 cache miss, 则会放入LRU</li>
+<li>如果 cache hit, 如果 LFU 中没有，则放入 LFU</li>
+<li>如果 cache miss, 但在 ghost list 中命中，这说明对应的 cache 如果再大一丁点儿就好了： 如果存在于 LRU ghost list, 则 p&#x3D;p+1；否则存在于LFU ghost list, p&#x3D;p-1.</li>
+<li>也就是说，利用这种适应机制，当系统趋向于访问最近的内容，会更多地命中LRU ghost list，这样会增大 LRU 的空间； 当系统趋向于访问最频繁的内容，会更多地命中 LFU ghost list，这样会增加LFU的空间.</li>
+</ul>
+<h3 id="LFU-Least-frequently-used"><a href="#LFU-Least-frequently-used" class="headerlink" title="LFU(Least-frequently used)"></a>LFU(Least-frequently used)</h3><ul>
+<li>其核心思想是:假设visit次数越多的item,很有可能在未来被revisit</li>
+<li>适应大规模扫描</li>
+<li>对热点友好</li>
+<li>缺点:忽略了recency, 可能会积累不再使用的数据 redis4.0开始支持了LFU,例如 volatile-lfu, allkeys-lfu 配置选项</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/zheng-ji/source-note/blob/main/golang-lru/">Link</a> 我是通过这份 golang-lru 的代码完整的学习，干净的代码读起来也欣然。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/09/23/2021-09-23-lru-summary/" data-id="clnfj559c006a7eqx77vw21wt" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LRU/" rel="tag">LRU</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-09-25-k8s-basic" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/23/2021-09-25-k8s-basic/" class="article-date">
+  <time datetime="2021-09-23T04:11:42.000Z" itemprop="datePublished">2021-09-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/k8s/">k8s</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/09/23/2021-09-25-k8s-basic/">K8S 基本对象</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/k8s/k8s-basic-object.png" alt="k8s object"></p>
+<ul>
+<li><p>Pod<br>Pod是Kubernetes创建或部署的最小单位。一个Pod封装一个或多个容器（container）、存储资源（volume）、一个独立的网络IP以及管理控制容器运行方式的策略选项。</p>
+</li>
+<li><p>Deployment<br>Deployment是对Pod的服务化封装。一个Deployment可以包含一个或多个Pod，每个Pod的角色相同，所以系统会自动为Deployment的多个Pod分发请求。</p>
+</li>
+<li><p>StatefulSet<br>StatefulSet是用来管理有状态应用的对象。和Deployment相同的是，StatefulSet管理了基于相同容器定义的一组Pod。但和Deployment不同的是，StatefulSet为它们的每个Pod维护了一个固定的ID。这些Pod是基于相同的声明来创建的，但是不能相互替换，无论怎么调度，每个Pod都有一个永久不变的ID。</p>
+</li>
+<li><p>Job<br>Job是用来控制批处理型任务的对象。批处理业务与长期伺服业务（Deployment）的主要区别是批处理业务的运行有头有尾，而长期伺服业务在用户不停止的情况下永远运行。Job管理的Pod根据用户的设置把任务成功完成就自动退出（Pod自动删除）。</p>
+</li>
+<li><p>CronJob<br>CronJob是基于时间控制的Job，类似于Linux系统的crontab，在指定的时间周期运行指定的任务。</p>
+</li>
+<li><p>DaemonSet<br>DaemonSet是这样一种对象（守护进程），它在集群的每个节点上运行一个Pod，且保证只有一个Pod，这非常适合一些系统层面的应用，例如日志收集、资源监控等，这类应用需要每个节点都运行，且不需要太多实例，一个比较好的例子就是Kubernetes的kube-proxy。</p>
+</li>
+<li><p>Service<br>Service是用来解决Pod访问问题的。Service有一个固定IP地址，Service将访问流量转发给Pod，而且Service可以给这些Pod做负载均衡。</p>
+</li>
+<li><p>Ingress<br>Service是基于四层TCP和UDP协议转发的，Ingress可以基于七层的HTTP和HTTPS协议转发，可以通过域名和路径做到更细粒度的划分。</p>
+</li>
+<li><p>ConfigMap<br>ConfigMap是一种用于存储应用所需配置信息的资源类型，用于保存配置数据的键值对。通过ConfigMap可以方便的做到配置解耦，使得不同环境有不同的配置。</p>
+</li>
+<li><p>Secret<br>Secret是一种加密存储的资源对象，您可以将认证信息、证书、私钥等保存在Secret中，而不需要把这些敏感数据暴露到镜像或者Pod定义中，从而更加安全和灵活。</p>
+</li>
+<li><p>PersistentVolume（PV）<br>PV指持久化数据存储卷，主要定义的是一个持久化存储在宿主机上的目录，比如一个NFS的挂载目录。</p>
+</li>
+<li><p>PersistentVolumeClaim（PVC）<br>Kubernetes提供PVC专门用于持久化存储的申请，PVC可以让您无需关心底层存储资源如何创建、释放等动作，而只需要申明您需要何种类型的存储资源、多大的存储空间。</p>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/09/23/2021-09-25-k8s-basic/" data-id="clnfj559d006d7eqxc7x81mej" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/k8s-basic/" rel="tag">k8s basic</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-09-25-k8s-volumn" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/23/2021-09-25-k8s-volumn/" class="article-date">
+  <time datetime="2021-09-23T04:11:42.000Z" itemprop="datePublished">2021-09-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/k8s/">k8s</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/09/23/2021-09-25-k8s-volumn/">K8S Volumen 与 VPC</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>容器中的文件在磁盘上是临时存放的，当容器重建时，容器中的文件将会丢失，另外当在一个Pod中同时运行多个容器时，常常需要在这些容器之间共享文件，Kubernetes抽象出了Volume来解决这两个问题，也就是存储卷，Kubernetes的Volume是Pod的一部分，Volume不是单独的对象，不能独立创建，只能在Pod中定义。</p>
+<p>Pod中的所有容器都可以访问Volume，但必须要挂载，且可以挂载到容器中任何目录。</p>
+<p>Volume的生命周期与挂载它的Pod相同，但是Volume里面的文件可能在Volume消失后仍然存在，这取决于Volume的类型。</p>
+<p>Volume的类型</p>
+<ul>
+<li>emptyDir：一种简单的空目录，主要用于临时存储。</li>
+<li>hostPath：将主机某个目录挂载到容器中。</li>
+<li>ConfigMap、Secret：特殊类型，将Kubernetes特定的对象类型挂载到Pod，</li>
+<li>PV&#x2F;PVC</li>
+</ul>
+<h3 id="EmptyDir"><a href="#EmptyDir" class="headerlink" title="EmptyDir"></a>EmptyDir</h3><p>EmptyDir是最简单的一种Volume类型，根据名字就能看出，这个Volume挂载后就是一个空目录，应用程序可以在里面读写文件，emptyDir Volume的生命周期与Pod相同，Pod删除后Volume的数据也同时删除掉。</p>
+<p>emptyDir的一些用途： 缓存空间，例如基于磁盘的归并排序。 为耗时较长的计算任务提供检查点，emptyDir配置示例如下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - image: nginx:alpine</span><br><span class="line">    name: test-container</span><br><span class="line">    volumeMounts:</span><br><span class="line">    - mountPath: /cache</span><br><span class="line">      name: cache-volume</span><br><span class="line">  volumes:</span><br><span class="line">  - name: cache-volume</span><br><span class="line">    emptyDir: &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>emptyDir实际是将Volume的内容写在Pod所在节点的磁盘上，另外emptyDir也可以设置存储介质为内存，如下所示，medium设置为Memory。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">volumes:</span><br><span class="line">  - name: html</span><br><span class="line">    emptyDir:</span><br><span class="line">      medium: Memory</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="HostPath"><a href="#HostPath" class="headerlink" title="HostPath"></a>HostPath</h3><p>HostPath是一种持久化存储，emptyDir里面的内容会随着Pod的删除而消失，但HostPath不会，如果对应的Pod删除，HostPath Volume里面的内容依然存在于节点的目录中，如果后续重新创建Pod并调度到同一个节点，挂载后依然可以读取到之前Pod写的内容。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: test-hostpath</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - image: nginx:alpine</span><br><span class="line">    name: hostpath-container</span><br><span class="line">    volumeMounts:</span><br><span class="line">    - mountPath: /test-pd</span><br><span class="line">      name: test-volume</span><br><span class="line">  volumes:</span><br><span class="line">  - name: test-volume</span><br><span class="line">    hostPath:</span><br><span class="line">      path: /data</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="PV"><a href="#PV" class="headerlink" title="PV"></a>PV</h3><p>如果要求Pod重新调度后仍然能使用之前读写过的数据，就只能使用网络存储了，网络存储种类非常多且有不同的使用方法，通常一个云服务提供商至少有块存储、文件存储、对象存储三种，Kubernetes解决这个问题的方式是抽象了 PV（PersistentVolume）和PVC（PersistentVolumeClaim）来解耦这个问题。从而让使用者不用关心具体的基础设施，当需要存储资源的时候，只要像CPU和内存一样，声明要多少即可。</p>
+<ul>
+<li>PV：PV 描述的是持久化存储卷，主要定义的是一个持久化存储在宿主机上的目录，比如一个NFS的挂载目录。</li>
+<li>PVC：PVC 描述的是Pod所希望使用的持久化存储的属性，比如，Volume存储的大小、可读写权限等等。</li>
+</ul>
+<p>管理员设置好网络存储的类型，提供对应的PV描述符配置到Kubernetes，使用者需要存储的时候只需要创建PVC，然后在Pod中使用Volume关联PVC，即可让Pod使用到存储资源，RECLAIM POLICY 是指 PV 的回收策略，Retain表示PVC被释放后PV继续保留。STATUS值为Available，表示PV处于可用的状态。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: pv-example</span><br><span class="line">spec:</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteMany                      # 读写模式</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 10Gi                      # 定义PV的大小</span><br><span class="line">  csi:</span><br><span class="line">    driver: nas.csi.everest.io         # 声明使用的驱动                   </span><br><span class="line">    fsType: nfs                        # 存储类型</span><br><span class="line">    volumeAttributes:</span><br><span class="line">      everest.io/share-export-location: sfs-nas01.cn-north-4b.myhuaweicloud.com:/share-96314776   # 挂载地址</span><br><span class="line">    volumeHandle: 68e4a4fd-d759-444b-8265-20dc66c8c502                                            # 存储ID</span><br></pre></td></tr></table></figure>
+
+<p>创建 PV </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f pv.yaml</span><br><span class="line">persistentvolume/pv-example created</span><br><span class="line"></span><br><span class="line">$ kubectl get pv</span><br><span class="line">NAME                 CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM    STORAGECLASS   REASON   AGE</span><br><span class="line">pv-example           10Gi       RWX            Retain           Available                                    4s</span><br></pre></td></tr></table></figure>
+
+<h3 id="PVC"><a href="#PVC" class="headerlink" title="PVC"></a>PVC</h3><p>PVC可以绑定一个PV，示例如下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name: pvc-example</span><br><span class="line">spec:</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteMany</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 10Gi              # 声明存储的大小</span><br><span class="line">  volumeName: pv-example         # PV的名称</span><br></pre></td></tr></table></figure>
+
+<p>创建 PVC 并查看。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f pvc.yaml</span><br><span class="line">persistentvolumeclaim/pvc-example created</span><br><span class="line"></span><br><span class="line">$ kubectl get pvc</span><br><span class="line">NAME          STATUS   VOLUME       CAPACITY   ACCESS MODES   STORAGECLASS   AGE</span><br><span class="line">pvc-example   Bound    pv-example   10Gi       RWX                           9s</span><br></pre></td></tr></table></figure>
+
+<p>这里可以看到状态是 Bound，VOLUME 是 pv-example，表示PVC已经绑定了PV。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get pv</span><br><span class="line">NAME          CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                  STORAGECLASS   REASON   AGE</span><br><span class="line">pv-example    10Gi       RWX            Retain           Bound    default/pvc-example                            50s</span><br></pre></td></tr></table></figure>
+<p>可以看到状态也变成了Bound，CLAIM是default&#x2F;pvc-example，表示这个PV绑定了default命名空间下的pvc-example这个PVC。 PV是集群级别的资源，并不属于某个命名空间，而PVC是命名空间级别的资源，PV可以与任何命名空间的PVC资源绑定。</p>
+<h3 id="StorageClass"><a href="#StorageClass" class="headerlink" title="StorageClass"></a>StorageClass</h3><p>管理员可以部署PV配置器（provisioner），然后定义对应的StorageClass，这样开发者在创建PVC的时候就可以选择需要创建存储的类型，PVC会把StorageClass传递给PV provisioner，由provisioner自动创建PV。如CCE就提供csi-disk、csi-nas、csi-obs等StorageClass，在声明PVC时加上StorageClassName，就可以自动创建PV，并自动创建底层的存储资源</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name:  pvc-sfs-auto-example</span><br><span class="line">spec:</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteMany</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 10Gi</span><br><span class="line">  storageClassName: csi-nas        # StorageClass</span><br></pre></td></tr></table></figure>
+
+<p>创建PVC并查看PVC和PV。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f pvc2.yaml</span><br><span class="line">persistentvolumeclaim/pvc-sfs-auto-example created</span><br><span class="line"></span><br><span class="line">$ kubectl get pvc</span><br><span class="line">NAME                   STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE</span><br><span class="line">pvc-sfs-auto-example   Bound    pvc-1f1c1812-f85f-41a6-a3b4-785d21063ff3   10Gi       RWX            csi-nas        29s</span><br><span class="line"></span><br><span class="line">$ kubectl get pv</span><br><span class="line">NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                         STORAGECLASS   REASON   AGE</span><br><span class="line">pvc-1f1c1812-f85f-41a6-a3b4-785d21063ff3   10Gi       RWO            Delete           Bound    default/pvc-sfs-auto-example  csi-nas                 20s</span><br></pre></td></tr></table></figure>
+
+<p>这可以看到使用StorageClass后，不仅创建了PVC，而且创建了PV，并且将二者绑定了。<br>定义了StorageClass后，就可以减少创建并维护PV的工作，PV变成了自动创建，作为使用者，只需要在声明PVC时指定StorageClassName即可，这就大大减少工作量。<br>再次说明，StorageClassName的类型在不同厂商的产品上各不相同， 在Pod中使用PVC, 有了PVC后，在Pod中使用持久化存储就非常方便了，在Pod Template中的Volume直接关联PVC的名称，然后挂载到容器之中即可</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-deployment</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx</span><br><span class="line">  replicas: 2</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx</span><br><span class="line">    spec:</span><br><span class="line">      containers: </span><br><span class="line">      - image: nginx:alpine</span><br><span class="line">        name: container-0 </span><br><span class="line">        volumeMounts: </span><br><span class="line">        - mountPath: /tmp                                # 挂载路径</span><br><span class="line">          name: pvc-sfs-example </span><br><span class="line">      restartPolicy: Always </span><br><span class="line">      volumes: </span><br><span class="line">      - name: pvc-sfs-example </span><br><span class="line">        persistentVolumeClaim: </span><br><span class="line">          claimName:  pvc-example                       # PVC的名称</span><br></pre></td></tr></table></figure>
+
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/09/23/2021-09-25-k8s-volumn/" data-id="clnfj559e006g7eqx41v023u3" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2020-02-10-deducting-inventory-with-mysql" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/02/10/2020-02-10-deducting-inventory-with-mysql/" class="article-date">
+  <time datetime="2020-02-10T04:11:42.000Z" itemprop="datePublished">2020-02-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/10/2020-02-10-deducting-inventory-with-mysql/">MySQL 扣减库存的笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="一个思考"><a href="#一个思考" class="headerlink" title="一个思考"></a>一个思考</h3><p>电商网站有一个场景是：用户购买一个商品，库存会做扣减。如果用 MySQL 做商品存储，会遇到什么坑，该怎么避免。</p>
+<p>简化的商品表如下。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `goods` (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT COMMENT <span class="string">&#x27;自增id&#x27;</span>,</span><br><span class="line">  `name` <span class="type">varchar</span>(<span class="number">256</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;&#x27;</span> COMMENT <span class="string">&#x27;商品名称&#x27;</span>,</span><br><span class="line">  `available` <span class="type">int</span>(<span class="number">11</span>)  <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;0&#x27;</span> COMMENT <span class="string">&#x27;库存剩余量&#x27;</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8</span><br></pre></td></tr></table></figure>
+
+
+<p>在阅读网上的解决方法之前，脑海会迸发一个解决方法是：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> goods <span class="keyword">SET</span> available <span class="operator">=</span> available <span class="operator">-</span> <span class="number">1</span> <span class="keyword">WHERE</span> id <span class="operator">=</span> xxx </span><br></pre></td></tr></table></figure>
+
+<p>如果是这么简单的话，那就没有必要讨论了。实际上在并发请求的业务场景下，有可能出现 available 变量变成负数。</p>
+<p>虽然我们可以将 available 变量设计成 int unsigned 字段来避免，但是在不同的 MySQL 版本下，会出现 available 溢出成为一个非常大的数。</p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><ul>
+<li>悲观锁的方案：SELECT FOR UPDATE</li>
+</ul>
+<p>当我们查询 goods 信息后就把当前的数据锁定，直到我们修改完毕后再解锁。不过 FOR UPDATE 仅适用于 InnoDB，且必须在事务区块中才能生效。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">set autocommit = 0; // 设置MySQL为非autocommit模式：</span><br><span class="line">begin trans;// 开始事务</span><br><span class="line">select avaliable from goods where id = xxx for update; //1.查询出商品信息</span><br><span class="line">if (avaliable &gt;= 0) &#123;</span><br><span class="line">   affectNum = udpate goods set available = available - 1 where id = xx ;</span><br><span class="line">   commit ; // 4.提交事务</span><br><span class="line">&#125; else &#123;</span><br><span class="line">   rollback ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>弊端：<br>悲观锁是排他锁，会阻塞其他写请求，如果上述代码有异常，导致 Commit&#x2F;Rollback 没有执行，就会造成所有请求都在等待锁。</p>
+<ul>
+<li>乐观锁的方案</li>
+</ul>
+<p>乐观锁假设数据一般情况下不会冲突，在数据提交更新的时候，才会对检测数据的冲突与，如果发现冲突了，则让返回用户错误的信息，让用户决定。<br>通常做法是记录加一个 <code>Version</code> 字段。读取记录时，连同 <code>Version</code> 一同读出。数据每次更新时候，Version + 1， 更新时判断记录的当前版本与之前取出来的 Version 值比对，<br>如果当前版本号与第一次取出来的 Version 值相等，则予以更新，否则认为是过期数据。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> avaiable ,version <span class="keyword">from</span> goods <span class="keyword">where</span> id<span class="operator">=</span>xxx limit <span class="number">1</span>; <span class="operator">/</span><span class="operator">/</span> 查询version</span><br><span class="line">if (available <span class="operator">&gt;</span> <span class="number">0</span>) &#123;</span><br><span class="line">	<span class="keyword">update</span> goods <span class="keyword">set</span> avaiable<span class="operator">=</span>avaiable<span class="number">-1</span> <span class="keyword">where</span> id <span class="operator">=</span>xx <span class="keyword">and</span> version<span class="operator">=</span> <span class="operator">&lt;</span>刚查出来的 Version<span class="operator">&gt;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>弊端： 这样虽然保证安全，但是需要执行2次 SQL</p>
+<ul>
+<li>Update 时增加 available 查询条件</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">udpate goods <span class="keyword">set</span> available <span class="operator">=</span> available <span class="operator">-</span> <span class="number">1</span> <span class="keyword">where</span> id <span class="operator">=</span> xx <span class="keyword">and</span> available <span class="operator">-</span> <span class="number">1</span> <span class="operator">&gt;=</span> <span class="number">0</span> ;</span><br></pre></td></tr></table></figure>
+
+<p>Innodb 的 Update 语句，对于 id 是主键索引的情况下会执行行锁。该语句在 MySQL中是先读后更新，串行且原子的。单条语句，实际上也是一个事务。这个方法效率更快，且安全。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/10/2020-02-10-deducting-inventory-with-mysql/" data-id="clnfj559c00687eqx9iywggb7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2019-10-22-nginx-grpc" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/22/2019-10-22-nginx-grpc/" class="article-date">
+  <time datetime="2019-10-22T04:11:42.000Z" itemprop="datePublished">2019-10-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/System/">System</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/22/2019-10-22-nginx-grpc/">Nginx 支持 GRPC 负载均衡</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>接触 grpc，从它的 <a target="_blank" rel="noopener" href="https://github.com/grpc/grpc-go/tree/master/examples/helloworld">example-GreetHelloWorld</a> 开始, client 指定了 Server 监听的IP和端口，然后直接访问.就完成了一次 RPC 请求。</p>
+<p>那时候我就在想，这里是否能指定代理转发，做负载均衡呢。比如 http访问下，我们会用 proxy_pass + upstream 来代理服务端，这样来实现服务端的负载均衡，以及灰度发布。</p>
+<p>今日偶然发现 nginx 1.13 已经 支持 grpc 协议， 实操上我们可以像使用 proxy_pass 一样使用 grpc_pass </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80 http2;</span><br><span class="line">    access_log logs/access.log main;</span><br><span class="line">    location / &#123;</span><br><span class="line">        // Your Server Address</span><br><span class="line">        grpc_pass grpc://localhost:50051;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/10/22/2019-10-22-nginx-grpc/" data-id="clnfj559b00647eqxdt1dgyuu" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx-grpc/" rel="tag">nginx grpc</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DataBase/">DataBase</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ElasticSearch/">ElasticSearch</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Life/">Life</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NLP/">NLP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork/">NetWork</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Product/">Product</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Program/">Program</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Redis/">Redis</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/System/">System</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/grpc/">grpc</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/mq/">mq</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-11/" rel="tag">C++11</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DataBase/" rel="tag">DataBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LRU/" rel="tag">LRU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MQ/" rel="tag">MQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ProtoBuffer/" rel="tag">ProtoBuffer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/" rel="tag">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupCache/" rel="tag">groupCache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grpc/" rel="tag">grpc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s-basic/" rel="tag">k8s basic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx-grpc/" rel="tag">nginx grpc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 10px;">Algorithm</a> <a href="/tags/C-11/" style="font-size: 10px;">C++11</a> <a href="/tags/DataBase/" style="font-size: 10px;">DataBase</a> <a href="/tags/Go/" style="font-size: 10px;">Go</a> <a href="/tags/Kafka/" style="font-size: 10px;">Kafka</a> <a href="/tags/LRU/" style="font-size: 10px;">LRU</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/ProtoBuffer/" style="font-size: 10px;">ProtoBuffer</a> <a href="/tags/Redis/" style="font-size: 16.67px;">Redis</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/groupCache/" style="font-size: 10px;">groupCache</a> <a href="/tags/grpc/" style="font-size: 13.33px;">grpc</a> <a href="/tags/k8s/" style="font-size: 20px;">k8s</a> <a href="/tags/k8s-basic/" style="font-size: 10px;">k8s basic</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/nginx-grpc/" style="font-size: 10px;">nginx grpc</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/07/">July 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">May 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/03/">March 2012</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/10/20/2021-10-20-why-docker-supervisor/"> Docker里使用 supervisor 管理多个程序</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/14/2021-10-14-binary-tree-algo/">二叉树相关的递归算法题</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/13/2021-10-13-go-channel/">Go Channel 笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/12/2021-10-12-why-kafka-so-fast/">Kafka 吞吐量大的原因</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/11/2021-10-11-redis-pipeline/">Redis Pipline 与事务</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2023 zheng-ji<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

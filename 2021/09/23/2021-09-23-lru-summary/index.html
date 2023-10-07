@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>LRU Cache 及变种 | 织网</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="偶然在学习LRU Cache的时候，发现他原来有挺多亲戚，好奇驱动下，就一并学习,记录下来做总结。 LRU 其核心思想是:假设刚visit的item, 很有可能在未来被revisit 丢弃最近最少访问的items 通常用双链表实现 缺点:忽略了 frequency, 不适合大规模扫描等情况 LRU 有一系列变种，比如LRU2, 2Q, LIRS等。  LRU-K算法 算法思想: LRU-K中的K代">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LRU Cache 及变种">
+<meta property="og:url" content="http://yoursite.com/2021/09/23/2021-09-23-lru-summary/index.html">
+<meta property="og:site_name" content="织网">
+<meta property="og:description" content="偶然在学习LRU Cache的时候，发现他原来有挺多亲戚，好奇驱动下，就一并学习,记录下来做总结。 LRU 其核心思想是:假设刚visit的item, 很有可能在未来被revisit 丢弃最近最少访问的items 通常用双链表实现 缺点:忽略了 frequency, 不适合大规模扫描等情况 LRU 有一系列变种，比如LRU2, 2Q, LIRS等。  LRU-K算法 算法思想: LRU-K中的K代">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-09-23T04:11:42.000Z">
+<meta property="article:modified_time" content="2023-10-07T04:09:04.091Z">
+<meta property="article:author" content="zheng-ji">
+<meta property="article:tag" content="LRU">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="织网" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">织网</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2021-09-23-lru-summary" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/23/2021-09-23-lru-summary/" class="article-date">
+  <time datetime="2021-09-23T04:11:42.000Z" itemprop="datePublished">2021-09-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      LRU Cache 及变种
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>偶然在学习LRU Cache的时候，发现他原来有挺多亲戚，好奇驱动下，就一并学习,记录下来做总结。</p>
+<h3 id="LRU"><a href="#LRU" class="headerlink" title="LRU"></a>LRU</h3><ul>
+<li>其核心思想是:假设刚visit的item, 很有可能在未来被revisit</li>
+<li>丢弃最近最少访问的items</li>
+<li>通常用双链表实现</li>
+<li>缺点:忽略了 frequency, 不适合大规模扫描等情况</li>
+<li>LRU 有一系列变种，比如LRU2, 2Q, LIRS等。</li>
+</ul>
+<h3 id="LRU-K算法"><a href="#LRU-K算法" class="headerlink" title="LRU-K算法"></a>LRU-K算法</h3><ul>
+<li>算法思想: LRU-K中的K代表最近使用的次数，因此LRU可以认为是LRU-1。LRU-K的主要目的是为了解决LRU算法“缓存污染”的问题，其核心思想是将“最近使用过1次”的判断标准扩展为“最近使用过K次”。</li>
+<li>工作原理相比LRU，LRU-K需要多维护一个队列，用于记录所有缓存数据被访问的历史。只有当数据的访问次数达到K次的时候，才将数据放入缓存。当需要淘汰数据时，LRU-K会淘汰第K次访问时间距当前时间最大的数据。</li>
+</ul>
+<p>详细实现如下<br>(1). 数据第一次被访问，加入到访问历史列表；<br>(2). 如果数据在访问历史列表里后没有达到K次访问，则按照一定规则（FIFO，LRU）淘汰；<br>(3). 当访问历史队列中的数据访问次数达到K次后，将数据索引从历史队列删除，将数据移到缓存队列中，并缓存此数据，缓存队列重新按照时间排序；<br>(4). 缓存数据队列中被再次访问后，重新排序；<br>(5). 需要淘汰数据时，淘汰缓存队列中排在末尾的数据，即：淘汰“倒数第K次访问离现在最久”的数据。<br>LRU-K具有LRU的优点，同时能够避免LRU的缺点，实际应用中LRU-2是综合各种因素后最优的选择，LRU-3或者更大的K值命中率会高，但适应性差，需要大量的数据访问才能将历史访问记录清除掉。</p>
+<h3 id="Two-queues（2Q）"><a href="#Two-queues（2Q）" class="headerlink" title="Two queues（2Q）"></a>Two queues（2Q）</h3><ul>
+<li>算法思想该算法类似于LRU-2，</li>
+<li>不同点在于2Q 将 LRU-2 算法中的访问历史队列（注意这不是缓存数据的）改为一个FIFO缓存队列，即：2Q算法有两个缓存队列，一个是FIFO队列，一个是LRU队列。</li>
+</ul>
+<p>工作原理当数据第一次访问时，2Q算法将数据缓存在FIFO队列里面，当数据第二次被访问时，则将数据从FIFO队列移到LRU队列里面，两个队列各自按照自己的方法淘汰数据。详细实现如下<br>(1). 新访问的数据插入到FIFO队列；<br>(2). 如果数据在FIFO队列中一直没有被再次访问，则最终按照FIFO规则淘汰；<br>(3). 如果数据在FIFO队列中被再次访问，则将数据移到LRU队列头部<br>(4). 如果数据在LRU队列再次被访问，则将数据移到LRU队列头部；<br>(5). LRU队列淘汰末尾的数据。</p>
+<h3 id="ARC（Adaptive-Replacement-Cache）"><a href="#ARC（Adaptive-Replacement-Cache）" class="headerlink" title="ARC（Adaptive Replacement Cache）"></a>ARC（Adaptive Replacement Cache）</h3><p>是一种适应性Cache算法, 它结合了LRU与LFU。</p>
+<ul>
+<li>整个 Cache 分成两部分，起始 LRU 和 LFU 各占一半，后续会动态适应调整 partion 位置（记为p）</li>
+<li>除此，LRU 和 LFU 各自有一个 ghost list(因此，一共4个list)</li>
+<li>每次，被淘汰的 item 放到对应的 ghost list中（ghost list只存key）, 例如：如果被 evicted 的 item 来自LRU的部分， 则该 item 对应的key会被放入 LRU 对应的 ghost list</li>
+<li>第一次 cache miss, 则会放入LRU</li>
+<li>如果 cache hit, 如果 LFU 中没有，则放入 LFU</li>
+<li>如果 cache miss, 但在 ghost list 中命中，这说明对应的 cache 如果再大一丁点儿就好了： 如果存在于 LRU ghost list, 则 p&#x3D;p+1；否则存在于LFU ghost list, p&#x3D;p-1.</li>
+<li>也就是说，利用这种适应机制，当系统趋向于访问最近的内容，会更多地命中LRU ghost list，这样会增大 LRU 的空间； 当系统趋向于访问最频繁的内容，会更多地命中 LFU ghost list，这样会增加LFU的空间.</li>
+</ul>
+<h3 id="LFU-Least-frequently-used"><a href="#LFU-Least-frequently-used" class="headerlink" title="LFU(Least-frequently used)"></a>LFU(Least-frequently used)</h3><ul>
+<li>其核心思想是:假设visit次数越多的item,很有可能在未来被revisit</li>
+<li>适应大规模扫描</li>
+<li>对热点友好</li>
+<li>缺点:忽略了recency, 可能会积累不再使用的数据 redis4.0开始支持了LFU,例如 volatile-lfu, allkeys-lfu 配置选项</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/zheng-ji/source-note/blob/main/golang-lru/">Link</a> 我是通过这份 golang-lru 的代码完整的学习，干净的代码读起来也欣然。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/09/23/2021-09-23-lru-summary/" data-id="clnfj559c006a7eqx77vw21wt" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LRU/" rel="tag">LRU</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/09/26/2021-09-27-go-grpc/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Go GRPC 入门
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/09/23/2021-09-25-k8s-basic/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">K8S 基本对象</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DataBase/">DataBase</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ElasticSearch/">ElasticSearch</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Life/">Life</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NLP/">NLP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork/">NetWork</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Product/">Product</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Program/">Program</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Redis/">Redis</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/System/">System</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/grpc/">grpc</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/mq/">mq</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-11/" rel="tag">C++11</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DataBase/" rel="tag">DataBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LRU/" rel="tag">LRU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MQ/" rel="tag">MQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ProtoBuffer/" rel="tag">ProtoBuffer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/" rel="tag">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupCache/" rel="tag">groupCache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grpc/" rel="tag">grpc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s-basic/" rel="tag">k8s basic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx-grpc/" rel="tag">nginx grpc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 10px;">Algorithm</a> <a href="/tags/C-11/" style="font-size: 10px;">C++11</a> <a href="/tags/DataBase/" style="font-size: 10px;">DataBase</a> <a href="/tags/Go/" style="font-size: 10px;">Go</a> <a href="/tags/Kafka/" style="font-size: 10px;">Kafka</a> <a href="/tags/LRU/" style="font-size: 10px;">LRU</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/ProtoBuffer/" style="font-size: 10px;">ProtoBuffer</a> <a href="/tags/Redis/" style="font-size: 16.67px;">Redis</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/groupCache/" style="font-size: 10px;">groupCache</a> <a href="/tags/grpc/" style="font-size: 13.33px;">grpc</a> <a href="/tags/k8s/" style="font-size: 20px;">k8s</a> <a href="/tags/k8s-basic/" style="font-size: 10px;">k8s basic</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/nginx-grpc/" style="font-size: 10px;">nginx grpc</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/07/">July 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">May 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/03/">March 2012</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/10/20/2021-10-20-why-docker-supervisor/"> Docker里使用 supervisor 管理多个程序</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/14/2021-10-14-binary-tree-algo/">二叉树相关的递归算法题</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/13/2021-10-13-go-channel/">Go Channel 笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/12/2021-10-12-why-kafka-so-fast/">Kafka 吞吐量大的原因</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/11/2021-10-11-redis-pipeline/">Redis Pipline 与事务</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2023 zheng-ji<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

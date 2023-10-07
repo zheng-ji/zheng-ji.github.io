@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>K8S Service | 织网</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Pod的IP地址是在Pod启动后才被分配，在启动前并不知道Pod的IP地址。 应用往往都是由多个运行相同镜像的一组Pod组成，逐个访问Pod也变得不现实。Kubernetes中的Service对象就是用来解决上述Pod访问问题的。Service有一个固定IP地址，Service将访问它的流量转发给Pod，具体转发给哪些Pod通过Label来选择，而且Service可以给这些Pod做负载均衡。 创建">
+<meta property="og:type" content="article">
+<meta property="og:title" content="K8S Service">
+<meta property="og:url" content="http://yoursite.com/2021/09/26/2021-09-26-k8s-service/index.html">
+<meta property="og:site_name" content="织网">
+<meta property="og:description" content="Pod的IP地址是在Pod启动后才被分配，在启动前并不知道Pod的IP地址。 应用往往都是由多个运行相同镜像的一组Pod组成，逐个访问Pod也变得不现实。Kubernetes中的Service对象就是用来解决上述Pod访问问题的。Service有一个固定IP地址，Service将访问它的流量转发给Pod，具体转发给哪些Pod通过Label来选择，而且Service可以给这些Pod做负载均衡。 创建">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-09-26T04:11:42.000Z">
+<meta property="article:modified_time" content="2023-10-07T04:09:04.073Z">
+<meta property="article:author" content="zheng-ji">
+<meta property="article:tag" content="k8s">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="织网" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">织网</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2021-09-26-k8s-service" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/26/2021-09-26-k8s-service/" class="article-date">
+  <time datetime="2021-09-26T04:11:42.000Z" itemprop="datePublished">2021-09-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/k8s/">k8s</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      K8S Service
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Pod的IP地址是在Pod启动后才被分配，在启动前并不知道Pod的IP地址。 应用往往都是由多个运行相同镜像的一组Pod组成，逐个访问Pod也变得不现实。Kubernetes中的Service对象就是用来解决上述Pod访问问题的。Service有一个固定IP地址，Service将访问它的流量转发给Pod，具体转发给哪些Pod通过Label来选择，而且Service可以给这些Pod做负载均衡。</p>
+<h3 id="创建-Deployment"><a href="#创建-Deployment" class="headerlink" title="创建 Deployment"></a>创建 Deployment</h3><p>创建后台Pod首先创建一个3副本的Deployment，即3个Pod，且Pod上带有标签“app: nginx”，具体如下所示。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1      </span><br><span class="line">kind: Deployment         </span><br><span class="line">metadata:</span><br><span class="line">  name: nginx            </span><br><span class="line">spec:</span><br><span class="line">  replicas: 3                    </span><br><span class="line">  selector:              </span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx</span><br><span class="line">  template:              </span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - image: nginx:latest</span><br><span class="line">        name: container-0</span><br><span class="line">        resources:</span><br><span class="line">          limits:</span><br><span class="line">            cpu: 100m</span><br><span class="line">            memory: 200Mi</span><br><span class="line">          requests:</span><br><span class="line">            cpu: 100m</span><br><span class="line">            memory: 200Mi</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建-Service"><a href="#创建-Service" class="headerlink" title="创建 Service"></a>创建 Service</h3><p>创建一个名为“nginx”的Service，通过selector选择到标签“app:nginx”的Pod，目标Pod的端口为80，Service对外暴露的端口为8080。</p>
+<p>访问服务只需要通过“服务名称:对外暴露的端口”接口，对应本例即“nginx:8080”。这样，在其他Pod中，只需要通过“nginx:8080”就可以访问到“nginx”关联的Pod。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx        # Service的名称</span><br><span class="line">spec:</span><br><span class="line">  selector:          # Label Selector，选择包含app=nginx标签的Pod</span><br><span class="line">    app: nginx</span><br><span class="line">  ports:</span><br><span class="line">  - name: service0</span><br><span class="line">    targetPort: 80   # Pod的端口</span><br><span class="line">    port: 8080       # Service对外暴露的端口</span><br><span class="line">    protocol: TCP    # 转发协议类型，支持TCP和UDP</span><br><span class="line">  type: ClusterIP    # Service的类型</span><br></pre></td></tr></table></figure>
+
+<p>将上面Service的定义保存到nginx-svc.yaml文件中，使用kubectl创建这个Service。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f nginx-svc.yaml</span><br><span class="line">service/nginx created</span><br><span class="line"></span><br><span class="line">$ kubectl get svc</span><br><span class="line">NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE</span><br><span class="line">kubernetes   ClusterIP   10.247.0.1       &lt;none&gt;        443/TCP    7h19m</span><br><span class="line">nginx        ClusterIP   10.247.124.252   &lt;none&gt;        8080/TCP   5h48m</span><br></pre></td></tr></table></figure>
+
+<p>可以看到Service有个Cluster IP，这个IP是固定不变的，除非Service被删除，所以您也可以使用ClusterIP在集群内部访问Service。</p>
+<p>下面创建一个Pod并进入容器，使用ClusterIP访问Pod，可以看到能直接返回内容。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl run -i --tty --image nginx:alpine test --rm /bin/sh</span><br><span class="line">If you don&#x27;t see a command prompt, try pressing enter.</span><br><span class="line"> # curl 10.247.124.252:8080</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用ServiceName访问Service"><a href="#使用ServiceName访问Service" class="headerlink" title="使用ServiceName访问Service"></a>使用ServiceName访问Service</h3><p>通过DNS进行域名解析后，可以使用“ServiceName:Port”访问Service，这也是Kubernetes中最常用的一种使用方式。向K8s 内部 DNS查询Service的名称获得Service的IP地址。<br>访问时通过 <code>ServiceName.namespace.svc.cluster.local</code>访问，其中nginx为 Service的名称，namespace 为命名空间名称，svc.cluster.local为域名后缀，在实际使用中，在同一个命名空间下可以省略 namespace.svc.cluster.local，直接使用ServiceName即可。</p>
+<p>例如上面创建的名为nginx的Service，直接通过“nginx:8080”就可以访问到Service，进而访问后台Pod。<br>使用ServiceName的方式有个主要的优点就是可以在开发应用程序时可以将ServiceName写在程序中，这样无需感知具体Service的IP地址。</p>
+<h3 id="Service是如何做到服务发现的"><a href="#Service是如何做到服务发现的" class="headerlink" title="Service是如何做到服务发现的"></a>Service是如何做到服务发现的</h3><p>前面说到有了Service后，无论Pod如何变化，Service都能够发现到Pod。</p>
+<p>如果调用kubectl describe命令查看Service的信息，您会看下如下信息。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl describe svc nginx</span><br><span class="line">Name:              nginx</span><br><span class="line">......</span><br><span class="line">Endpoints:         172.16.2.132:80,172.16.3.6:80,172.16.3.7:80</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<p>可以看到一个Endpoints，Endpoints同样也是Kubernetes的一种资源对象，可以查询得到。Kubernetes正是通过Endpoints监控到Pod的IP，从而让Service能够发现Pod。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get endpoints</span><br><span class="line">NAME         ENDPOINTS                                     AGE</span><br><span class="line">kubernetes   192.168.0.127:5444                            7h19m</span><br><span class="line">nginx        172.16.2.132:80,172.16.3.6:80,172.16.3.7:80   5h48m</span><br></pre></td></tr></table></figure>
+
+<p>实际上Service相关的事情都由节点上的kube-proxy处理。在Service创建时Kubernetes会分配IP给Service，同时通过API Server通知所有kube-proxy有新Service创建了，kube-proxy收到通知后通过iptables记录Service和IP&#x2F;端口对的关系，从而让Service在节点上可以被查询到。</p>
+<h3 id="Service的类型与使用场景"><a href="#Service的类型与使用场景" class="headerlink" title="Service的类型与使用场景"></a>Service的类型与使用场景</h3><p>Service的类型除了ClusterIP还有NodePort、LoadBalancer和None，这几种类型的Service有着不同的用途。</p>
+<ul>
+<li>ClusterIP：用于在集群内部互相访问的场景，通过ClusterIP访问Service。</li>
+<li>NodePort：用于从集群外部访问的场景，通过节点上的端口访问Service，详细介绍请参见NodePort类型的Service。</li>
+<li>LoadBalancer：用于从集群外部访问的场景，其实是NodePort的扩展，通过一个特定的LoadBalancer访问Service，这个LoadBalancer将请求转发到节点的NodePort</li>
+<li>None：用于Pod间的互相发现，这种类型的Service又叫Headless Service</li>
+</ul>
+<h4 id="NodePort类型的Service"><a href="#NodePort类型的Service" class="headerlink" title="NodePort类型的Service"></a>NodePort类型的Service</h4><p>NodePort类型的Service可以让Kubemetes集群每个节点上保留一个相同的端口， 外部访问连接首先访问节点IP:Port，然后将这些连接转发给服务对应的Pod。如下图所示。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: nodeport-service</span><br><span class="line">spec:</span><br><span class="line">  type: NodePort</span><br><span class="line">  ports:</span><br><span class="line">  - port: 8080</span><br><span class="line">    targetPort: 80</span><br><span class="line">    nodePort: 30120</span><br><span class="line">  selector:</span><br><span class="line">    app: nginx</span><br></pre></td></tr></table></figure>
+
+<p>创建并查看，可以看到PORT这一列为8080:30120&#x2F;TCP，说明Service的8080端口是映射到节点的30120端口。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f nodeport.yaml </span><br><span class="line">service/nodeport-service created</span><br><span class="line"></span><br><span class="line">$ kubectl get svc -o wide</span><br><span class="line">NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE    SELECTOR</span><br><span class="line">kubernetes         ClusterIP   10.247.0.1       &lt;none&gt;        443/TCP          107m   &lt;none&gt;</span><br><span class="line">nginx              ClusterIP   10.247.124.252   &lt;none&gt;        8080/TCP         16m    app=nginx</span><br><span class="line">nodeport-service   NodePort    10.247.210.174   &lt;none&gt;        8080:30120/TCP   17s    app=nginx</span><br></pre></td></tr></table></figure>
+
+<h4 id="LoadBalancer类型的Service"><a href="#LoadBalancer类型的Service" class="headerlink" title="LoadBalancer类型的Service"></a>LoadBalancer类型的Service</h4><p>LoadBalancer类型的Service其实是NodePort类型Service的扩展，通过一个特定的LoadBalancer访问Service，这个LoadBalancer将请求转发到节点的NodePort。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1 </span><br><span class="line">kind: Service </span><br><span class="line">metadata: </span><br><span class="line">  annotations:   </span><br><span class="line">    kubernetes.io/elb.id: 3c7caa5a-a641-4bff-801a-feace27424b6</span><br><span class="line">  labels: </span><br><span class="line">    app: nginx </span><br><span class="line">  name: nginx </span><br><span class="line">spec: </span><br><span class="line">  loadBalancerIP: 10.78.42.242     #  ELB实例的IP地址</span><br><span class="line">  ports: </span><br><span class="line">  - name: service0 </span><br><span class="line">    port: 80</span><br><span class="line">    protocol: TCP </span><br><span class="line">    targetPort: 80</span><br><span class="line">    nodePort: 30120</span><br><span class="line">  selector: </span><br><span class="line">    app: nginx </span><br><span class="line">  type: LoadBalancer    # 类型为LoadBalancer </span><br><span class="line"></span><br><span class="line">#### Headless Service</span><br><span class="line">Service解决了Pod的内外部访问问题，但还有下面这些问题没解决。</span><br><span class="line"></span><br><span class="line">* 同时访问所有Pod</span><br><span class="line">* 一个Service内部的Pod互相访问</span><br><span class="line"></span><br><span class="line">Headless Service正是解决这个问题的，Headless Service不会创建ClusterIP，并且查询会返回所有Pod的DNS记录，这样就可查询到所有Pod的IP地址。</span><br><span class="line">StatefulSet中StatefulSet正是使用Headless Service解决Pod间互相访问的问题。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>apiVersion: v1<br>kind: Service       # 对象类型为Service<br>metadata:<br>  name: nginx-headless<br>  labels:<br>    app: nginx<br>spec:<br>  ports:<br>    - name: nginx     # Pod间通信的端口名称<br>      port: 80        # Pod间通信的端口号<br>  selector:<br>    app: nginx        # 选择标签为app:nginx的Pod<br>  clusterIP: None     # 必须设置为None，表示Headless Service</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">执行如下命令创建Headless Service。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="kubectl-create-f-headless-yaml"><a href="#kubectl-create-f-headless-yaml" class="headerlink" title="kubectl create -f headless.yaml"></a>kubectl create -f headless.yaml</h1><p>service&#x2F;nginx-headless created</p>
+<p>创建完成后可以查询Service。</p>
+<h1 id="kubectl-get-svc"><a href="#kubectl-get-svc" class="headerlink" title="kubectl get svc"></a>kubectl get svc</h1><p>NAME             TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE<br>nginx-headless   ClusterIP   None         <none>        80&#x2F;TCP    5s</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">创建一个Pod来查询DNS，可以看到能返回所有Pod的记录，这就解决了访问所有Pod的问题了。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>$ kubectl run -i –tty –image tutum&#x2F;dnsutils dnsutils –restart&#x3D;Never –rm &#x2F;bin&#x2F;sh<br>If you don’t see a command prompt, try pressing enter.<br>&#x2F; # nslookup nginx-0.nginx<br>Server:         10.247.3.10<br>Address:        10.247.3.10#53<br>Name:   nginx-0.nginx.default.svc.cluster.local<br>Address: 172.16.0.31</p>
+<p>&#x2F; # nslookup nginx-1.nginx<br>Server:         10.247.3.10<br>Address:        10.247.3.10#53<br>Name:   nginx-1.nginx.default.svc.cluster.local<br>Address: 172.16.0.18</p>
+<p>&#x2F; # nslookup nginx-2.nginx<br>Server:         10.247.3.10<br>Address:        10.247.3.10#53<br>Name:   nginx-2.nginx.default.svc.cluster.local<br>Address: 172.16.0.19</p>
+<pre><code>
+</code></pre>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/09/26/2021-09-26-k8s-service/" data-id="clnfj559g006w7eqxamaib3do" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/09/26/2021-09-26-k8s-pod/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          K8S Pod
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/09/26/2021-09-27-go-grpc/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Go GRPC 入门</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DataBase/">DataBase</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ElasticSearch/">ElasticSearch</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Life/">Life</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NLP/">NLP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork/">NetWork</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Product/">Product</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Program/">Program</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Redis/">Redis</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/System/">System</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/grpc/">grpc</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/mq/">mq</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-11/" rel="tag">C++11</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DataBase/" rel="tag">DataBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LRU/" rel="tag">LRU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MQ/" rel="tag">MQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ProtoBuffer/" rel="tag">ProtoBuffer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/" rel="tag">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupCache/" rel="tag">groupCache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grpc/" rel="tag">grpc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s-basic/" rel="tag">k8s basic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx-grpc/" rel="tag">nginx grpc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 10px;">Algorithm</a> <a href="/tags/C-11/" style="font-size: 10px;">C++11</a> <a href="/tags/DataBase/" style="font-size: 10px;">DataBase</a> <a href="/tags/Go/" style="font-size: 10px;">Go</a> <a href="/tags/Kafka/" style="font-size: 10px;">Kafka</a> <a href="/tags/LRU/" style="font-size: 10px;">LRU</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/ProtoBuffer/" style="font-size: 10px;">ProtoBuffer</a> <a href="/tags/Redis/" style="font-size: 16.67px;">Redis</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/groupCache/" style="font-size: 10px;">groupCache</a> <a href="/tags/grpc/" style="font-size: 13.33px;">grpc</a> <a href="/tags/k8s/" style="font-size: 20px;">k8s</a> <a href="/tags/k8s-basic/" style="font-size: 10px;">k8s basic</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/nginx-grpc/" style="font-size: 10px;">nginx grpc</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/07/">July 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">May 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/03/">March 2012</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/10/20/2021-10-20-why-docker-supervisor/"> Docker里使用 supervisor 管理多个程序</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/14/2021-10-14-binary-tree-algo/">二叉树相关的递归算法题</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/13/2021-10-13-go-channel/">Go Channel 笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/12/2021-10-12-why-kafka-so-fast/">Kafka 吞吐量大的原因</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/11/2021-10-11-redis-pipeline/">Redis Pipline 与事务</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2023 zheng-ji<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

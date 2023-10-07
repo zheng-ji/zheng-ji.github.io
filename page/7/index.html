@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>织网</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="织网">
+<meta property="og:url" content="http://yoursite.com/page/7/index.html">
+<meta property="og:site_name" content="织网">
+<meta property="og:locale">
+<meta property="article:author" content="zheng-ji">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="织网" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">织网</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-2015-06-11-qing-qiao-shi-shi-tong-ji-yong-hu-shu" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/11/2015-06-11-qing-qiao-shi-shi-tong-ji-yong-hu-shu/" class="article-date">
+  <time datetime="2015-06-11T15:14:00.000Z" itemprop="datePublished">2015-06-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/11/2015-06-11-qing-qiao-shi-shi-tong-ji-yong-hu-shu/">轻巧实时统计用户数</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>最近在优化一个短地址的统计服务，之前是使用 Cookie 来做统计每天的UV，而且这个需求是近乎实时的，<br>业务方需要每5分钟就能看到最新统计结果。但有些情况我们是取不到Cookie的，比如服务器对服务器的狂刷访问，那么UV就计算不准确，<br>是时候要改造方案了。</p>
+<p>后来我用 IP+UserAgent 来识别用户，从而统计 UV。好了，接下来你会怎么做这个实时统计呢？</p>
+<p>##两个方案的选择##</p>
+<ul>
+<li>Plan A：</li>
+</ul>
+<p>将每天的 <code>IP+UA</code> 存进 Redis 的 Set 集合里，它会自动去重，然后计算该集合里元素的个数得到结果，此方案似乎不错，<br>但真的好吗？假如每天大概有200W个UV，1个用户标识<code>IP+UA</code>需要大概150个字节，那么大约要耗费300MB的内存。</p>
+<p>觉得内存太宝贵，应该有更好的方法，想起了位运算， 于是就有了</p>
+<ul>
+<li>Plan B:</li>
+</ul>
+<p>将 <code>IP+UA</code> 组合成的字符串哈希成一个数值，然后借助 Redis 的 BitSet 数据结构求出<code>UV</code>。以下是伪代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">conn = redis()</span><br><span class="line">index = hash(UA+IP)</span><br><span class="line">key = &quot;xxx_2015-05-10&quot;</span><br><span class="line">conn.do(&#x27;SETBIT&#x27;, key, index, 1) # 将该hash值对应的位赋值为1</span><br><span class="line"></span><br><span class="line">realtime_uv = conn.do(&#x27;BITCOUNT&#x27;, key) # 得到实时的uv</span><br></pre></td></tr></table></figure>
+
+<p>根据业务的情况，我的hash桶开了200W个位，大概需要消耗2M的内存，的确节约不少空间，位运算的效率也很快。<br>于是欣然选择 Plan B</p>
+<h2 id="一些链接"><a href="#一些链接" class="headerlink" title="一些链接"></a>一些链接</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://redis.readthedocs.org/en/2.4/set.html">Redis Set</a></li>
+<li><a target="_blank" rel="noopener" href="http://redis.io/commands/SETBIT">Redis BitSet</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.nosqlfan.com/html/3501.html">NoSQLFan 一个文章</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/06/11/2015-06-11-qing-qiao-shi-shi-tong-ji-yong-hu-shu/" data-id="clnfj558t003q7eqxcbz8h08e" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-05-17-da-jian-postfix" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/17/2015-05-17-da-jian-postfix/" class="article-date">
+  <time datetime="2015-05-16T16:25:00.000Z" itemprop="datePublished">2015-05-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/System/">System</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/17/2015-05-17-da-jian-postfix/">搭建 Postfix</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我们需要搭建邮件服务，采用Postfix服务, 坑点不少，遂记录。<br>现在我们决定在 <code>IP：1.2.3.4</code> 的机器上部署<code>Postfix</code>服务，让它可以发邮件</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install postfix</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p>编辑 <code>/etc/postfix/main.cnf</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">smtpd_banner = $myhostname ESMTP $mail_name (Ubuntu)</span><br><span class="line">biff = no</span><br><span class="line">append_dot_mydomain = no</span><br><span class="line">readme_directory = no</span><br><span class="line">smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem</span><br><span class="line">smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key</span><br><span class="line">smtpd_use_tls=yes</span><br><span class="line">smtpd_tls_session_cache_database = btree:$&#123;data_directory&#125;/smtpd_scache</span><br><span class="line">smtp_tls_session_cache_database = btree:$&#123;data_directory&#125;/smtp_scache</span><br><span class="line">myhostname = mail.zheng-ji.info 邮箱服务器域名</span><br><span class="line">alias_maps = hash:/etc/aliases</span><br><span class="line">alias_database = hash:/etc/aliases</span><br><span class="line">myorigin = $myhostname</span><br><span class="line">mydestination = mail.zheng-ji.info, localhost.localdomain, localhost</span><br><span class="line">mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128, hash:/etc/postfix/access 可以使用这个邮箱服务的外部地址</span><br><span class="line">relay_domains = $mydestination</span><br><span class="line">inet_interfaces = all</span><br><span class="line">inet_protocols = all</span><br></pre></td></tr></table></figure>
+
+<h3 id="授权"><a href="#授权" class="headerlink" title="授权"></a>授权</h3><p>为了让邮件能真正到达对方邮箱而不被视为垃圾邮件， 我们需要进行DNS权威认证</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">A 记录指向 1.2.3.4</span><br><span class="line">MX 记录也指向 1.2.3.4</span><br><span class="line">TXT 记录 v=spf1 ip4:1.2.3.4 ~all</span><br></pre></td></tr></table></figure>
+
+<p>以上操作是防止被认为垃圾邮件。</p>
+<p>外部需要访问该Postfix 服务发送邮件，需要有access权限,<br>编辑&#x2F;etc&#x2F;postfix&#x2F;access, 假设 <code>IP:5.6.7.8</code> 的机器想访问该服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">5.6.7.8  OK</span><br></pre></td></tr></table></figure>
+
+<p>重启并授权生效</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo service postfix restart</span><br><span class="line">postmap access</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/17/2015-05-17-da-jian-postfix/" data-id="clnfj558s003o7eqx3tne5kxv" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-05-10-mysql-slave-relay-log-corrupt-chu-li-he-hui-fu" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/10/2015-05-10-mysql-slave-relay-log-corrupt-chu-li-he-hui-fu/" class="article-date">
+  <time datetime="2015-05-10T12:02:00.000Z" itemprop="datePublished">2015-05-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/DataBase/">DataBase</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/10/2015-05-10-mysql-slave-relay-log-corrupt-chu-li-he-hui-fu/">MySQL Slave Relay log Corrupt 恢复</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h3><p>周日早晨收到 <code>ganglia</code> 报警, 内容是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MySQL_Slave_SQL is 0.00</span><br></pre></td></tr></table></figure>
+<p>意味着从库同步有问题了。这时候进入从库看看状态</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show slave status\G;</span><br></pre></td></tr></table></figure>
+
+<p>看到</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Slave_IO_State: Waiting for master to send event</span><br><span class="line">   Master_Host: xxx.xxx.xxx</span><br><span class="line">   Master_User: replication</span><br><span class="line">   Master_Port: 3306</span><br><span class="line">   Connect_Retry: 60</span><br><span class="line">   Master_Log_File: mysql-bin.000028</span><br><span class="line">   ad_Master_Log_Pos: 982714864</span><br><span class="line">   Relay_Log_File: relay-bin.000143</span><br><span class="line">   Relay_Master_Log_File: mysql-bin.000028</span><br><span class="line">   Slave_IO_Running: Yes</span><br><span class="line">   Slave_SQL_Running: No</span><br><span class="line">   Replicate_Do_DB:</span><br><span class="line"> Replicate_Ignore_DB:</span><br><span class="line"> Replicate_Do_Table:</span><br><span class="line"> Replicate_Ignore_Table:</span><br><span class="line"> Replicate_Wild_Do_Table:</span><br><span class="line"> Replicate_Wild_Ignore_Table:</span><br><span class="line"> Last_Errno: 1594</span><br><span class="line"> Last_Error: Relay log read failure: Could not parse relay log event entry. The possible reasons are: the master&#x27;s binary log is corrupted (you can check this by running &#x27;mysqlbinlog&#x27; on the binary log), the slave&#x27;s relay log is corrupted (you can check this by running &#x27;mysqlbinlog&#x27; on the relay log), a network problem, or a bug in the master&#x27;s or slave&#x27;s MySQL code. If you want to check the master&#x27;s binary log or slave&#x27;s relay log, you will be able to know their names by issuing &#x27;SHOW SLAVE STATUS&#x27; on this slave.</span><br><span class="line"> Skip_Counter: 3</span><br><span class="line"> Exec_Master_Log_Pos: 974999870</span><br><span class="line"> Relay_Log_Space: 399910514</span><br><span class="line"> Until_Condition: None</span><br></pre></td></tr></table></figure>
+<p>是因为从库的 relay log 损坏导致的从库停止执行同步, 后面从 MySQL 的错误日志发现是由几个没经过优化的大查询导致从库内存使用较大，mysqld_safe 被迫重启了。</p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>找到：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Relay_Master_Log_File: mysql-bin.000028</span><br><span class="line">Exec_Master_Log_Pos: 974999870</span><br></pre></td></tr></table></figure>
+
+<p>执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; stop slave ;</span><br><span class="line">mysql&gt; change master to master_log_file=&#x27;mysql-bin.000028&#x27;,master_log_pos=974999870;</span><br><span class="line">mysql&gt; start slave;</span><br></pre></td></tr></table></figure>
+<p>这样就重新追上了。以后还是要提高周围同事使用 MySQL 的优化意识啊。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/10/2015-05-10-mysql-slave-relay-log-corrupt-chu-li-he-hui-fu/" data-id="clnfj558s003m7eqx8retgkjz" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-04-05-yong-bao-docker" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/05/2015-04-05-yong-bao-docker/" class="article-date">
+  <time datetime="2015-04-05T12:24:00.000Z" itemprop="datePublished">2015-04-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Docker/">Docker</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/04/05/2015-04-05-yong-bao-docker/">为服务端程序构建 Docker</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Docker 的优点自从问世就一直被工业界热论。</p>
+<p>平时工作中，所部署的大多数<code>Python</code>项目都会用上 <a target="_blank" rel="noopener" href="http://wiki.zheng-ji.info/Python/virtualenv-py.html">virtualenv</a>,<br>沙箱隔离带来的好处不言而喻。我也希望静态编译的服务，比如 <code>Golang</code> <code>C++</code> 的项目<br>同样能使用上沙箱环境。得益于<code>Docker</code>，我们仍然可以做到。</p>
+<p>这个过程没有想象中的简单，需要一番折腾，我以最近写的 KafkServer 为例，叙述我是怎么构建的，需要读者具备一定的 Docker 基础. 或许这不是最好的方法。</p>
+<h3 id="一览该-Docker-项目"><a href="#一览该-Docker-项目" class="headerlink" title="一览该 Docker 项目"></a>一览该 Docker 项目</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">zj@zheng-ji:~/workspace/gocode/src/kafconsumer/docker$ tree</span><br><span class="line">.</span><br><span class="line">├── Dockerfile</span><br><span class="line">├── kafConsumer</span><br><span class="line">│   ├── consumer</span><br><span class="line">│   ├── etc</span><br><span class="line">│   │   ├── config.yml</span><br><span class="line">│   │   └── logger.xml</span><br><span class="line">│   └── script</span><br><span class="line">│       └── start.sh</span><br><span class="line">└── kafConsumer.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p>以上的截图，是一个完整的 <code>Docker</code> 项目，包含了：</p>
+<ul>
+<li><code>Dockerfile</code>,</li>
+<li><code>kafCounsumer</code>(服务端程序，里面附带的启动脚本，配置程序，以及二进制文件)，</li>
+<li>还有它被压缩而成的 <code>kafConsumer.tar.gz</code></li>
+</ul>
+<hr>
+<h3 id="Dockerfile-的内容"><a href="#Dockerfile-的内容" class="headerlink" title="Dockerfile 的内容"></a>Dockerfile 的内容</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu:14.04                                                         </span><br><span class="line">MAINTAINER zheng-ji &lt;zheng-ji.info&gt;                                     </span><br><span class="line">RUN echo Asia/Shanghai &gt; /etc/timezone                   </span><br><span class="line">RUN sed -i &quot;s/archive\.ubuntu/mirrors.163/&quot; /etc/apt/sources.list          </span><br><span class="line">RUN apt-get update                                                         </span><br><span class="line">COPY kafConsumer.tar.gz /                                                  </span><br><span class="line">RUN tar xvf kafConsumer.tar.gz                                         </span><br><span class="line">VOLUME /data                   </span><br><span class="line">WORKDIR /kafConsumer                                                   </span><br><span class="line">ENTRYPOINT [&quot;./script/start.sh&quot;]</span><br></pre></td></tr></table></figure>
+
+<p><code>Dockerfile</code> 可以理解为<code>makefile</code> 之类的文件，Docker 可以依照文件中的内容，构建镜像.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker -t build Server/KafConsumer .</span><br></pre></td></tr></table></figure>
+
+<p>这样就生成了<code>Tag</code> 为 <code>Server/KafConsumer</code> 的镜像，待会儿我们会使用它</p>
+<p>以上 <code>Dockerfile</code> 的具体内容的意义是:</p>
+<blockquote>
+<ul>
+<li>第一行：拉取ubuntu 14:04的镜像源</li>
+<li>第二行：维护者</li>
+<li>第三行：调整时区</li>
+<li>第四行：更新源地址</li>
+<li>第五行：更新源</li>
+<li>第六行：复制项目下的压缩包到虚拟机根目录</li>
+<li>第七行：解压</li>
+<li>第八行：项目中使用&#x2F;data数据卷</li>
+<li>第九行：进入工作目录</li>
+<li>第十行：Docker的入口执行文件是start.sh</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="入口文件的内容"><a href="#入口文件的内容" class="headerlink" title="入口文件的内容"></a>入口文件的内容</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">ulimit -a</span><br><span class="line">if [ ! -d /data/ad ];  then</span><br><span class="line">    mkdir /data/ad</span><br><span class="line">fi</span><br><span class="line">exec ./consumer -c=etc/config.yml</span><br></pre></td></tr></table></figure>
+
+<p>这是一个shell的启动文件，因此一定要在开头写明 #!&#x2F;bin&#x2F;bash, 使用exec 执行程序</p>
+<hr>
+<h3 id="启动镜像"><a href="#启动镜像" class="headerlink" title="启动镜像"></a>启动镜像</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run -i -t  -v /path/to/data:/data Server/kafConsumer</span><br></pre></td></tr></table></figure>
+<p>这样就执行了，-v 可以映射你的本地文件到虚拟机的某个数据卷，这样我们就能从外面看到程序产生的文件.</p>
+<p>###如果你想关闭或者重启该服务的怎么办</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo docker ps -a</span><br><span class="line"></span><br><span class="line">找到你的 Docker 容器</span><br><span class="line"></span><br><span class="line">CONTAINER ID    IMAGE           COMMAND                CREATED        STATUS        PORTS    NAMES</span><br><span class="line">5b39d0d5cb85    Server/kafkaconsumer:latest   &quot;./script/start.sh&quot;    3 hours ago    tender_bohr </span><br></pre></td></tr></table></figure>
+
+<p>启动或者关闭</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo docker start tender_bohr</span><br><span class="line">sudo docker stop tender_bohr</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="Daocloud-加速"><a href="#Daocloud-加速" class="headerlink" title="Daocloud  加速"></a>Daocloud  加速</h3><p>功夫墙的原因，国外很多镜像被墙，因此构建镜像很慢，使用 Daocloud 服务可以加速,注册后就有该服务了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/default/docker</span><br><span class="line">DOCKER_OPTS=&quot;$DOCKER_OPTS --registry-mirror=http://xxxxxx.m.daocloud.io&quot;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/04/05/2015-04-05-yong-bao-docker/" data-id="clnfj558r003k7eqx5tv7d7ht" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-02-08-trie-suggestion" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/02/08/2015-02-08-trie-suggestion/" class="article-date">
+  <time datetime="2015-02-08T05:40:00.000Z" itemprop="datePublished">2015-02-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/08/2015-02-08-trie-suggestion/">实现一个智能提示框功能</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>耗了3个夜晚出来的东西.</p>
+<p>先上图吧：</p>
+<img src="/images/2015/02/suggest.png" class="">
+
+<p>是的，就是这样一个类似百度框的联想提升功能，让我纠结了几个晚上，在实现成功的那一瞬间，着实感受到编程之美。很享受为了一个小idea折腾的酣畅淋漓的过程。</p>
+<p>起因: 在公司<code>GitLab</code>看到有这人对内部管理系统提出了这个需求，但是一直没有被<code>close</code>, 我觉得应该挺有趣的，好奇心驱动下就开始搞了。</p>
+<p>如果仅仅是实现这个需求，应该有很多种</p>
+<ul>
+<li>方法一：使用一个hash,将关键字填入key，如果采用此法，数据量大的时候估计堪忧，以一个汉字2个Byte计算的话，1kw个词条，1个词条10个词语的话需要占用大于200M内存。</li>
+<li>方法二：前缀匹配，那么应该怎么选择数据结构,朴素的做法是O(N^N),我们肯定采用复杂度较优的Trie树  O(1)</li>
+<li>方法三：Radix Tree 据说这个是linux cache的一个算法。看了几个小时，真心复杂，不得不佩服内核开发者！</li>
+</ul>
+<h3 id="讲一讲trie树吧"><a href="#讲一讲trie树吧" class="headerlink" title="讲一讲trie树吧"></a>讲一讲<code>trie</code>树吧</h3><img src="/images/2015/02/triestruct.png" class="">
+
+<ul>
+<li>根节点不包含字符，除根节点外的每一个子节点都包含一个字符。</li>
+<li>根节点到某一节点，路径上经过的字符连接起来，就是该节点对应的字符串。</li>
+<li>每个单词的公共前缀作为一个字符节点保存。</li>
+<li>叶子节点的指针是空的</li>
+</ul>
+<p>以下是具体的数据结构代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">type Node struct &#123;</span><br><span class="line">    Link     map[string]*Node  #指针</span><br><span class="line">    Key      string                     #每个节点的字符</span><br><span class="line">    IsLeaf   bool                       #是否叶子节点 </span><br><span class="line">    Weight   float64                    #权重</span><br><span class="line">    LongWord string                     #从根节点到该节点的长字符</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>围绕这个数据结构做了<br>构建树，删除节点，添加节点，获取子节点等</p>
+<h3 id="知识铺垫："><a href="#知识铺垫：" class="headerlink" title="知识铺垫："></a>知识铺垫：</h3><p>在用 Go 语言处理中文字符的时候，需要特别使用 []rune数组，看以下示范代码就知道了,他把中文处理成1个字符表现的编码方式了。正式我们下列处理Trie需要用到的。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line">import &quot;fmt&quot;</span><br><span class="line"></span><br><span class="line">func main () &#123;</span><br><span class="line">    m_str := &quot;编程&quot;</span><br><span class="line">    fmt.Println(&quot;fmt:&quot;, m_str)</span><br><span class="line">    m_str_rune := []rune(m_str)</span><br><span class="line">    fmt.Println(&quot;fmt:&quot;, m_str_rune)</span><br><span class="line">    m_str_byte := []byte(m_str)</span><br><span class="line">    fmt.Println(&quot;fmt:&quot;, m_str_byte)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$ ./test_rune</span><br><span class="line">fmt: 编程</span><br><span class="line">fmt: [32534 31243]</span><br><span class="line">fmt: [231 188 150 231 168 139]</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试结果："><a href="#测试结果：" class="headerlink" title="测试结果："></a>测试结果：</h3><p>导入100W条词条,搜索的反应是瞬秒，1ms返回响应，在4G的机器上，整个程序占用内存0.3%。</p>
+<hr>
+<p>每个成熟的互联网产品，背后都是工程师耗费一点一滴思维的结晶构建而成的。对待技术不得不敬畏。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/zheng-ji/trietips">代码</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/02/08/2015-02-08-trie-suggestion/" data-id="clnfj558r003i7eqx04e34low" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-02-03-haproxy-plus-mysql" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/02/03/2015-02-03-haproxy-plus-mysql/" class="article-date">
+  <time datetime="2015-02-03T15:17:00.000Z" itemprop="datePublished">2015-02-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/DataBase/">DataBase</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/03/2015-02-03-haproxy-plus-mysql/">haproxy - MySQl 的负载均衡</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>服务器上每个PHP进程占用一个数据库链接，当有 n 台服务器, 每台服务器用用100 * m 个PHP 进程的时候，数据库的压力是有点小大。</p>
+<p>为了解决这个问题, 可以有的选择是：</p>
+<ul>
+<li>业内炒的比较火的有，奇虎<a target="_blank" rel="noopener" href="https://github.com/Qihoo360/Atlas">Atlas</a>, 淘宝前架构师写的<a target="_blank" rel="noopener" href="http://weibo.com/dbatools">OneProxy</a>, 官方的MySQL-Proxy;</li>
+<li>从连接层解决负载均衡的压力，Haproxy 所擅长的事情</li>
+</ul>
+<p>对于第一个选择，同事做过调研，使用起来不太放心。官方库就无人维护, 于是，最后选择了 Haproxy 来承担数据库的前端代理.链接数下降明显。</p>
+<hr>
+<h3 id="一些关键的配置"><a href="#一些关键的配置" class="headerlink" title="一些关键的配置"></a>一些关键的配置</h3><p>参考<a target="_blank" rel="noopener" href="http://www.sysads.co.uk/2014/08/install-haproxy-1-5-6-on-ubuntu-14-04/">连接</a>:</p>
+<p>以下是配置内容</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">listen mysql-cluster</span><br><span class="line">    bind 127.0.0.1:3306  # 连接本地3306 到后端的DB</span><br><span class="line">    mode tcp</span><br><span class="line">    option mysql-check user haproxy_check # haproxy_check 是该haproxy用户</span><br><span class="line">    balance roundrobin</span><br><span class="line">    server mysql-1 10.0.0.1:3306 check # 后端DB</span><br><span class="line">    server mysql-2 10.0.0.2:3306 check # 后端DB</span><br><span class="line"></span><br><span class="line">listen 0.0.0.0:8080 # 监控页面</span><br><span class="line">    mode http</span><br><span class="line">    stats enable</span><br><span class="line">    stats uri /</span><br><span class="line">    stats realm Strictly\ Private</span><br><span class="line">    stats auth A_Username:YourPassword</span><br><span class="line">    stats auth Another_User:passwd</span><br></pre></td></tr></table></figure>
+
+<p>值得注意的是，我们需要在DB 里面添加用户 haproxy_check,使得它有权限访问这个数据库。一开始我习惯用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">假设我的内网ip是 192.168.1.5</span><br><span class="line">create user &#x27;haproxy_check&#x27;@&#x27;192.168.1.5&#x27; identified by &#x27;xxx&#x27;;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+<p>事实上这样连接 haproxy 会报：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql -h127.0.0.1 -uusername -p</span><br><span class="line">lost connection to mysql server at &#x27;reading initial communication packet&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>后来老实按照 digitalocean 的文章修改成</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">INSERT INTO mysql.user (Host,User) values (&#x27;192.168.1.5&#x27;,&#x27;haproxy_check&#x27;);</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+
+<p>测试就通过了.好奇怪，在我的理解中很不应该, 明天继续看看为什么会这么奇怪。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/02/03/2015-02-03-haproxy-plus-mysql/" data-id="clnfj558q003f7eqx3ixl1q3z" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-01-31-da-jian-elasticsearchyu-kibana" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/01/31/2015-01-31-da-jian-elasticsearchyu-kibana/" class="article-date">
+  <time datetime="2015-01-31T04:52:00.000Z" itemprop="datePublished">2015-01-31</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/ElasticSearch/">ElasticSearch</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/01/31/2015-01-31-da-jian-elasticsearchyu-kibana/">搭建 elasticsearch kibana</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ElasticSearch是一个基于Lucene构建的开源，分布式，RESTful搜索引擎。设计用于云计算中，能够达到实时搜索，稳定，可靠，快速,<br>Kibana 是一个与之配套的 web 界面。</p>
+<h3 id="安装所需的："><a href="#安装所需的：" class="headerlink" title="安装所需的："></a>安装所需的：</h3><ul>
+<li>需要openJDK</li>
+<li>下载并安装 <a target="_blank" rel="noopener" href="http://www.elasticsearch.org/overview/elkdownloads/">elasticsearch-1.4.2.deb</a></li>
+<li>下载并安装 <a target="_blank" rel="noopener" href="http://www.elasticsearch.org/overview/elkdownloads/">kibana-4.0.0-beta3.tar.gz</a></li>
+</ul>
+<h3 id="配置相关"><a href="#配置相关" class="headerlink" title="配置相关"></a>配置相关</h3><p>启动 elasticsearch 方式如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service elasticsearch restart</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>我是使用 <a target="_blank" rel="noopener" href="http://wiki.zheng-ji.info/Sys/supervisor.html">supervisor</a> 启动 kibana, </li>
+<li>同时使用 <a target="_blank" rel="noopener" href="http://wiki.zheng-ji.info/Sys/monit.html">monit</a> 监控elasticsearch</li>
+</ul>
+<p>在&#x2F;etc&#x2F;defaut&#x2F;elasticsearch 配置数据文件目录的地址，log 地址，调整内存和堆栈大小，个人认为机器配置的50% 就可以了。</p>
+<p>Nginx 配置，使得kibanan可以被外部访问，eleasticsearch 默认监听的是5601：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen 80;</span><br><span class="line">        #auth_basic_user_file /home/ymserver/auth/kibana-user;</span><br><span class="line">        error_log /home/ymserver/log/nginx/kibana.err.log;</span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass http://127.0.0.1:5601$request_uri;</span><br><span class="line">            proxy_set_header Host $http_host;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; </span><br><span class="line">            proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="使用过程"><a href="#使用过程" class="headerlink" title="使用过程"></a>使用过程</h3><p>Python 有支持elasticsearch 的库 <a target="_blank" rel="noopener" href="https://github.com/elasticsearch/elasticsearch-py">elasticsearch-py</a>，<br>用其导数据进入elasticsearch,需要指定好索引。</p>
+<p>使用restful<a target="_blank" rel="noopener" href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/">查询</a>，<br>如下例子：其中’2014-12-18’是索引名，q后面是查询条件，_all表示全部索引</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">curl -XGET &#x27;http://localhost:9200/2014-12-18/_search/?q=name:861160022835011&#x27;</span><br><span class="line">curl -XGET &#x27;http://localhost:9200/_all/_search/?q=name:861160022835011&#x27;</span><br><span class="line">curl -XGET localhost:9200/_search -d &#x27;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot;: &#123;</span><br><span class="line">        &quot;bool&quot;: &#123;</span><br><span class="line">            &quot;must&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;term&quot;: &#123;</span><br><span class="line">                    &quot;field1&quot;: &quot;X&quot;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;term&quot;: &#123;</span><br><span class="line">                    &quot;field3&quot;: &quot;Z&quot;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ],</span><br><span class="line">            &quot;must_not&quot;: &#123;</span><br><span class="line">                &quot;term&quot;: &#123;</span><br><span class="line">                    &quot;field2&quot;: &quot;Y&quot;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+<h3 id="性能概述"><a href="#性能概述" class="headerlink" title="性能概述"></a>性能概述</h3><p>导入1个月的日志4.2G，31天的文件，每天一个索引，用了6个小时，elasticsearch用了 6.7G 的空间，在海量数据查询1s内响应。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/01/31/2015-01-31-da-jian-elasticsearchyu-kibana/" data-id="clnfj558q003d7eqxfwaqfl7y" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-01-21-percona-toolkitxiao-xiang-li-di-pt-archiver" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/01/21/2015-01-21-percona-toolkitxiao-xiang-li-di-pt-archiver/" class="article-date">
+  <time datetime="2015-01-21T15:27:00.000Z" itemprop="datePublished">2015-01-21</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/DataBase/">DataBase</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/01/21/2015-01-21-percona-toolkitxiao-xiang-li-di-pt-archiver/">Percona 小箱里的pt-archiver</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在管理线上数据库，时常要做一些数据归档操作，在没有了解 <code>Percona toolkit</code> 之前，第一个想到的是在夜深人静的时候使用 <code>MySqlDump</code> 来完成这件事情。但它不是我们的优质选择，理由有：</p>
+<ul>
+<li><code>MySqlDump</code> 只能备份在本机，不能直接做远端备份</li>
+<li>导出数据量太大的时候会锁表, 即使它的速度很快，但是在线上服务这是很危险的操作</li>
+<li>它仅仅只能导出，无法做到同时删除(可能不是太有必要)</li>
+</ul>
+<p>面对上述的场景，<code>Percona Toolkit</code> 让DBA 有了更好地选择，<a target="_blank" rel="noopener" href="http://www.percona.com/doc/percona-toolkit/2.1/pt-archiver.html">pt-archiver</a> 应时而生。</p>
+<h2 id="pt-archiver-介绍："><a href="#pt-archiver-介绍：" class="headerlink" title="pt-archiver 介绍："></a>pt-archiver 介绍：</h2><p>根据官方文档的说法，几乎不会对线上的OTLP操作有影响：</p>
+<blockquote>
+<p>The goal is a low-impact, forward-only job to nibble old data out of the table without impacting OLTP queries much</p>
+</blockquote>
+<p>它可以帮助我们将数据归档到文件, 另一个数据库，或者同一个数据库的另一个表, 亦或是用于合并两个表的内容。</p>
+<h2 id="用法介绍："><a href="#用法介绍：" class="headerlink" title="用法介绍："></a>用法介绍：</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver [OPTION...] --source DSN --where WHERE</span><br></pre></td></tr></table></figure>
+
+<p>归档的文件方便使用 load data infile 命令导入数据。另外你还可以用它来执行 delete 操作。这个工具默认的会删除源中的数据，使用的时候请注意。</p>
+<p>假如我们将数据库里符合条件的记录归档到文件，并不做删除操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver --ask-pass --progress 100000 --no-delete --no-check-charset --source h=localhost,u=root,D=blog,t=comment--file /home/ubuntu/tmp/comment--where &#x27;time &lt; &quot;2013-12-31h&quot;&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>注意的选项参数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">--ask-pass        提示要求输密码</span><br><span class="line">--progress num    执行num行在界面通知我们</span><br><span class="line">--source h,D,t    数据源</span><br><span class="line">--no-delete       加上这个参数并不会执行删除操作</span><br><span class="line">--dry-run         仅仅将执行语句打印在终端，事实上并不执行。可以用于检测执行过程</span><br><span class="line">--where           执行语句，需要用冒号包围起来</span><br><span class="line">--limit           批量操作的数量，合理提高这个数值可以加快archive速度</span><br></pre></td></tr></table></figure>
+
+<h3 id="小总结"><a href="#小总结" class="headerlink" title="小总结"></a>小总结</h3><p>  通过开启 mysql 的 <code>general log</code>, 可以发现pt-archiver 执行时，是分批commit 的事务，因此执行效率会慢，在8核16G 内存的生产环境机器备份 1kw 条记录, 耗时150 分钟。 但基本不对服务造成影响，而且可以不用深夜进行, 值得一用。</p>
+<p>  最近攒了好多好工具和经验，要好好整理搬上来和大家分享才是。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/01/21/2015-01-21-percona-toolkitxiao-xiang-li-di-pt-archiver/" data-id="clnfj558p003a7eqx81qb8w5q" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2014-12-13-nginxcuo-wu-ma" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/12/13/2014-12-13-nginxcuo-wu-ma/" class="article-date">
+  <time datetime="2014-12-13T07:18:00.000Z" itemprop="datePublished">2014-12-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/System/">System</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/12/13/2014-12-13-nginxcuo-wu-ma/">Nginx 错误码</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在定位线上服务问题的时候，通常会去查看<code>Nginx</code> 的<code>error log</code></p>
+<p>那么 error 的定义, 对查找问题就显得很有帮助</p>
+<ul>
+<li>upstream prematurely closed connection</li>
+</ul>
+<blockquote>
+<p>请求uri的时候出现的异常，是由于 upstream 还未返回应答给用户时用户断掉连接造成的，对系统没有影响，可以忽略</p>
+</blockquote>
+<ul>
+<li>recv() failed (104: Connection reset by peer)</li>
+</ul>
+<blockquote>
+<p>服务器的并发连接数超过了其承载量，服务器会将其中一些连接Down掉；客户关掉了浏览器，而服务器还在给客户端发送数据;</p>
+</blockquote>
+<ul>
+<li>(111: Connection refused) while connecting to upstream</li>
+</ul>
+<blockquote>
+<p>用户在连接时，若遇到后端 upstream 挂掉或者不通，会收到该错误</p>
+</blockquote>
+<ul>
+<li>(111: Connection refused) while reading response header from upstream</li>
+</ul>
+<blockquote>
+<p>用户在连接成功后读取数据时，若遇到后端 upstream 挂掉或者不通，会收到该错误</p>
+</blockquote>
+<ul>
+<li>(111: Connection refused) while sending request to upstream</li>
+</ul>
+<blockquote>
+<p>Nginx 和 upstream 连接成功后发送数据时，若遇到后端 upstream 挂掉或者不通，会收到该错误</p>
+</blockquote>
+<ul>
+<li>(110: Connection timed out) while connecting to upstream</li>
+</ul>
+<blockquote>
+<p>nginx 连接后面的 upstream 时超时</p>
+</blockquote>
+<ul>
+<li>(110: Connection timed out) while reading upstream</li>
+</ul>
+<blockquote>
+<p>nginx 读取来自 upstream 的响应时超时 </p>
+</blockquote>
+<ul>
+<li>(110: Connection timed out) while reading response header from upstream</li>
+</ul>
+<blockquote>
+<p>nginx 读取来自 upstream 的响应头时超时</p>
+</blockquote>
+<ul>
+<li>(110: Connection timed out) while reading upstream</li>
+</ul>
+<blockquote>
+<p>nginx读取来自 upstream 的响应时超时</p>
+</blockquote>
+<ul>
+<li>(104: Connection reset by peer) while connecting to upstream</li>
+</ul>
+<blockquote>
+<p>upstream发送了 RST，将连接重置</p>
+</blockquote>
+<ul>
+<li>upstream sent invalid header while reading response header from upstream</li>
+</ul>
+<blockquote>
+<p>upstream 发送的响应头无效</p>
+</blockquote>
+<ul>
+<li>upstream sent no valid HTTP&#x2F;1.0 header while reading response header from upstream</li>
+</ul>
+<blockquote>
+<p>upstream 发送的响应头无效</p>
+</blockquote>
+<ul>
+<li>client intended to send too large body</li>
+</ul>
+<blockquote>
+<p>用于设置允许接受的客户端请求内容的最大值，默认值是1M，client 发送的 body 超过了设置值</p>
+</blockquote>
+<ul>
+<li>reopening logs</li>
+</ul>
+<blockquote>
+<p>用户发送kill  -USR1命令</p>
+</blockquote>
+<ul>
+<li>gracefully shutting down</li>
+</ul>
+<blockquote>
+<p>用户发送kill  -WINCH命令</p>
+</blockquote>
+<ul>
+<li>no live upstreams while connecting to upstream</li>
+</ul>
+<blockquote>
+<p>upstream 下的 server 全都挂了</p>
+</blockquote>
+<ul>
+<li>SSL_do_handshake() failed</li>
+</ul>
+<blockquote>
+<p>SSL握手失败</p>
+</blockquote>
+<ul>
+<li>ngx_slab_alloc() failed: no memory in SSL session shared cache</li>
+</ul>
+<blockquote>
+<p>ssl_session_cache大小不够等原因造成</p>
+</blockquote>
+<ul>
+<li>could not add new SSL session to the session cache while SSL handshaking</li>
+</ul>
+<blockquote>
+<p>ssl_session_cache 大小不够等原因造成</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2014/12/13/2014-12-13-nginxcuo-wu-ma/" data-id="clnfj558o00387eqx8rc610ua" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2014-11-29-yong-dao-de-tcpdump" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/29/2014-11-29-yong-dao-de-tcpdump/" class="article-date">
+  <time datetime="2014-11-29T06:15:00.000Z" itemprop="datePublished">2014-11-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/System/">System</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/29/2014-11-29-yong-dao-de-tcpdump/">用到的Tcpdump</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>开发中，要定位具体问题，特别是网络问题的时候，多数是要晋出<code>tcpdump</code>，遗憾的是我略懂皮毛，有必要深入一些。<br>简单说下我常用的 TcpDump的方法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tcpdump -i eth0 -Xxn port 80 -s 0 -c 1024 </span><br></pre></td></tr></table></figure>
+
+<p>如果仅仅是看manual  多数时候还是会忘记，好记性不如烂笔头，上述的选项是我认为很有用的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-i 指定网卡</span><br><span class="line">-Xxn X使用Ascii和16进制，n 表示 ip 用数字表示</span><br><span class="line">-s 0 表示整包抓取</span><br><span class="line">-c 1024 表示包得大小</span><br></pre></td></tr></table></figure>
+
+<p>如果希望将抓包过程中保留下来，可以在上述命令尾部加上 <code>-w trace.cap</code><br>这种格式的文件，文本编辑器是无法理解，需要特殊的软件才能回复，比如 <code>wireshark</code></p>
+<p>Tcpdump 中的 flag 有必要提下：</p>
+<ul>
+<li>PSH 代表要求发送立即发送缓冲区内的其他对应数据包，无需缓冲区满才发送</li>
+<li>RST 如果RST&#x3D;1表示连接马上结束，无需等待终止确认手续，发送端已经断线</li>
+<li>SYNC 表示主动连接到对方，建立连接</li>
+<li>FIN 表示传送结束，发送方等待对方响应</li>
+</ul>
+<p>通过 wireshark 可以再现所谓的三次握手和四次挥手过程。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2014/11/29/2014-11-29-yong-dao-de-tcpdump/" data-id="clnfj558o00357eqx0s4lh7j9" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/6/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/8/">Next &amp;raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DataBase/">DataBase</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ElasticSearch/">ElasticSearch</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Life/">Life</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NLP/">NLP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork/">NetWork</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Product/">Product</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Program/">Program</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Redis/">Redis</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/System/">System</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/grpc/">grpc</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/mq/">mq</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-11/" rel="tag">C++11</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DataBase/" rel="tag">DataBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LRU/" rel="tag">LRU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MQ/" rel="tag">MQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ProtoBuffer/" rel="tag">ProtoBuffer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/" rel="tag">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupCache/" rel="tag">groupCache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grpc/" rel="tag">grpc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s-basic/" rel="tag">k8s basic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx-grpc/" rel="tag">nginx grpc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 10px;">Algorithm</a> <a href="/tags/C-11/" style="font-size: 10px;">C++11</a> <a href="/tags/DataBase/" style="font-size: 10px;">DataBase</a> <a href="/tags/Go/" style="font-size: 10px;">Go</a> <a href="/tags/Kafka/" style="font-size: 10px;">Kafka</a> <a href="/tags/LRU/" style="font-size: 10px;">LRU</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/ProtoBuffer/" style="font-size: 10px;">ProtoBuffer</a> <a href="/tags/Redis/" style="font-size: 16.67px;">Redis</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/groupCache/" style="font-size: 10px;">groupCache</a> <a href="/tags/grpc/" style="font-size: 13.33px;">grpc</a> <a href="/tags/k8s/" style="font-size: 20px;">k8s</a> <a href="/tags/k8s-basic/" style="font-size: 10px;">k8s basic</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/nginx-grpc/" style="font-size: 10px;">nginx grpc</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/07/">July 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">May 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/03/">March 2012</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/10/20/2021-10-20-why-docker-supervisor/"> Docker里使用 supervisor 管理多个程序</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/14/2021-10-14-binary-tree-algo/">二叉树相关的递归算法题</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/13/2021-10-13-go-channel/">Go Channel 笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/12/2021-10-12-why-kafka-so-fast/">Kafka 吞吐量大的原因</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/11/2021-10-11-redis-pipeline/">Redis Pipline 与事务</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2023 zheng-ji<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

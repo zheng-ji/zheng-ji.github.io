@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>织网</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="织网">
+<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:site_name" content="织网">
+<meta property="og:locale">
+<meta property="article:author" content="zheng-ji">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="织网" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">织网</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-2021-10-20-why-docker-supervisor" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/10/20/2021-10-20-why-docker-supervisor/" class="article-date">
+  <time datetime="2021-10-20T12:20:00.000Z" itemprop="datePublished">2021-10-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Docker/">Docker</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/20/2021-10-20-why-docker-supervisor/"> Docker里使用 supervisor 管理多个程序</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="问题："><a href="#问题：" class="headerlink" title="问题："></a>问题：</h3><ul>
+<li><p>之前在使用 Docker 有一个困惑，如果我将程序的启动命令作为启动的 <code>EntryPoint</code>, 如果服务有问题，Docker 就启不来了，更谈不上进去定位是哪里出错了。</p>
+</li>
+<li><p>Docker 容器在启动的时候开启单个进程。但我们经常需要在一个机器上开启多个服务, 通常我们会用一个 shell 脚本，包罗各种启动命令来运行多个程序。</p>
+</li>
+</ul>
+<p>但是这样的缺点:</p>
+<ol>
+<li>无法看到各个子进程的运行状态</li>
+<li>如果 shell 脚本有问题，那整个 docker 也启动不了，就不给你机会登陆 docker 里面去查看具体内容。</li>
+</ol>
+<h3 id="精妙的方案"><a href="#精妙的方案" class="headerlink" title="精妙的方案:"></a>精妙的方案:</h3><p>如果将 Docker 的 CMD 启动命令换成启动一个 Supervisord 本身，再加上一个不休眠的程序来做为启动入口，问题就迎刃而解. 因为 Supervisord 会常驻运行, 再由它去托管各种子程序的自动拉起, 之后再加上一句 <code>sleep infinity</code>. 保证这是一个永不退出的 CMD, docker 启动后，你就可以进去里面 debug 你需要的各种程序，包括重启之类的。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/sh</span><br><span class="line">nohup /usr/bin/supervisord &gt;/dev/null 2&gt;&amp;1 &amp;</span><br><span class="line">sleep infinity</span><br></pre></td></tr></table></figure>
+
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/10/20/2021-10-20-why-docker-supervisor/" data-id="clnfj559n007w7eqxeh7f6vet" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-10-14-binary-tree-algo" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/10/14/2021-10-14-binary-tree-algo/" class="article-date">
+  <time datetime="2021-10-14T07:30:42.000Z" itemprop="datePublished">2021-10-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Algorithm/">Algorithm</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/14/2021-10-14-binary-tree-algo/">二叉树相关的递归算法题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="求二叉树的最大深度"><a href="#求二叉树的最大深度" class="headerlink" title="求二叉树的最大深度"></a>求二叉树的最大深度</h4><ul>
+<li>递归</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">int find_max_depth_V1(TreeNode* root)</span><br><span class="line">&#123;</span><br><span class="line">    int depth = 0;</span><br><span class="line">    if (!root)</span><br><span class="line">    &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">    depth = 1 + max(find_max_depth_V1(root-&gt;left), find_max_depth_V1(root-&gt;right));</span><br><span class="line">    return depth;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>层遍历</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">int find_max_depth_V2(TreeNode* root)</span><br><span class="line">&#123;</span><br><span class="line">    if (!root) &#123; return 0; &#125;</span><br><span class="line">    int depth = 0;</span><br><span class="line">    queue&lt;TreeNode*&gt; Q;</span><br><span class="line">    Q.push(root);</span><br><span class="line">    while (!Q.empty())</span><br><span class="line">    &#123;</span><br><span class="line">        depth++;</span><br><span class="line">        for (int i = 0; i &lt; Q.size(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            TreeNode* t = Q.front();</span><br><span class="line">            Q.pop();</span><br><span class="line">            if (t-&gt;left)</span><br><span class="line">            &#123;</span><br><span class="line">                Q.push(t-&gt;left);</span><br><span class="line">            &#125;</span><br><span class="line">            if (t-&gt;right)</span><br><span class="line">            &#123;</span><br><span class="line">                Q.push(t-&gt;right);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return depth;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="求二叉树的最小深度"><a href="#求二叉树的最小深度" class="headerlink" title="求二叉树的最小深度"></a>求二叉树的最小深度</h4><ul>
+<li>递归</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">int find_min_depth_V1(TreeNode* root)</span><br><span class="line">&#123;</span><br><span class="line">    int depth = 0;</span><br><span class="line">    if (!root)</span><br><span class="line">    &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">    if (!root-&gt;left)</span><br><span class="line">    &#123;</span><br><span class="line">        return 1 + find_min_depth_V1(root-&gt;right);</span><br><span class="line">    &#125;</span><br><span class="line">    if (!root-&gt;right)</span><br><span class="line">    &#123;</span><br><span class="line">        return 1 + find_min_depth_V1(root-&gt;left);</span><br><span class="line">    &#125;</span><br><span class="line">    depth = 1 + min(find_max_depth_V1(root-&gt;left), find_max_depth_V1(root-&gt;right));</span><br><span class="line">    return depth;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="求二叉树中节点的个数"><a href="#求二叉树中节点的个数" class="headerlink" title="求二叉树中节点的个数"></a>求二叉树中节点的个数</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">int count_node(TreeNode* root)</span><br><span class="line">&#123;</span><br><span class="line">    if (!root) &#123; return 0; &#125;</span><br><span class="line">    int left = count_node(root-&gt;left);</span><br><span class="line">    int right = count_node(root-&gt;right);</span><br><span class="line">    return left + right + 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="求二叉树中叶子节点的个数"><a href="#求二叉树中叶子节点的个数" class="headerlink" title="求二叉树中叶子节点的个数"></a>求二叉树中叶子节点的个数</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int count_leaf_node(TreeNode* root)</span><br><span class="line">&#123;</span><br><span class="line">    if (!root) return 0;</span><br><span class="line">    if (!root-&gt;left &amp;&amp; !root-&gt;right) return 1;</span><br><span class="line">    return count_leaf_node(root-&gt;left) + count_leaf_node(root-&gt;right);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="求二叉树中第-k-层节点的个数"><a href="#求二叉树中第-k-层节点的个数" class="headerlink" title="求二叉树中第 k 层节点的个数"></a>求二叉树中第 k 层节点的个数</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">int num_of_k_node(TreeNode* root, int k)</span><br><span class="line">&#123;</span><br><span class="line">    if (!root || k&lt;1) &#123; return 0; &#125;</span><br><span class="line">	if (k == 1) &#123; return 1; &#125;</span><br><span class="line">    int num_left = num_of_k_node(root-&gt;left, k - 1);</span><br><span class="line">    int num_right = num_of_k_node(root-&gt;right, k - 1);</span><br><span class="line">    return num_left + num_right;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="判断二叉树是否是平衡二叉树"><a href="#判断二叉树是否是平衡二叉树" class="headerlink" title="判断二叉树是否是平衡二叉树"></a>判断二叉树是否是平衡二叉树</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">int max_depth(TreeNode* root)</span><br><span class="line">&#123;</span><br><span class="line">    if (!root)</span><br><span class="line">    &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">    int left = max_depth(root-&gt;left);</span><br><span class="line">    int right = max_depth(root-&gt;right);</span><br><span class="line">    if (left==-1 || right == -1 || fabs(left-right)&gt;1) &#123; return -1; &#125;</span><br><span class="line">    return max(left,right) + 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">bool isBanlanced(TreeNode* root)</span><br><span class="line">&#123;</span><br><span class="line">    return max_depth(root) != -1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="两个二叉树是否互为镜像"><a href="#两个二叉树是否互为镜像" class="headerlink" title="两个二叉树是否互为镜像"></a>两个二叉树是否互为镜像</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">bool isMirror(TreeNode* root1, TreeNode* root2)</span><br><span class="line">&#123;</span><br><span class="line">    if (!root1 &amp;&amp; !root2) &#123; return true; &#125;</span><br><span class="line">    if (!root1 || !root2) &#123; return false; &#125;</span><br><span class="line">    if (root1-&gt;val != root2-&gt;val) &#123; return false; &#125;</span><br><span class="line">    return isMirror(root1-&gt;left, root2-&gt;right) &amp;&amp; isMirror(root1-&gt;right, root2-&gt;left);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="翻转二叉树"><a href="#翻转二叉树" class="headerlink" title="翻转二叉树"></a>翻转二叉树</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">TreeNode* mirrorTreeNode(TreeNode* root)</span><br><span class="line">&#123;</span><br><span class="line">    if (!root)</span><br><span class="line">    &#123;</span><br><span class="line">        return NULL;</span><br><span class="line">    &#125;</span><br><span class="line">    TreeNode* left = mirrorTreeNode(root-&gt;left);</span><br><span class="line">    TreeNode* right = mirrorTreeNode(root-&gt;right);</span><br><span class="line">    root-&gt;left = right;</span><br><span class="line">    root-&gt;right = left;</span><br><span class="line">    return root;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="求两个二叉树的最低公共祖先节点"><a href="#求两个二叉树的最低公共祖先节点" class="headerlink" title="求两个二叉树的最低公共祖先节点"></a>求两个二叉树的最低公共祖先节点</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">bool findNode(TreeNode* root, TreeNode* node)</span><br><span class="line">&#123;</span><br><span class="line">    if (!root || !node) &#123;</span><br><span class="line">	 	return false;</span><br><span class="line">	&#125;</span><br><span class="line">    if (root-&gt;val==node-&gt;val &amp;&amp; root-&gt;left == node-&gt;left &amp;&amp; root-&gt;right == node-&gt;right) &#123;</span><br><span class="line">		 return true; </span><br><span class="line">	&#125;</span><br><span class="line">    bool found = findNode(root-&gt;left, node);</span><br><span class="line">    if (!found) &#123;</span><br><span class="line">		 found = findNode(root-&gt;right, node);</span><br><span class="line">	&#125;</span><br><span class="line">    return found;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">TreeNode* getLastCommonParent(TreeNode* root, TreeNode* node1, TreeNode* node2)</span><br><span class="line">&#123;</span><br><span class="line">    if (findNode(root-&gt;left,node1))</span><br><span class="line">    &#123;</span><br><span class="line">        if (findNode(root-&gt;right, node2)) &#123;</span><br><span class="line">            return root;</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            return getLastCommonParent(root-&gt;left, node1, node2);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        if (findNode(root-&gt;left,node2))</span><br><span class="line">        &#123;</span><br><span class="line">            return root;</span><br><span class="line">        &#125;</span><br><span class="line">        else</span><br><span class="line">        &#123;</span><br><span class="line">            return getLastCommonParent(root-&gt;right, node1, node2);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="二叉树的前序遍历"><a href="#二叉树的前序遍历" class="headerlink" title="二叉树的前序遍历"></a>二叉树的前序遍历</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">void preOrder2(TreeNode* root, vector&lt;int&gt; &amp;result)</span><br><span class="line">&#123;</span><br><span class="line">    if (!root) &#123; return; &#125;</span><br><span class="line">    result.push_back(root-&gt;val);</span><br><span class="line">    preOrder2(root-&gt;left, result);</span><br><span class="line">    preOrder2(root-&gt;right, result);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vector&lt;int&gt; preOrderReverse(TreeNode* root)</span><br><span class="line">&#123;</span><br><span class="line">    vector&lt;int&gt; result;</span><br><span class="line">    preOrder2(root, result);</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="二叉树的中序遍历"><a href="#二叉树的中序遍历" class="headerlink" title="二叉树的中序遍历"></a>二叉树的中序遍历</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">void midOrder2(TreeNode* root, vector&lt;int&gt; &amp;result)</span><br><span class="line">&#123;</span><br><span class="line">    if (!root)</span><br><span class="line">    &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    midOrder2(root-&gt;left, result);</span><br><span class="line">    result.push_back(root-&gt;val);</span><br><span class="line">    midOrder2(root-&gt;right, result);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vector&lt;int&gt; midOrderReverse(TreeNode* root)</span><br><span class="line">&#123;</span><br><span class="line">    vector&lt;int&gt; result;</span><br><span class="line">    midOrder2(root, result);</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="二叉树的后序遍历（递归）"><a href="#二叉树的后序遍历（递归）" class="headerlink" title="二叉树的后序遍历（递归）"></a>二叉树的后序遍历（递归）</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">void posOrder2(TreeNode* root, vector&lt;int&gt; &amp;result)</span><br><span class="line">&#123;</span><br><span class="line">    if (!root)</span><br><span class="line">    &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    posOrder2(root-&gt;left, result);</span><br><span class="line">    posOrder2(root-&gt;right, result);</span><br><span class="line">    result.push_back(root-&gt;val);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vector&lt;int&gt; midOrderReverse(TreeNode* root)</span><br><span class="line">&#123;</span><br><span class="line">    vector&lt;int&gt; result;</span><br><span class="line">    posOrder2(root, result);</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="输入二叉树和整数，打印出二叉树节点值等于输入整数的所有路径"><a href="#输入二叉树和整数，打印出二叉树节点值等于输入整数的所有路径" class="headerlink" title="输入二叉树和整数，打印出二叉树节点值等于输入整数的所有路径"></a>输入二叉树和整数，打印出二叉树节点值等于输入整数的所有路径</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">void helper(TreeNode* root, int target, vector&lt;int&gt; s, int currentSum)</span><br><span class="line">&#123;</span><br><span class="line">    currentSum += root-&gt;val;</span><br><span class="line">    s.push_back(root-&gt;val);</span><br><span class="line">    if (!root-&gt;left &amp;&amp; !root-&gt;right)</span><br><span class="line">    &#123;</span><br><span class="line">        if (currentSum == target) &#123;</span><br><span class="line">            for (auto i:s)</span><br><span class="line">            &#123;</span><br><span class="line">                cout &lt;&lt; i &lt;&lt;&quot; &quot;;</span><br><span class="line">            &#125;</span><br><span class="line">            cout &lt;&lt; endl;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    if (root-&gt;left)</span><br><span class="line">    &#123;</span><br><span class="line">        helper(root-&gt;left, target, s, currentSum);</span><br><span class="line">    &#125;</span><br><span class="line">    if (root-&gt;right)</span><br><span class="line">    &#123;</span><br><span class="line">        helper(root-&gt;right, target, s, currentSum);</span><br><span class="line">    &#125;</span><br><span class="line">    s.pop_back();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void findPath(TreeNode* root, int target)</span><br><span class="line">&#123;</span><br><span class="line">    if (!root)</span><br><span class="line">    &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    vector&lt;int&gt; s;</span><br><span class="line">    int currentSum = 0;</span><br><span class="line">    helper(root, target, s, currentSum);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/10/14/2021-10-14-binary-tree-algo/" data-id="clnfj559m007r7eqxc34xb9wr" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-10-13-go-channel" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/10/13/2021-10-13-go-channel/" class="article-date">
+  <time datetime="2021-10-13T07:30:42.000Z" itemprop="datePublished">2021-10-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Go/">Go</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/13/2021-10-13-go-channel/">Go Channel 笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>[toc]</p>
+<p>Channel 是我认为 Go 最灵活的部分，而我应用的方法不多，此文是我阅读《Go并发编程实战》总结下来，当作备忘。</p>
+<h3 id="Channel-是什么"><a href="#Channel-是什么" class="headerlink" title="Channel 是什么"></a>Channel 是什么</h3><p>可在多个 goroutine 从&#x2F;往 一个Channel 中 receive&#x2F;send 数据， 不必考虑额外的同步措施。Channel可以作为一个先入先出的队列，接收的数据和发送的数据的顺序是一致的。</p>
+<ul>
+<li>chanel 类型</li>
+</ul>
+<p>buffered chann 满了，就会阻塞， 使用 make 分配结构空间及其附属空间，并完成其间的指针初始化， make 返回这个结构空间，不另外分配一个指针</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//带缓冲的Channel make </span></span><br><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> Task， <span class="number">3</span>)</span><br><span class="line"><span class="keyword">chan</span> T          <span class="comment">// 可以接收和发送类型为 T 的数据</span></span><br><span class="line"><span class="keyword">chan</span>&lt;- <span class="type">float64</span>  <span class="comment">// 只可以用来发送 float64 类型的数据</span></span><br><span class="line">&lt;-<span class="keyword">chan</span> <span class="type">int</span>      <span class="comment">// 只可以用来接收 int 类型的数据</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>关闭 Channel</li>
+</ul>
+<p>以下代码检查是否关闭， 它可以用来检查Channel是否已经被关闭了。从Channel接收一个值，如果Channel关闭了或没有数据，那么ok将被置为false</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">close(chan)</span><br><span class="line">x， ok = &lt;- c </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>几种情况下的读写</li>
+</ul>
+<p>在一个已经 close 的 unbuffered Channel上执行读操作，会返回Channel对应类型的零值，比如 bool 型 Channel 返回 false，int 型 Channel 返回0。</p>
+<ul>
+<li>向 close的Channel写则会触发panic。读不会导致阻塞。</li>
+<li>往 nil Channel 中发送数据会一直被阻塞着。</li>
+<li>对一个没有初始化的Channel进行读写操作都将发生阻塞，例子如下：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>空值(nil)</th>
+<th>已关闭</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>关闭</td>
+<td>panic</td>
+<td>panic</td>
+</tr>
+<tr>
+<td>写</td>
+<td>阻塞</td>
+<td>panic</td>
+</tr>
+<tr>
+<td>读</td>
+<td>阻塞</td>
+<td>不阻塞</td>
+</tr>
+</tbody></table>
+<p>Example</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	var c chan int</span><br><span class="line">	&lt;-c</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$ go run testnilChannel.go</span><br><span class="line">fatal error: all goroutines are asleep – deadlock!</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	var c chan int</span><br><span class="line">	c &lt;- 1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$ go run testnilChannel.go</span><br><span class="line">fatal error: all goroutines are asleep – deadlock!</span><br></pre></td></tr></table></figure>
+
+<h3 id="代码技巧"><a href="#代码技巧" class="headerlink" title="代码技巧"></a>代码技巧</h3><ul>
+<li>与 select 的配合使用</li>
+</ul>
+<p>select 语句和 switch 语句一样，它不是循环，它只会选择一个 case 来处理，如果想一直处理 Channel，你可以在外面加一个无限的for循环</p>
+<ul>
+<li>range</li>
+</ul>
+<p><code>range c</code> 产生的迭代值为Channel中发送的值，它会一直迭代直到 Channel 被关闭。上面的例子中如果把close(c)注释掉，程序会一直阻塞在 for 那一行。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">for i := range c &#123;</span><br><span class="line">	fmt.Println(i)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="业务使用场景"><a href="#业务使用场景" class="headerlink" title="业务使用场景"></a>业务使用场景</h3><ul>
+<li>超时控制，心跳 HeartBeat</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">// 利用 time.After 实现</span><br><span class="line">func worker(start chan bool) &#123;</span><br><span class="line">    timeout := time.After(30 * time.Second)</span><br><span class="line">    for &#123;</span><br><span class="line">        select &#123;</span><br><span class="line">            // … do some stuff</span><br><span class="line">            case &lt;- timeout:</span><br><span class="line">                return</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 与 timeout实现类似，下面是一个简单的心跳select实现：</span><br><span class="line"></span><br><span class="line">func worker(start chan bool) &#123;</span><br><span class="line">    heartbeat := time.Tick(30 * time.Second)</span><br><span class="line">    for &#123;</span><br><span class="line">        select &#123;</span><br><span class="line">            // … do some stuff</span><br><span class="line">            case &lt;- heartbeat:</span><br><span class="line">                //… do heartbeat stuff</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>取最快的结果</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">main() &#123;</span><br><span class="line">    ret := make(chan string， 3)</span><br><span class="line">    for i := 0; i &lt; cap(ret); i++ &#123;</span><br><span class="line">        go call(ret)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println(&lt;-ret)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func call(ret chan&lt;- string) &#123;</span><br><span class="line">    // do something</span><br><span class="line">    // ...</span><br><span class="line">    ret &lt;- &quot;result&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>限制并发</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 最大并发数为 2</span><br><span class="line">limits := make(chan struct&#123;&#125;， 2)</span><br><span class="line">for i := 0; i &lt; 10; i++ &#123;</span><br><span class="line">    go func() &#123;</span><br><span class="line">        // 缓冲区满了就会阻塞在这</span><br><span class="line">        limits &lt;- struct&#123;&#125;&#123;&#125;</span><br><span class="line">        do()</span><br><span class="line">        &lt;-limits</span><br><span class="line">    &#125;()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>广播， 多个 goroutine 同步响应</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">func main() &#123;</span><br><span class="line">    c := make(chan struct&#123;&#125;)</span><br><span class="line">    for i := 0; i &lt; 5; i++ &#123;</span><br><span class="line">        go do(c)</span><br><span class="line">    &#125;</span><br><span class="line">    close(c)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func do(c &lt;-chan struct&#123;&#125;) &#123;</span><br><span class="line">    // 会阻塞直到收到 close</span><br><span class="line">    &lt;-c</span><br><span class="line">    fmt.Println(&quot;hello&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>等待一个事件</li>
+</ul>
+<p>main goroutine 通过”&lt;-c”来等待 sub goroutine中的完成事件，sub goroutine 通过close Channel触发这一事件。当然也可以通过向 Channel 写入一个 bool 值的方式来作为事件通知。main goroutine 在 Channel c上没有任何数据可读的情况下会阻塞等待。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import &quot;fmt&quot;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">    fmt.Println(&quot;Begin doing something!&quot;)</span><br><span class="line">    c := make(chan bool)</span><br><span class="line">    go func() &#123;</span><br><span class="line">        fmt.Println(&quot;Doing something…&quot;)</span><br><span class="line">            close(c)</span><br><span class="line">    &#125;()</span><br><span class="line">    &lt;-c</span><br><span class="line">    fmt.Println(&quot;Done!&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="忘记关闭的陷阱"><a href="#忘记关闭的陷阱" class="headerlink" title="忘记关闭的陷阱"></a>忘记关闭的陷阱</h3><p>事实上除了超时场景，其他使用协程(goroutine)的场景，也很容易因为实现不当，导致协程无法退出，随着时间的积累，造成内存耗尽，程序崩溃。</p>
+<p>造成泄露的例子</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">func do(taskCh chan int) &#123;</span><br><span class="line">	for &#123;</span><br><span class="line">		select &#123;</span><br><span class="line">		case t := &lt;-taskCh:</span><br><span class="line">			time.Sleep(time.Millisecond)</span><br><span class="line">			fmt.Printf(&quot;task %d is done\n&quot;， t)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func sendTasks() &#123;</span><br><span class="line">	taskCh := make(chan int， 10)</span><br><span class="line">	go do(taskCh)</span><br><span class="line">	for i := 0; i &lt; 1000; i++ &#123;</span><br><span class="line">		taskCh &lt;- i</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func TestDo(t *testing.T) &#123;</span><br><span class="line">    t.Log(runtime.NumGoroutine())</span><br><span class="line">    sendTasks()</span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	t.Log(runtime.NumGoroutine())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>正确的样子</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">func doCheckClose(taskCh chan int) &#123;</span><br><span class="line">	for &#123;</span><br><span class="line">		select &#123;</span><br><span class="line">		case t， beforeClosed := &lt;-taskCh:</span><br><span class="line">			if !beforeClosed &#123;</span><br><span class="line">				fmt.Println(&quot;taskCh has been closed&quot;)</span><br><span class="line">				return</span><br><span class="line">			&#125;</span><br><span class="line">			time.Sleep(time.Millisecond)</span><br><span class="line">			fmt.Printf(&quot;task %d is done\n&quot;， t)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func sendTasksCheckClose() &#123;</span><br><span class="line">	taskCh := make(chan int， 10)</span><br><span class="line">	go doCheckClose(taskCh)</span><br><span class="line">	for i := 0; i &lt; 1000; i++ &#123;</span><br><span class="line">		taskCh &lt;- i</span><br><span class="line">	&#125;</span><br><span class="line">	close(taskCh)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func TestDoCheckClose(t *testing.T) &#123;</span><br><span class="line">	t.Log(runtime.NumGoroutine())</span><br><span class="line">	sendTasksCheckClose()</span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	runtime.GC()</span><br><span class="line">	t.Log(runtime.NumGoroutine())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>link: <a target="_blank" rel="noopener" href="http://colobu.com/2016/04/14/Golang-Channels/">http://colobu.com/2016/04/14/Golang-Channels/</a><br>link：<a target="_blank" rel="noopener" href="https://studygolang.com/articles/11320">https://studygolang.com/articles/11320</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/10/13/2021-10-13-go-channel/" data-id="clnfj559l007o7eqx08297li1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/" rel="tag">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-10-12-why-kafka-so-fast" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/10/12/2021-10-12-why-kafka-so-fast/" class="article-date">
+  <time datetime="2021-10-12T07:30:42.000Z" itemprop="datePublished">2021-10-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/mq/">mq</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/12/2021-10-12-why-kafka-so-fast/">Kafka 吞吐量大的原因</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Page-Cache"><a href="#Page-Cache" class="headerlink" title="Page Cache"></a>Page Cache</h3><p>为优化读写性能，Kafka 利用操作系统本身的 Page Cache，就是利用操作系统自身的内存而不是 JVM 空间内存。</p>
+<ol>
+<li>避免 Object 消耗：如果是使用 Java 堆，Java对象的内存消耗比较大，通常是所存储数据的两倍甚至更多。</li>
+<li>避免 GC问题：随着 JVM 中数据不断增多，垃圾回收将会变得复杂与缓慢，使用系统缓存就不会存在 GC 问题</li>
+</ol>
+<p>相比于使用 JVM 等数据结构，利用操作系统的 Page Cache 更加简单可靠。</p>
+<ul>
+<li>操作系统层面的缓存利用率会更高，因为存储的都是紧凑的字节结构而不是独立的对象。</li>
+<li>即使服务进程重启，系统缓存依然不会消失，避免了重建缓存的过程。</li>
+</ul>
+<h3 id="零拷贝"><a href="#零拷贝" class="headerlink" title="零拷贝"></a>零拷贝</h3><p>如果没有零拷贝技术 Kafka 读数据的过程如下图：</p>
+<p><img src="/images/mq/kafka-zero-copy-1.png"></p>
+<ol>
+<li>先看数据在不在 os cache里，如果不在的话就从磁盘文件里读取数据后放入 os cache。</li>
+<li>从操作系统的 os cache 里拷贝数据到应用程序进程的缓存里，</li>
+<li>从应用程序进程的缓存里拷贝数据到操作系统层面的 Socket 缓存里，</li>
+<li>从Socket缓存里提取数据后发送到网卡，最后发送出去给下游消费。</li>
+</ol>
+<p><img src="/images/mq/kafka-zero-copy-2.png"></p>
+<p>通过零拷贝技术，就不需把 os cache里的数据拷贝到应用缓存，再从应用缓存拷贝到 Socket 缓存了，两次拷贝都省略了。</p>
+<ul>
+<li>对 Socket 缓存仅仅就是拷贝数据的描述符过去，然后数据就直接从 os cache 中发送到网卡上去了，大大的提升数据消费时读取文件数据的性能。</li>
+<li>在从磁盘读数据的时候，会先看看 os cache 内存中是否有，如果有的话，其实读数据都是直接读内存的。</li>
+<li>大量的数据都是直接写入 os cache 中，然后读数据的时候也是从 os cache 中读。 相当于是 Kafka 完全基于内存提供数据的写和读了，所以这个整体性能会极其的高。</li>
+</ul>
+<h3 id="分区分段-索引"><a href="#分区分段-索引" class="headerlink" title="分区分段+索引"></a>分区分段+索引</h3><ul>
+<li>Kafka 的 message 是按 topic 分类存储的，</li>
+<li>topic 中的数据按照一个一个的 partition 即分区存储到不同broker节点。</li>
+<li>每个 partition 对应了操作系统上的一个文件夹，partition 实际上又是按照 segment 分段存储的。Kafka 的 message 消息实际上是分布式存储在一个一个小的 segment 中的，每次文件操作也是直接操作的 segment。</li>
+<li>Kafka 又默认为分段后的数据文件建立了索引文件，就是文件系统上的.index文件。这种分区分段+索引的设计，不仅提升了数据读取的效率，同时也提高了数据操作的并行度。</li>
+</ul>
+<h3 id="磁盘顺序写-批量读写-批量压缩"><a href="#磁盘顺序写-批量读写-批量压缩" class="headerlink" title="磁盘顺序写, 批量读写, 批量压缩"></a>磁盘顺序写, 批量读写, 批量压缩</h3><ul>
+<li>消息是顺序写磁盘的</li>
+<li>Kafka 数据读写也是批量的而不是单条的。 除了利用底层的技术外，Kafka 还在应用程序层面提供了一些手段来提升性能。最明显的就是使用批次。在向Kafka写入数据时，可以启用批次写入，这样可以避免在网络上频繁传输单个消息带来的延迟和带宽开销</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/10/12/2021-10-12-why-kafka-so-fast/" data-id="clnfj559l007k7eqxdewrdiod" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-10-11-redis-pipeline" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/10/11/2021-10-11-redis-pipeline/" class="article-date">
+  <time datetime="2021-10-11T07:30:42.000Z" itemprop="datePublished">2021-10-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Redis/">Redis</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/11/2021-10-11-redis-pipeline/">Redis Pipline 与事务</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="pipline-是什么"><a href="#pipline-是什么" class="headerlink" title="pipline 是什么"></a>pipline 是什么</h3><p>pipeline 就是把所有的命令一次发过去，避免频繁的发送、接收带来的网络开销，redis在打包接收到一堆命令后，依次执行，然后把结果再打包返回给客户端。</p>
+<p><img src="/images/redis/redis-pipline.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import redis</span><br><span class="line">from concurrent.futures import ProcessPoolExecutor</span><br><span class="line"> </span><br><span class="line">r = redis.Redis(host=&#x27;127.0.0.1&#x27;, port=6380)</span><br><span class="line"> </span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    with r.pipeline(transaction=False) as p:</span><br><span class="line">        p.sadd(&#x27;seta&#x27;, 1)</span><br><span class="line">        p.sadd(&#x27;seta&#x27;, 2)</span><br><span class="line">        p.execute()</span><br></pre></td></tr></table></figure>
+
+<p>这容易让人想起他和<code>MULTI</code>有什么区别呢？</p>
+<ul>
+<li>pipeline 选择客户端缓冲，multi 选择服务端队列缓冲；</li>
+<li>请求次数的不一致，multi需要每个命令都发送一次给服务端，pipeline最后一次性发送给服务端，请求次数相对于multi减少</li>
+<li>multi&#x2F;exec 可以保证原子性，而 pipeline 不保证原子性</li>
+</ul>
+<h3 id="watch-是什么"><a href="#watch-是什么" class="headerlink" title="watch 是什么"></a>watch 是什么</h3><p>提到 watch 就离不开 Redis 事务，Redis 事务可以一次执行多个命令，它先以 MULTI 开始一个事务，然后将多个命令入队到事务中， 最后由 EXEC 命令触发事务， 一并执行事务中的所有命令。<br>在 Redis 中使用 watch 命令可以决定事务是执行还是回滚。在 multi 命令之前使用 watch 命令监控某些键值对，然后使用 multi 命令开启事务，执行各类对数据结构进行操作的命令，这个时候命令会进入队列。 当 Redis 使用 exec 命令执行事务的时候</p>
+<ol>
+<li>它首先去比对被 watch 命令所监控的键值对，如果没有发生变化，那么它会执行事务队列中的命令，提交事务；</li>
+<li>如果发生变化，那么它不会执行任何事务中的命令，而去事务回滚。无论事务是否回滚，Redis 都会去取消执行事务前的 watch 命令</li>
+</ol>
+<p><img src="/images/redis/redis-watch.png"></p>
+<p>Pipeline 加上 watch, 实现事务。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">import redis</span><br><span class="line">from concurrent.futures import ProcessPoolExecutor</span><br><span class="line"> </span><br><span class="line">r = redis.Redis(host=&#x27;127.0.0.1&#x27;, port=6379)</span><br><span class="line">r.set(&quot;stock:count&quot;, 100)</span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    with r.pipeline() as pipe:</span><br><span class="line">        while True:</span><br><span class="line">            try:</span><br><span class="line">                # watch库存键, multi后如果该key被其他客户端改变, 事务操作会抛出WatchError异常</span><br><span class="line">                pipe.watch(&#x27;stock:count&#x27;)</span><br><span class="line">                count = int(pipe.get(&#x27;stock:count&#x27;))</span><br><span class="line">                if count &gt; 0:  # 有库存</span><br><span class="line">                    # 事务开始</span><br><span class="line">                    pipe.multi() # </span><br><span class="line">                    pipe.decr(&#x27;stock:count&#x27;)</span><br><span class="line">                    # 把命令推送过去</span><br><span class="line">                    return True</span><br><span class="line">                else:</span><br><span class="line">                    return False</span><br><span class="line">            except redis.WatchError:</span><br><span class="line">                # 打印WatchError异常, 观察被watch锁住的情况</span><br><span class="line">                pipe.unwatch()</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/10/11/2021-10-11-redis-pipeline/" data-id="clnfj559k007h7eqxaghxeonv" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-10-08-mq-rocketmq" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/10/08/2021-10-08-mq-rocketmq/" class="article-date">
+  <time datetime="2021-10-08T03:30:42.000Z" itemprop="datePublished">2021-10-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/mq/">mq</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/08/2021-10-08-mq-rocketmq/">RocketMQ</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>RocketMQ 是阿里巴巴消息中间件团队研发并大规模应用于生产系统的中间件，满足线上海量消息堆积的需求，早期阿里曾经基于ActiveMQ研发消息系统，随着业务消息的规模增大，瓶颈逐渐显现，后来也考虑过Kafka，但因为在低延迟和高可靠性方面没有选择，最后才自主研发了RocketMQ， 各方面的性能都比目前已有的消息队列要好，RocketMQ和Kafka在概念和原理上都非常相似，所以也经常被拿来对比；RocketMQ默认采用长轮询的拉模式， 单机支持千万级别的消息堆积，可以非常好的应用在海量消息系统中。</p>
+<p><img src="/images/mq/rocketmq-1.png"></p>
+<p>主要组成包括 NameServer, Broker, Producer, Consumer</p>
+<h3 id="NameServer"><a href="#NameServer" class="headerlink" title="NameServer"></a>NameServer</h3><p>RocketMQ 自研了类似于 zookeeper 的一个软件, 我觉得是因为功能简单，就没有引入zookeeper了, 其主要功能:</p>
+<ul>
+<li>管理brokers：broker 启动时会注册到 NameServer，两者之间保持心跳监测机制，来保证 NameServer 知道 broker 的存活状态</li>
+<li>路由信息管理：每一台 NameServer 存有全部的 broker 集群信息和生产者&#x2F;消费者客户端的请求信息</li>
+</ul>
+<p>为帮助理解，先上概念图<br><img src="/images/mq/rocketmq-2.png"></p>
+<h3 id="Broker"><a href="#Broker" class="headerlink" title="Broker"></a>Broker</h3><p>Broker上存Topic信息，Topic由多个队列组成，队列会平均分散在多个Broker上。Producer的发送机制保证消息尽量平均分布到所有队列中，最终效果就是所有消息都平均落在每个 Broker 上。</p>
+<p>CommitLog：是消息主体以及元数据的存储主体，对 CommitLog 建立一个ConsumeQueue，每个 ConsumeQueue 对应一个（概念模型中的）MessageQueue，所以只要有 CommitLog 在，ConsumeQueue即使数据丢失，仍然可以恢复出来。</p>
+<p>ConsumeQueue：是一个消息的逻辑队列，存储了这个 Queue 在 CommitLog 中的起始 offset，log 大小和 MessageTag的hashCode。每个Topic下的每个 Queue 都有一个对应的 ConsumeQueue 文件，例如Topic中有三个队列，每个队列中的消息索引都会有一个编号，编号从0开始，往上递增。并由此一个位点offset的概念。</p>
+<p>RocketMQ的高性能在于顺序写盘(CommitLog)、零拷贝和跳跃读, 尽量命中PageCache, 所以内存越大越好。同时由于缓存的局部性原理,可以很快的在内存上读取到消息。</p>
+<h3 id="高可靠性高性能"><a href="#高可靠性高性能" class="headerlink" title="高可靠性高性能"></a>高可靠性高性能</h3><p>高可靠性在于刷盘和 Master&#x2F;Slave，即使 NameServer 全部挂掉不影响已经运行的 Broker,Producer,Consumer。<br>发送消息可负载均衡，且发送消息线程安全，集群消费模式下消费者端负载均衡，这些特性加上上述的高性能读写，共同造就了 RocketMQ 的高并发读写能力。<br>刷盘和主从同步均为异步(默认)时，broker进程挂掉(例如重启)，消息依然不会丢失，因为 broker 关机时会执行持久化。 当物理机器宕机时，才有消息丢失的风险。另外，master挂掉后，消费者从slave消费消息，但slave不能写消息。</p>
+<h3 id="动态伸缩能力"><a href="#动态伸缩能力" class="headerlink" title="动态伸缩能力"></a>动态伸缩能力</h3><p>RocketMQ具有很好动态伸缩能力(非顺序消息)，伸缩性体现在Topic和Broker两个维度。</p>
+<ul>
+<li><p>Topic维度：假如一个Topic的消息量特别大，但集群水位压力还是很低，就可以扩大该Topic的队列数，Topic的队列数跟发送、消费速度成正比。</p>
+</li>
+<li><p>Broker维度：如果集群水位很高了，需要扩容，直接加机器部署Broker就可以。Broker 起来后向 NameServer 注册，Producer、Consumer 通过 NameServer 发现新 Broker，立即跟该Broker直连，收发消息。</p>
+</li>
+</ul>
+<h3 id="事务消息机制"><a href="#事务消息机制" class="headerlink" title="事务消息机制"></a>事务消息机制</h3><p>RocketMQ事务消息</p>
+<ul>
+<li>Half(Prepare) Message</li>
+</ul>
+<p>指的是暂不能投递的消息，发送方已经将消息成功发送到了 MQ 服务端，但是服务端未收到生产者对该消息的二次确认，此时该消息被标记成 “暂不能投递”状态，处于该种状态下的消息即半消息。</p>
+<ul>
+<li>消息回查<br>由于网络闪断、生产者应用重启等原因，导致某条事务消息的二次确认丢失，MQ 服务端通过扫描发现某条消息长期处于“半消息”时，需要主动向消息生产者询问该消息的最终状态（Commit 或是 Rollback），该过程即消息回查。</li>
+</ul>
+<p><img src="/images/mq/rocketmq-3.png"></p>
+<ol>
+<li>发送方向 MQ 服务端发送消息。</li>
+<li>MQ Server 将消息持久化成功之后，向发送方 ACK 确认消息已经发送成功，此时消息为半消息。</li>
+<li>发送方开始执行本地事务逻辑。</li>
+<li>发送方根据本地事务执行结果向 MQ Server 提交二次确认（Commit 或是 Rollback），MQ Server 收到 Commit 状态则将半消息标记为可投递，订阅方最终将收到该消息；MQ Server 收到 Rollback 状态则删除半消息，订阅方将不会接受该消息。</li>
+<li>在断网或者是应用重启的特殊情况下，上述步骤4提交的二次确认最终未到达 MQ Server，经过固定时间后 MQ Server 将对该消息发起消息回查。</li>
+<li>发送方收到消息回查后，需要检查对应消息的本地事务执行的最终结果。</li>
+<li>发送方根据检查得到的本地事务的最终状态再次提交二次确认，MQ Server 仍按照步骤4对半消息进行操作。</li>
+</ol>
+<h3 id="关于-Consumer"><a href="#关于-Consumer" class="headerlink" title="关于 Consumer"></a>关于 Consumer</h3><p>采用的是长轮询方式</p>
+<ul>
+<li>CLUSTERING 模式下，一条消息只会被 ConsumerGroup 里的一个实例消费，但可以被多个不同的 ConsumerGroup 消费，</li>
+<li>BROADCASTING 模式下，一条消息会被ConsumerGroup里的所有实例消费。</li>
+</ul>
+<h3 id="Kafka-与-RocketMQ-对比："><a href="#Kafka-与-RocketMQ-对比：" class="headerlink" title="Kafka 与 RocketMQ 对比："></a>Kafka 与 RocketMQ 对比：</h3><p>当业务需要系统间调用解耦时，MQ 是一个很好的方案，目前选择最多的当属Kafka和阿里的RocketMQ, 两种中间件的对比屡屡被提及。</p>
+<ul>
+<li><p>适用场景<br>Kafka适合日志处理； RocketMQ适合业务处理。</p>
+</li>
+<li><p>性能<br>Kafka单机写入 TPS 号称在百万条&#x2F;秒； RocketMQ 大约在10万条&#x2F;秒。 追求性能的话，Kafka单机性能更高。</p>
+</li>
+<li><p>可靠性<br>RocketMQ 支持异步&#x2F;同步刷盘; 异步&#x2F;同步 Replication； Kafka使用异步刷盘方式，异步Replication。 RocketMQ所支持的同步方式提升了数据的可靠性。</p>
+</li>
+<li><p>支持的队列数<br>Kafka单机超过64个队列&#x2F;分区，消息发送性能降低严重； RocketMQ 单机支持最高5万个队列，性能稳定, 这也是适合业务处理的原因之一</p>
+</li>
+<li><p>消费失败重试机制<br>Kafka消费失败不支持重试, RocketMQ消费失败支持定时重试，每次重试间隔时间顺延。</p>
+</li>
+<li><p>定时消息<br>Kafka不支持定时消息, RocketMQ支持定时消息</p>
+</li>
+<li><p>分布式事务消息<br>Kafka不支持分布式事务消息, RocketMQ支持分布式事务消息</p>
+</li>
+<li><p>消息查询机制<br>Kafka不支持消息查询, RocketMQ支持根据Message Id查询消息，也支持根据消息内容查询消息</p>
+</li>
+<li><p>消息回溯<br>Kafka 理论上可以按照 Offset 来回溯消息, RocketMQ 支持按照时间来回溯消息，精度毫秒，例如从一天之前的某时某分某秒开始重新消费消息</p>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/10/08/2021-10-08-mq-rocketmq/" data-id="clnfj559j007a7eqx4c32bba1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MQ/" rel="tag">MQ</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-10-09-db-mysql-gtid" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/10/08/2021-10-09-db-mysql-gtid/" class="article-date">
+  <time datetime="2021-10-08T03:30:42.000Z" itemprop="datePublished">2021-10-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/DataBase/">DataBase</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/08/2021-10-09-db-mysql-gtid/">MySQL GTID 复制</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>GTID 是基于 MySQL 服务器生成的已经被成功执行的全局事务ID，由服务器ID以及事务ID组合而成。这个全局ID在所有存在主从关系的数据库服务器上是唯一的。这样特性使 MySQL 的主从复制变得更加简单，以及数据库一致性更可靠。</p>
+<h3 id="GTID-是什么"><a href="#GTID-是什么" class="headerlink" title="GTID 是什么"></a>GTID 是什么</h3><p>MySQL-5.6.5开始支持GTID。 global transaction identifiers。全局唯一ID。<br>一个GTID在一个服务器上只执行一次，避免重复执行导致数据混乱或者主从不一致。<br>GTID用来代替传统复制方法，不再使用 <code>MASTER_LOG_FILE</code> 与 <code>MASTER_LOG_POS</code> 开启复制。而是使用 <code>MASTER_AUTO_POSTION=1</code> 的方式开始复制。</p>
+<h3 id="为什么用-GTID-复制"><a href="#为什么用-GTID-复制" class="headerlink" title="为什么用 GTID 复制"></a>为什么用 GTID 复制</h3><p>1、更简单搭建主从， 不用以前那样在需要找log_file和log_pos。<br>2、比传统的复制更加安全，保证数据的一致性，零丢失。</p>
+<h3 id="GTID的工作原理"><a href="#GTID的工作原理" class="headerlink" title="GTID的工作原理"></a>GTID的工作原理</h3><p>1 当一个事务在主库端执行并提交时，产生GTID，记录到 binlog 。<br>2 binlog 传输到 slave, 存储到 slave 的 relaylog 后，设置gtid_next变量，告诉 slave，下一个要执行的 GTID 值。<br>3 SQL 线程从 relay log中获取GTID，然后对比 slave的 binlog 是否有该GTID。<br>4 如果有记录，说明该 GTID 的事务已经执行，slave 会忽略。<br>5 如果没有记录，slave 就会执行该 GTID 事务，并记录该 GTID 到自身的 binlog， 在执行事务前会先检查其他 session 持有该GTID，确保不被重复执行。<br>6 在解析过程中会判断是否有主键，如果没有就用二级索引，如果没有就用全部扫描。</p>
+<h3 id="配置GTID"><a href="#配置GTID" class="headerlink" title="配置GTID"></a>配置GTID</h3><p>对于 GTID 的配置(使用mysql-5.6.5以上版本)，如下:</p>
+<ul>
+<li>主：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">server_id=1                  #服务器id</span><br><span class="line">gtid_mode=on                 #开启gtid模式</span><br><span class="line">enforce_gtid_consistency=on  #强制gtid一致性，开启后对于特定create table不被支持</span><br><span class="line"></span><br><span class="line">#binlog</span><br><span class="line">log_bin=master-binlog</span><br><span class="line">log-slave-updates=1    </span><br><span class="line">binlog_format=row            #其他格式可能造成数据不一致</span><br><span class="line"></span><br><span class="line">#relay log</span><br><span class="line">skip_slave_start=1            </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>从：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">gtid_mode=on</span><br><span class="line">enforce_gtid_consistency=on</span><br><span class="line">server_id=2</span><br><span class="line"></span><br><span class="line">#binlog</span><br><span class="line">log-bin=slave-binlog</span><br><span class="line">log-slave-updates=1</span><br><span class="line">binlog_format=row            #其他格式可能造成数据不一致</span><br><span class="line"></span><br><span class="line">#relay log</span><br><span class="line">skip_slave_start=1</span><br></pre></td></tr></table></figure>
+
+<h3 id="开始同步"><a href="#开始同步" class="headerlink" title="开始同步"></a>开始同步</h3><ul>
+<li>新数据库服务器, 在slave端执行以下操作</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[master]&gt; CHANGE MASTER TO  </span><br><span class="line">    -&gt;  MASTER_HOST=&#x27;$IP&#x27;,    </span><br><span class="line">    -&gt;  MASTER_USER=&#x27;repl&#x27;,    </span><br><span class="line">    -&gt;  MASTER_PASSWORD=&#x27;xxx&#x27;,    </span><br><span class="line">    -&gt;  MASTER_PORT=3306,    </span><br><span class="line">    -&gt;  MASTER_AUTO_POSITION = 1;</span><br><span class="line"></span><br><span class="line">[master]&gt; start slave;</span><br><span class="line">Query OK, 0 rows affected (0.01 sec)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>传统复制的转向 GTID复制</li>
+</ul>
+<ol>
+<li><p>按上文修改配置参数文件；</p>
+</li>
+<li><p>所有服务器设置global.read_only参数，等待主从服务器同步完毕；</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SET @@global.read_only = ON; </span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><p>依次重启主从服务器；</p>
+</li>
+<li><p>使用change master 更新主从配置；</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CHANGE MASTER TO</span><br><span class="line">  &gt; MASTER_HOST = host,</span><br><span class="line">  &gt; MASTER_PORT = port,</span><br><span class="line">  &gt; MASTER_USER = user,</span><br><span class="line">  &gt; MASTER_PASSWORD = password,</span><br><span class="line">  &gt; MASTER_AUTO_POSITION = 1;</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>START SLAVE;</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/10/08/2021-10-09-db-mysql-gtid/" data-id="clnfj559j007d7eqx70zs1q1m" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DataBase/" rel="tag">DataBase</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-09-29-grpc-4-way" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/30/2021-09-29-grpc-4-way/" class="article-date">
+  <time datetime="2021-09-30T04:11:42.000Z" itemprop="datePublished">2021-09-30</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/grpc/">grpc</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/09/30/2021-09-29-grpc-4-way/">GRPC 通讯的四种方式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>GRPC 通讯的四种方式有</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">service Echo &#123;</span><br><span class="line">    // UnaryAPI</span><br><span class="line">    rpc UnaryEcho(EchoRequest) returns (EchoResponse) &#123;&#125;</span><br><span class="line">    // SServerStreaming</span><br><span class="line">    rpc ServerStreamingEcho(EchoRequest) returns (stream EchoResponse) &#123;&#125;</span><br><span class="line">    // ClientStreamingE</span><br><span class="line">    rpc ClientStreamingEcho(stream EchoRequest) returns (EchoResponse) &#123;&#125;</span><br><span class="line">    // BidirectionalStreaming</span><br><span class="line">    rpc BidirectionalStreamingEcho(stream EchoRequest) returns (stream EchoResponse) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>服务端与客户端普通的 Protobuf Message 通讯</p>
+</li>
+<li><p>客户端发起普通的 ProtoBuf Message, 服务端使用Stream 回应</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> Server 代码</span><br><span class="line">1. 获取stream</span><br><span class="line">2  接受客户端消息，然后不断发送</span><br><span class="line">3  返回 nil 表示结束</span><br><span class="line">*/</span><br><span class="line">func (e *Echo) ServerStreamingEcho(req *pb.EchoRequest, stream pb.Echo_ServerStreamingEchoServer) error &#123;</span><br><span class="line">	log.Printf(&quot;Recved %v&quot;, req.GetMessage())</span><br><span class="line">	// 具体返回多少个response根据业务逻辑调整</span><br><span class="line">	for i := 0; i &lt; 2; i++ &#123;</span><br><span class="line">		// 通过 send 方法不断推送数据</span><br><span class="line">		err := stream.Send(&amp;pb.EchoResponse&#123;Message: req.GetMessage()&#125;)</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			log.Fatalf(&quot;Send error:%v&quot;, err)</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	// 返回nil表示已经完成响应</span><br><span class="line">	return nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> Client 代码</span><br><span class="line">1. 获取stream, 并发送 HelloWorld</span><br><span class="line">2. for 循环获取服务端推送的消息,  err == io.EOF 则表示服务端关闭stream了 退出</span><br><span class="line">*/</span><br><span class="line">func serverStream(client pb.EchoClient) &#123;</span><br><span class="line">    // 获取stream</span><br><span class="line">	stream, err := client.ServerStreamingEcho(context.Background(), &amp;pb.EchoRequest&#123;Message: &quot;Hello World&quot;&#125;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalf(&quot;could not echo: %v&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	// for 循环获取服务端推送的消息</span><br><span class="line">	for &#123;</span><br><span class="line">	    // 通过 Recv() 不断获取服务端send()推送的消息</span><br><span class="line">	    resp, err := stream.Recv()</span><br><span class="line">	    // err==io.EOF 则表示服务端关闭stream了 退出</span><br><span class="line">	    if err == io.EOF &#123;</span><br><span class="line">			log.Println(&quot;server closed&quot;)</span><br><span class="line">			break</span><br><span class="line">	    &#125;   </span><br><span class="line">	    if err != nil &#123;</span><br><span class="line">			log.Printf(&quot;Recv error:%v&quot;, err)</span><br><span class="line">			continue</span><br><span class="line">	    &#125;   </span><br><span class="line">	    log.Printf(&quot;Recv data:%v&quot;, resp.GetMessage())</span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>客户端端发起 Stream 流式请求, 服务端使用 Protobuf Message 回应</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">	Server代码</span><br><span class="line">	for 循环中通过 stream.Recv() 不断接收client传来的数据</span><br><span class="line">	err == io.EOF表示客户端已经发送完毕关闭连接了,此时在等待服务端处理完并返回消息</span><br><span class="line">	stream.SendAndClose() 发送消息并关闭连接</span><br><span class="line">*/</span><br><span class="line">func (e *Echo) ClientStreamingEcho(stream pb.Echo_ClientStreamingEchoServer) error &#123;</span><br><span class="line">	for &#123;</span><br><span class="line">		req, err := stream.Recv() </span><br><span class="line">		if err == io.EOF &#123;</span><br><span class="line">			log.Println(&quot;client closed&quot;)</span><br><span class="line">			// 4.SendAndClose 返回并关闭连接, 在客户端发送完毕后服务端即可返回响应</span><br><span class="line">			return stream.SendAndClose(&amp;pb.EchoResponse&#123;Message: &quot;ok&quot;&#125;)</span><br><span class="line">		&#125;</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line">		log.Printf(&quot;Recved %v&quot;, req.GetMessage())</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">Client 代码</span><br><span class="line">	1. 建立连接并获取client</span><br><span class="line">	2. 获取 stream 并通过 Send 方法不断推送数据到服务端</span><br><span class="line">	3. 发送完成后通过 stream.CloseAndRecv() 关闭steam并接收服务端返回结果</span><br><span class="line">*/</span><br><span class="line">func clientStream(client pb.EchoClient) &#123;</span><br><span class="line">	stream, err := client.ClientStreamingEcho(context.Background())</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalf(&quot;Sum() error: %v&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	for i := int64(0); i &lt; 2; i++ &#123;</span><br><span class="line">		err := stream.Send(&amp;pb.EchoRequest&#123;Message: &quot;hello world&quot;&#125;)</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			log.Printf(&quot;send error: %v&quot;, err)</span><br><span class="line">			continue</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	resp, err := stream.CloseAndRecv()</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalf(&quot;CloseAndRecv() error: %v&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Printf(&quot;sum: %v&quot;, resp.GetMessage())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>客户端服务端 双向流式通讯。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">Server 代码</span><br><span class="line">	1. 建立连接 获取client</span><br><span class="line">	2. 通过client调用方法获取stream</span><br><span class="line">	3. 开两个goroutine（使用 chan 传递数据） 分别用于Recv()和Send()</span><br><span class="line">		一直Recv()到err==io.EOF(即客户端关闭stream), Send()则自己控制什么时候Close, 服务端stream没有Close 只要跳出循环就算close了</span><br><span class="line">*/</span><br><span class="line">func (e *Echo) BidirectionalStreamingEcho(stream pb.Echo_BidirectionalStreamingEchoServer) error &#123;</span><br><span class="line">	var (</span><br><span class="line">		waitGroup sync.WaitGroup</span><br><span class="line">		msgCh     = make(chan string)</span><br><span class="line">	)</span><br><span class="line">	waitGroup.Add(1)</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer waitGroup.Done()</span><br><span class="line"></span><br><span class="line">		for v := range msgCh &#123;</span><br><span class="line">			err := stream.Send(&amp;pb.EchoResponse&#123;Message: v&#125;)</span><br><span class="line">			if err != nil &#123;</span><br><span class="line">				fmt.Println(&quot;Send error:&quot;, err)</span><br><span class="line">				continue</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	waitGroup.Add(1)</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer waitGroup.Done()</span><br><span class="line">		for &#123;</span><br><span class="line">			req, err := stream.Recv()</span><br><span class="line">			if err == io.EOF &#123;</span><br><span class="line">				break</span><br><span class="line">			&#125;</span><br><span class="line">			if err != nil &#123;</span><br><span class="line">				log.Fatalf(&quot;recv error:%v&quot;, err)</span><br><span class="line">			&#125;</span><br><span class="line">			fmt.Printf(&quot;Recved :%v \n&quot;, req.GetMessage())</span><br><span class="line">			msgCh &lt;- req.GetMessage()</span><br><span class="line">		&#125;</span><br><span class="line">		close(msgCh)</span><br><span class="line">	&#125;()</span><br><span class="line">	waitGroup.Wait()</span><br><span class="line"></span><br><span class="line">	// 返回nil表示已经完成响应</span><br><span class="line">	return nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> Client 代码</span><br><span class="line">	1. 建立连接 获取client</span><br><span class="line">	2. 通过client获取stream</span><br><span class="line">	3. 开两个goroutine 分别用于Recv()和Send()</span><br><span class="line">		3.1 一直Recv()到err==io.EOF(即服务端关闭stream)</span><br><span class="line">		3.2 Send()则由自己控制</span><br><span class="line">	4. 发送完毕调用 stream.CloseSend()关闭stream 必须调用关闭 否则Server会一直尝试接收数据</span><br><span class="line">*/</span><br><span class="line">func bidirectionalStream(client pb.EchoClient) &#123;</span><br><span class="line">	var wg sync.WaitGroup</span><br><span class="line">	stream, err := client.BidirectionalStreamingEcho(context.Background())</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		panic(err)</span><br><span class="line">	&#125;</span><br><span class="line">	wg.Add(1)</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer wg.Done()</span><br><span class="line">		for &#123;</span><br><span class="line">			req, err := stream.Recv()</span><br><span class="line">			if err == io.EOF &#123;</span><br><span class="line">				fmt.Println(&quot;Server Closed&quot;)</span><br><span class="line">				break</span><br><span class="line">			&#125;</span><br><span class="line">			if err != nil &#123;</span><br><span class="line">				continue</span><br><span class="line">			&#125;</span><br><span class="line">			fmt.Printf(&quot;Recved:%v \n&quot;, req.GetMessage())</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	wg.Add(1)</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer wg.Done()</span><br><span class="line"></span><br><span class="line">		for i := 0; i &lt; 2; i++ &#123;</span><br><span class="line">			err := stream.Send(&amp;pb.EchoRequest&#123;Message: &quot;hello world&quot;&#125;)</span><br><span class="line">			if err != nil &#123;</span><br><span class="line">				log.Printf(&quot;send error:%v\n&quot;, err)</span><br><span class="line">			&#125;</span><br><span class="line">			time.Sleep(time.Second)</span><br><span class="line">		&#125;</span><br><span class="line">		// 4. 发送完毕关闭stream</span><br><span class="line">		err := stream.CloseSend()</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			log.Printf(&quot;Send error:%v\n&quot;, err)</span><br><span class="line">			return</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述完整代码 <a target="_blank" rel="noopener" href="https://github.com/zheng-ji/grpc-example/blob/main/stream">Link</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/09/30/2021-09-29-grpc-4-way/" data-id="clnfj559i00777eqx4o1pfflh" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/grpc/" rel="tag">grpc</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-09-28-grpc-gateway" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/28/2021-09-28-grpc-gateway/" class="article-date">
+  <time datetime="2021-09-28T04:11:42.000Z" itemprop="datePublished">2021-09-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/grpc/">grpc</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/09/28/2021-09-28-grpc-gateway/">GRPC Gateway 入门</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在某些情况下，即使我们写了 gRPC 服务，但我们仍然想提供传统的 HTTP&#x2F;JSON API。但是仅仅为了公开 HTTP&#x2F;JSON API 而编写另一个服务有点不友好。<br>有什么方法可以只编写一次代码，却可以同时在 gRPC 和 HTTP&#x2F;JSON 中提供 API？ </p>
+<p>gRPC-gateway 可以帮我们做到，它读取 protobuf service 定义并生成反向代理服务器( reverse-proxy server) ，根据服务定义中的 <code>google.api.http annotations</code> 将 RESTful HTTP API 转换为 gRPC。</p>
+<p><img src="/images/grpc/grpc-gateway.png"></p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>在这之前需要先安装好 protoc, </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install protoc</span><br><span class="line">$ go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.26</span><br><span class="line">$ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1</span><br><span class="line">$ go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.16.0 </span><br><span class="line">$ export PATH=&quot;$PATH:$(go env GOPATH)/bin&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="编写-ProtoBuf"><a href="#编写-ProtoBuf" class="headerlink" title="编写 ProtoBuf"></a>编写 ProtoBuf</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">|~proto/</span><br><span class="line">| |~api/</span><br><span class="line">| | |-hello.proto</span><br><span class="line">| `~google/</span><br><span class="line">|   `~api/</span><br><span class="line">|     |-annotations.proto</span><br><span class="line">|     `-http.proto</span><br></pre></td></tr></table></figure>
+
+<p>在根目录执行 <code>go mod init grpc-gateway-exp</code>, 创建 <code>proto</code> 目录，从 <code>https://github.com/googleapis/googleapis/tree/master/google/api</code> 下载 <code>annotation.proto</code> 和 <code>http.proto</code> 放置于 <code>proto/google/api</code> 目录下, 主要是用于 http 服务的注解，比如:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">syntax = &quot;proto3&quot;;</span><br><span class="line">package grpc_gateway_exp;</span><br><span class="line">option go_package = &quot;grpc_gateway_exp&quot;;</span><br><span class="line">import &quot;google/api/annotations.proto&quot;; // 会在当前根目录开始搜索</span><br><span class="line"></span><br><span class="line">service HelloService</span><br><span class="line">&#123;</span><br><span class="line">    rpc Hello(HelloMessage) returns (HelloResponse)</span><br><span class="line">    &#123;</span><br><span class="line">        # 魔法发生的地方</span><br><span class="line">        option (google.api.http) = &#123;</span><br><span class="line">            get: &quot;/hello&quot;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message HelloMessage </span><br><span class="line">&#123;</span><br><span class="line">    string message = 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message HelloResponse </span><br><span class="line">&#123;</span><br><span class="line">    string result = 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="借助-buf-生成-ProtoBuf-所需代码"><a href="#借助-buf-生成-ProtoBuf-所需代码" class="headerlink" title="借助 buf 生成 ProtoBuf 所需代码"></a>借助 <a target="_blank" rel="noopener" href="https://github.com/bufbuild/buf">buf</a> 生成 ProtoBuf 所需代码</h3><p>安装 <code>buf</code> 的命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">BIN=&quot;/usr/local/bin&quot; &amp;&amp; \</span><br><span class="line">VERSION=&quot;1.0.0-rc2&quot; &amp;&amp; \</span><br><span class="line">BINARY_NAME=&quot;buf&quot; &amp;&amp; \</span><br><span class="line">curl -sSL \</span><br><span class="line">     &quot;https://github.com/bufbuild/buf/releases/download/v$&#123;VERSION&#125;/$&#123;BINARY_NAME&#125;-$(uname -s)-$(uname -m)&quot; \</span><br><span class="line">     -o &quot;$&#123;BIN&#125;/$&#123;BINARY_NAME&#125;&quot; &amp;&amp; \</span><br><span class="line">chmod +x &quot;$&#123;BIN&#125;/$&#123;BINARY_NAME&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>在项目根目录创建 <code>buf.yaml</code>，<code>buf.gen.yaml</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">version: v1beta1</span><br><span class="line">build:</span><br><span class="line">  roots:</span><br><span class="line">    - proto # proto的目录</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">version: v1beta1</span><br><span class="line">plugins:</span><br><span class="line">  - name: go</span><br><span class="line">    out: proto</span><br><span class="line">    opt: paths=source_relative</span><br><span class="line">  - name: go-grpc   # go-grpc plugin</span><br><span class="line">    out: proto</span><br><span class="line">    opt: paths=source_relative,require_unimplemented_servers=false # 相对路径引用</span><br><span class="line">  - name: grpc-gateway # grpc-gateway plugin</span><br><span class="line">    out: proto</span><br><span class="line">    opt: paths=source_relative # 相对路径引用</span><br></pre></td></tr></table></figure>
+
+<p>执行 <code>buf generate</code> 之后就生成了。</p>
+<h3 id="Go-Mod-的使用"><a href="#Go-Mod-的使用" class="headerlink" title="Go Mod 的使用"></a>Go Mod 的使用</h3><p>项目运用了 <code>Go Module</code> , 以期读者何时何地的下载，都能直接使用。<br>项目分了子 package, 诸如 server, service, proto。<br>由于在根目录执行了 go mod init grpc-gateway-exp 所以对子 package 的引用, 可以用如下的写法。这个经典的写法应该引起注意。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import (</span><br><span class="line">	pb &quot;grpc-gateway-exp/proto/api&quot; // 看这里</span><br><span class="line">	&quot;grpc-gateway-exp/service&quot; // 看这里</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="写-grpc-gateway"><a href="#写-grpc-gateway" class="headerlink" title="写 grpc-gateway"></a>写 grpc-gateway</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">package server</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;context&quot;</span><br><span class="line">	&quot;log&quot;</span><br><span class="line">	&quot;net/http&quot;</span><br><span class="line">	&quot;github.com/grpc-ecosystem/grpc-gateway/runtime&quot;</span><br><span class="line">	&quot;google.golang.org/grpc&quot;</span><br><span class="line">	pb &quot;grpc-gateway-exp/proto/api&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func StartGwServer() &#123;</span><br><span class="line">	conn, err := grpc.DialContext(</span><br><span class="line">		context.Background(),</span><br><span class="line">		&quot;0.0.0.0:9090&quot;, // 背后的RPC Server</span><br><span class="line">		grpc.WithBlock(),</span><br><span class="line">		grpc.WithInsecure(),</span><br><span class="line">	)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalln(&quot;Failed to dial server: &quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	mux := runtime.NewServeMux()</span><br><span class="line">	err = pb.RegisterHelloServiceHandler(context.Background(), mux, conn)</span><br><span class="line"></span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalln(&quot;Failed to register gateway: &quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	server := &amp;http.Server&#123;</span><br><span class="line">		Addr:    &quot;:8090&quot;,</span><br><span class="line">		Handler: mux,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	log.Println(&quot;Start gRPC Gateway Server on http://0.0.0.0:8090&quot;)</span><br><span class="line">	err = server.ListenAndServe()</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalln(&quot;Start Gateway Server failed: &quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>效果<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl localhost:8090/hello?message=world</span><br><span class="line">$ hello world</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>上述完整代码 <a target="_blank" rel="noopener" href="https://github.com/zheng-ji/grpc-gateway-exp">Link</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/09/28/2021-09-28-grpc-gateway/" data-id="clnfj559i00737eqx2hv38piy" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/grpc/" rel="tag">grpc</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2021-09-26-k8s-configmap-secret" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/26/2021-09-26-k8s-configmap-secret/" class="article-date">
+  <time datetime="2021-09-26T04:11:42.000Z" itemprop="datePublished">2021-09-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/k8s/">k8s</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/09/26/2021-09-26-k8s-configmap-secret/">K8S ConfigMap &amp; Secret</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="ConfigMap"><a href="#ConfigMap" class="headerlink" title="ConfigMap"></a>ConfigMap</h3><p>是一种用于存储应用所需配置信息的资源类型，用于保存配置数据的键值对，可以用来保存单个属性，也可以用来保存配置文件。</p>
+<p>通过ConfigMap可以方便的做到配置解耦，使得不同环境有不同的配置。</p>
+<h3 id="创建ConfigMap"><a href="#创建ConfigMap" class="headerlink" title="创建ConfigMap"></a>创建ConfigMap</h3><p>下面示例创建了一个名为configmap-test的ConfigMap，ConfigMap的配置数据在data字段下定义。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: ConfigMap</span><br><span class="line">metadata:</span><br><span class="line">  name: configmap-test</span><br><span class="line">data:                     # 配置数据</span><br><span class="line">  property_1: Hello</span><br><span class="line">  property_2: World</span><br></pre></td></tr></table></figure>
+
+<h3 id="在Volume中引用ConfigMap"><a href="#在Volume中引用ConfigMap" class="headerlink" title="在Volume中引用ConfigMap"></a>在Volume中引用ConfigMap</h3><p>在Volume中引用ConfigMap，就是通过文件的方式直接将ConfigMap的每条数据填入Volume，每条数据是一个文件，键就是文件名，键值就是文件内容。</p>
+<p>如下示例中，创建一个名为vol-configmap的Volume，这个Volume引用名为“configmap-test”的ConfigMap，再将Volume挂载到容器的“&#x2F;tmp”路径下。<br>Pod创建成功后，在容器的“&#x2F;tmp”路径下，就有两个文件property_1和property_2，它们的值分别为“Hello”和“World”。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - image: nginx:alpine</span><br><span class="line">    name: container-0</span><br><span class="line">    resources:</span><br><span class="line">      limits:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">      requests:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">    volumeMounts:</span><br><span class="line">    - name: vol-configmap           # 挂载名为vol-configmap的Volume</span><br><span class="line">      mountPath: &quot;/tmp&quot;</span><br><span class="line">  volumes:</span><br><span class="line">  - name: vol-configmap</span><br><span class="line">    configMap:                      # 引用ConfigMap</span><br></pre></td></tr></table></figure>
+
+<h3 id="Secret-是什么"><a href="#Secret-是什么" class="headerlink" title="Secret 是什么"></a>Secret 是什么</h3><p>Secret是一种加密存储的资源对象，您可以将认证信息、证书、私钥等保存在Secret中，而不需要把这些敏感数据暴露到镜像或者Pod定义中，从而更加安全和灵活。</p>
+<p>Secret与ConfigMap非常像，都是key-value键值对形式，使用方式也相同，不同的是Secret会加密存储，所以适用于存储敏感信息。<br>创建secret</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Secret</span><br><span class="line">metadata:</span><br><span class="line">  name: mysecret</span><br><span class="line">data:</span><br><span class="line">  key1: aGVsbG8gd29ybGQ=   # &quot;hello world&quot; Base64编码后的值</span><br><span class="line">  key2: MzMwNg==           # &quot;3306&quot; Base64编码后的值</span><br></pre></td></tr></table></figure>
+
+<h3 id="在Volume中引用Secret"><a href="#在Volume中引用Secret" class="headerlink" title="在Volume中引用Secret"></a>在Volume中引用Secret</h3><p>通过文件的方式直接将Secret的每条数据填入Volume，每条数据是一个文件，键就是文件名，键值就是文件内容。<br>创建一个名为vol-secret的Volume，这个Volume引用名为“mysecret”的Secret，再将Volume挂载到容器的“&#x2F;tmp”路径下。Pod创建成功后，在容器的“&#x2F;tmp”路径下，就有两个文件key1和key2。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - image: nginx:alpine</span><br><span class="line">    name: container-0</span><br><span class="line">    resources:</span><br><span class="line">      limits:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">      requests:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">    volumeMounts:</span><br><span class="line">    - name: vol-secret              # 挂载名为vol-secret的Volume</span><br><span class="line">      mountPath: &quot;/tmp&quot;</span><br><span class="line">  imagePullSecrets:</span><br><span class="line">  - name: default-secret</span><br><span class="line">  volumes:</span><br><span class="line">  - name: vol-secret</span><br><span class="line">    secret:                         # 引用Secret</span><br><span class="line">      secretName: mysecret</span><br></pre></td></tr></table></figure>
+
+<p>进入Pod容器中，可以在&#x2F;tmp目录下发现key1和key2两个文件，并看到文件中的值是base64解码后的值，分别为“hello world”和“3306”。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/09/26/2021-09-26-k8s-configmap-secret/" data-id="clnfj559e006k7eqx9td30inz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DataBase/">DataBase</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ElasticSearch/">ElasticSearch</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Life/">Life</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NLP/">NLP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork/">NetWork</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Product/">Product</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Program/">Program</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Redis/">Redis</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/System/">System</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/grpc/">grpc</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/mq/">mq</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-11/" rel="tag">C++11</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DataBase/" rel="tag">DataBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LRU/" rel="tag">LRU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MQ/" rel="tag">MQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ProtoBuffer/" rel="tag">ProtoBuffer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/" rel="tag">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupCache/" rel="tag">groupCache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grpc/" rel="tag">grpc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s-basic/" rel="tag">k8s basic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx-grpc/" rel="tag">nginx grpc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 10px;">Algorithm</a> <a href="/tags/C-11/" style="font-size: 10px;">C++11</a> <a href="/tags/DataBase/" style="font-size: 10px;">DataBase</a> <a href="/tags/Go/" style="font-size: 10px;">Go</a> <a href="/tags/Kafka/" style="font-size: 10px;">Kafka</a> <a href="/tags/LRU/" style="font-size: 10px;">LRU</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/ProtoBuffer/" style="font-size: 10px;">ProtoBuffer</a> <a href="/tags/Redis/" style="font-size: 16.67px;">Redis</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/groupCache/" style="font-size: 10px;">groupCache</a> <a href="/tags/grpc/" style="font-size: 13.33px;">grpc</a> <a href="/tags/k8s/" style="font-size: 20px;">k8s</a> <a href="/tags/k8s-basic/" style="font-size: 10px;">k8s basic</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/nginx-grpc/" style="font-size: 10px;">nginx grpc</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/07/">July 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">May 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/03/">March 2012</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/10/20/2021-10-20-why-docker-supervisor/"> Docker里使用 supervisor 管理多个程序</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/14/2021-10-14-binary-tree-algo/">二叉树相关的递归算法题</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/13/2021-10-13-go-channel/">Go Channel 笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/12/2021-10-12-why-kafka-so-fast/">Kafka 吞吐量大的原因</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/11/2021-10-11-redis-pipeline/">Redis Pipline 与事务</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2023 zheng-ji<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

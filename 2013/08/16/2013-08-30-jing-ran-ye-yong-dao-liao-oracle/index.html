@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>竟然也用到了Oracle | 织网</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Oracle初印象曾经阿里的去O化搞得满城风雨，，随后很多企业也开始跟风去除Oracle，让Oracle这样的企业都为之咳嗽了一阵子。有兴趣的朋友可以看看王坚博士的文章。作为一个开源软件热爱者，首先接触到的一定是Mysql， 随后才是MongoDB,Redis,LevelDb。无论如何是怎么也想不到会去接触Oracle，就像我再也没有机会也不会去使用3.5英寸软盘的样子,因为这样会让我感觉到世界在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="竟然也用到了Oracle">
+<meta property="og:url" content="http://yoursite.com/2013/08/16/2013-08-30-jing-ran-ye-yong-dao-liao-oracle/index.html">
+<meta property="og:site_name" content="织网">
+<meta property="og:description" content="Oracle初印象曾经阿里的去O化搞得满城风雨，，随后很多企业也开始跟风去除Oracle，让Oracle这样的企业都为之咳嗽了一阵子。有兴趣的朋友可以看看王坚博士的文章。作为一个开源软件热爱者，首先接触到的一定是Mysql， 随后才是MongoDB,Redis,LevelDb。无论如何是怎么也想不到会去接触Oracle，就像我再也没有机会也不会去使用3.5英寸软盘的样子,因为这样会让我感觉到世界在">
+<meta property="og:locale">
+<meta property="og:image" content="http://yoursite.com/images/2013/08/oracle.png">
+<meta property="article:published_time" content="2013-08-16T12:25:00.000Z">
+<meta property="article:modified_time" content="2023-10-07T04:09:04.070Z">
+<meta property="article:author" content="zheng-ji">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/images/2013/08/oracle.png">
+  
+    <link rel="alternate" href="/atom.xml" title="织网" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">织网</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2013-08-30-jing-ran-ye-yong-dao-liao-oracle" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/08/16/2013-08-30-jing-ran-ye-yong-dao-liao-oracle/" class="article-date">
+  <time datetime="2013-08-16T12:25:00.000Z" itemprop="datePublished">2013-08-16</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/DataBase/">DataBase</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      竟然也用到了Oracle
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="Oracle初印象"><a href="#Oracle初印象" class="headerlink" title="Oracle初印象"></a>Oracle初印象</h4><p>曾经阿里的去O化搞得满城风雨，，随后很多企业也开始跟风去除Oracle，让Oracle这样的企业都为之咳嗽了一阵子。有兴趣的朋友可以看看王坚博士的文章。作为一个开源软件热爱者，首先接触到的一定是Mysql， 随后才是MongoDB,Redis,LevelDb。无论如何是怎么也想不到会去接触Oracle，就像我再也没有机会也不会去使用3.5英寸软盘的样子,因为这样会让我感觉到世界在倒退。</p>
+<p>先知言：”存在即合理”。也就为以后的遇见埋下伏笔。果然，由于历史原因，庞大的业务体系下，我终于还是遇见了它，带着对伟大数据库敬仰的心探索了一把。说实话，当你习惯了简单的Mysql之类的思维之后，接触Oracle就有点纠结了。我愿意称其为接触另一种新思维方式。没有比这更值得鼓舞人心的动力了 ：）</p>
+<img src="/images/2013/08/oracle.png" class="">
+
+<p>我做的事情是在游戏数据操作中做一个抽象的操作类。涉及框架代码的改造，这过程有点DT。我从事的工作大部分是C++开发这过程着实feel到了“生命太短，远离C++” 涉及到多重继承，虚析构函数，同个父类冲突，属性可见性,抽象类可用。Debug 了两天。还好有GDB这种家伙。<br>Oracle查询流程</p>
+<p>简单描述下普通的Oracle建立连接以及查询的顺序,使用的是OCCI （Oracle的C++接口）:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//创建enviroment变量</span><br><span class="line">Environment *env = Environment::createEnvironment( Environment::DEFAULT);</span><br><span class="line">//创建连接</span><br><span class="line">Connection *conn = env-&gt;createConnection( userName, password, connectString);</span><br><span class="line">//创建 查询描述符</span><br><span class="line">Statement *stmt = conn-&gt;createStatement( &quot;SELECT blobcol FROM mytable&quot;);</span><br><span class="line">//执行查询，返回结果集</span><br><span class="line">ResultSet *rs = stmt-&gt;executeQuery();</span><br><span class="line">//关闭查询，环境变量</span><br><span class="line">stmt-&gt;closeResultSet(rs);</span><br><span class="line">conn-&gt;terminateStatement(stmt);</span><br><span class="line">env-&gt;terminateConnection(conn);</span><br><span class="line">Environment::terminateEnvironment(env);</span><br></pre></td></tr></table></figure>
+
+<p>蛋蛋的疼</p>
+<p>期间遇到了Oracle 好多奇形怪状的问题。尽管如此，我喜欢这样折腾自己 :) 是不是有点变态。</p>
+<ul>
+<li>创建环境变量类指明多线程使用。该任务需要多线程执行的，如果不特别声明多线程执行，如果不特别指明的话会奔溃，我纠结了一天就是因为没有指明这个常量。这在Mysql是没有见到的吧</li>
+<li>连接管理。Oracle的连接关闭很重要。查询任务完成后要及时关闭连接。如果不关闭连接和环境句柄，程序就会有很大的潜在bug,程序执行期间也会奔溃。这过程中自己写了连接管理模块。特别处理了多线程处理时的构造与析构。</li>
+</ul>
+<p>以下是连接管理类的代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;string.h&gt;</span><br><span class="line">using namespace oracle::occi;</span><br><span class="line">class COraclconn</span><br><span class="line">&#123;</span><br><span class="line">    public :</span><br><span class="line"></span><br><span class="line">        COraclconn (const std::string &amp; user, const std:: string&amp; password,</span><br><span class="line">                const std:: string&amp; dbname)</span><br><span class="line">        &#123;</span><br><span class="line">            m_status = false;</span><br><span class="line">            env = NULL;</span><br><span class="line">            conn = NULL;</span><br><span class="line">            stmt = NULL;</span><br><span class="line">            env = Environment::createEnvironment( Environment::THREADED_MUTEXED);</span><br><span class="line">            if (! env)</span><br><span class="line">            &#123;</span><br><span class="line">                env = NULL;</span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line">            conn = env-&gt; createConnection(user, password, dbname);</span><br><span class="line">            if (! conn)</span><br><span class="line">            &#123;</span><br><span class="line">                conn = NULL;</span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line">            m_status = true;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ~COraclconn ()</span><br><span class="line">        &#123;</span><br><span class="line">            if ( conn &amp;&amp; stmt)</span><br><span class="line">                conn-&gt; terminateStatement( stmt);</span><br><span class="line">            if ( env &amp;&amp; conn)</span><br><span class="line">                env-&gt; terminateConnection( conn);</span><br><span class="line">            if ( env)</span><br><span class="line">                Environment:: terminateEnvironment( env);</span><br><span class="line">        &#125;</span><br><span class="line">        Statement * getstmt( const string&amp; sql)</span><br><span class="line">        &#123;</span><br><span class="line">            if (! m_status)</span><br><span class="line">                return NULL;</span><br><span class="line">            if ( stmt)</span><br><span class="line">            &#123;</span><br><span class="line">                conn-&gt; terminateStatement( stmt);</span><br><span class="line">                stmt = NULL;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">            stmt = conn-&gt; createStatement(sql);</span><br><span class="line">            if (! stmt)</span><br><span class="line">            &#123;</span><br><span class="line">                stmt = NULL;</span><br><span class="line">                m_status = false;</span><br><span class="line">            &#125;</span><br><span class="line">            return stmt;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    protected :</span><br><span class="line">        bool m_status;</span><br><span class="line">        Environment *env ;</span><br><span class="line">        Connection *conn ;</span><br><span class="line">        Statement *stmt ;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>还好我做的是封装SQL，对于其诡异的语法可以不用涉及到。相信每个热爱技术的人儿碰到写相对非业务的代码会感到充实愉快的吧。</p>
+<p>Happy Hacking ：）</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/08/16/2013-08-30-jing-ran-ye-yong-dao-liao-oracle/" data-id="clnfj558800157eqxd0e1ef9v" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2013/08/20/2013-08-20-minigame-fu-wu-duan-she-ji/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          MiniGame 服务端设计
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2013/07/15/2013-08-30-feng-pei-zhi-lu/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">封培之旅</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DataBase/">DataBase</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ElasticSearch/">ElasticSearch</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Life/">Life</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NLP/">NLP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork/">NetWork</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Product/">Product</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Program/">Program</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Redis/">Redis</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/System/">System</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/grpc/">grpc</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/mq/">mq</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-11/" rel="tag">C++11</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DataBase/" rel="tag">DataBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LRU/" rel="tag">LRU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MQ/" rel="tag">MQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ProtoBuffer/" rel="tag">ProtoBuffer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/" rel="tag">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupCache/" rel="tag">groupCache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grpc/" rel="tag">grpc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s-basic/" rel="tag">k8s basic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx-grpc/" rel="tag">nginx grpc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 10px;">Algorithm</a> <a href="/tags/C-11/" style="font-size: 10px;">C++11</a> <a href="/tags/DataBase/" style="font-size: 10px;">DataBase</a> <a href="/tags/Go/" style="font-size: 10px;">Go</a> <a href="/tags/Kafka/" style="font-size: 10px;">Kafka</a> <a href="/tags/LRU/" style="font-size: 10px;">LRU</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/ProtoBuffer/" style="font-size: 10px;">ProtoBuffer</a> <a href="/tags/Redis/" style="font-size: 16.67px;">Redis</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/groupCache/" style="font-size: 10px;">groupCache</a> <a href="/tags/grpc/" style="font-size: 13.33px;">grpc</a> <a href="/tags/k8s/" style="font-size: 20px;">k8s</a> <a href="/tags/k8s-basic/" style="font-size: 10px;">k8s basic</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/nginx-grpc/" style="font-size: 10px;">nginx grpc</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/07/">July 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">May 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/03/">March 2012</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/10/20/2021-10-20-why-docker-supervisor/"> Docker里使用 supervisor 管理多个程序</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/14/2021-10-14-binary-tree-algo/">二叉树相关的递归算法题</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/13/2021-10-13-go-channel/">Go Channel 笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/12/2021-10-12-why-kafka-so-fast/">Kafka 吞吐量大的原因</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/11/2021-10-11-redis-pipeline/">Redis Pipline 与事务</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2023 zheng-ji<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

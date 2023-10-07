@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>织网</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="织网">
+<meta property="og:url" content="http://yoursite.com/page/3/index.html">
+<meta property="og:site_name" content="织网">
+<meta property="og:locale">
+<meta property="article:author" content="zheng-ji">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="织网" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">织网</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-2019-09-03-atomic-flag-spinlock" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/09/03/2019-09-03-atomic-flag-spinlock/" class="article-date">
+  <time datetime="2019-09-03T04:11:42.000Z" itemprop="datePublished">2019-09-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/03/2019-09-03-atomic-flag-spinlock/">C++11 atomic_flag 自旋锁</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>C++11 可以通过 atomic_flag 来实现自旋锁。</p>
+<p><code>test_and_set()</code>函数检查 atomic_flag 标志, 如果之前没被设置过则设置 atomic_flag 的标志, 并返回 false;<br>如果之前已被设置则返回 true。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Spinlock</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">public:</span><br><span class="line">    Spinlock(): flag(ATOMIC_FLAG_INIT) &#123;&#125;</span><br><span class="line">    <span class="type">void</span> <span class="title function_">lock</span><span class="params">()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>( flag.test_and_set() );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">void</span> <span class="title function_">unlock</span><span class="params">()</span></span><br><span class="line">    &#123;</span><br><span class="line">        flag.clear();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public:</span><br><span class="line">    <span class="built_in">std</span>::<span class="type">atomic_flag</span> flag;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/09/03/2019-09-03-atomic-flag-spinlock/" data-id="clnfj559b00627eqx1eq5b5qk" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-11/" rel="tag">C++11</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2019-08-03-protobuffer-extension" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/08/03/2019-08-03-protobuffer-extension/" class="article-date">
+  <time datetime="2019-08-03T04:11:42.000Z" itemprop="datePublished">2019-08-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/08/03/2019-08-03-protobuffer-extension/">ProtoBuffer 自定义 option 扩展</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>相信使用过 ProtoBuffer 的同学都不陌生以下的定义, 一个 Kid ProtoBuffer 对象，有一个 <code>age</code> 字段，且默认值是7。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">message Kid</span><br><span class="line">&#123;</span><br><span class="line">   optional uint32 age = 1 [default=7];</span><br><span class="line">   optional uint32 score = 2 ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运用 PB 的 默认 option 扩展，我们可以指定一些行为，比如上面的默认初始值。</p>
+<p>我们想实现自定义的选项，比如，我想指定一种<code>上报</code>的 option, 对于此类 option, 我就将这种字段上报给老师。那么定义的 ProtoBuffer 大概会长这样:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">message Kid</span><br><span class="line">&#123;</span><br><span class="line">   optional uint32 age = 1 [default=7];</span><br><span class="line">   optional uint32 score = 2 [action = Report];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>是否可行呢？幸运的是 PB 有自定义 option 的机制，使得我们的设想变成可能。</p>
+<h4 id="如何实现自定义扩展"><a href="#如何实现自定义扩展" class="headerlink" title="如何实现自定义扩展"></a>如何实现自定义扩展</h4><p>1:  注册 Fieldoption , <code>action.proto</code> 就是定义好了 option 的 Proto 文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">package action;</span><br><span class="line">import &quot;google/protobuf/descriptor.proto&quot;;</span><br><span class="line"></span><br><span class="line">enum ActionType &#123;</span><br><span class="line">    REPORT = 1;</span><br><span class="line">&#125;</span><br><span class="line">extend google.protobuf.Fieldoptions &#123;</span><br><span class="line">    optional ActionType rule = 12345 [default = REPORT];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2： 应用 option<br>import 定义的 Proto 文件, 就可以轻易用上了。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">package Kid                                                                          </span><br><span class="line">import &quot;action.proto&quot;;                                                                    </span><br><span class="line">message person </span><br><span class="line">&#123;</span><br><span class="line">   optional uint32 age = 1;</span><br><span class="line">   optional int32 age = 2 [(action.rule) = REPORT];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="怎么通过反射获取-option-的值呢"><a href="#怎么通过反射获取-option-的值呢" class="headerlink" title="怎么通过反射获取 option 的值呢"></a>怎么通过反射获取 option 的值呢</h4><p>通过 descriptor &amp;&amp; reflection 我们可以得到 option 的值 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;google/protobuf/message.h&gt;</span><br><span class="line">#include &lt;google/protobuf/descriptor.h&gt;</span><br><span class="line">#include &quot;kid.pb.h&quot;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    Kid obj;</span><br><span class="line">    obj.set_age(12);</span><br><span class="line"></span><br><span class="line">    auto descriptor = obj.GetDescriptor();</span><br><span class="line">    auto reflection = obj.GetReflection();</span><br><span class="line">	// 通过 FieldName 获取字段</span><br><span class="line">    auto  idField = descriptor-&gt;FindFieldByName(&quot;age&quot;);</span><br><span class="line">    reflection-&gt;SetInt32(&amp;obj, idField, 18);</span><br><span class="line">    for (unsigned int i = 0; i &lt; descriptor-&gt;field_count(); ++i) </span><br><span class="line">    &#123;</span><br><span class="line">        auto field = descriptor-&gt;field(i);</span><br><span class="line"></span><br><span class="line">        cout &lt;&lt; &quot;field_is_repeated:&quot; &lt;&lt; field-&gt;is_repeated() &lt;&lt; endl;</span><br><span class="line">        // 获取 field_num</span><br><span class="line">        cout &lt;&lt; &quot;field_num:&quot; &lt;&lt; field-&gt;number() &lt;&lt; endl;</span><br><span class="line">        // 获取 option cout &lt;&lt; &quot;optiona value:&quot; &lt;&lt; field-&gt;options().GetExtension(action::rule) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">        switch (field-&gt;type()) </span><br><span class="line">        &#123;</span><br><span class="line">            case ::google::protobuf::FieldDescriptor::TYPE_INT32:</span><br><span class="line">                cout &lt;&lt; &quot;int type, value:&quot; &lt;&lt; reflection-&gt;GetInt32(obj, field);</span><br><span class="line">                break;</span><br><span class="line">            case ::google::protobuf::FieldDescriptor::TYPE_FLOAT:</span><br><span class="line">                cout &lt;&lt; &quot;float type, value:&quot; &lt;&lt; reflection-&gt;GetFloat(obj, field);</span><br><span class="line">                break;</span><br><span class="line">            default:</span><br><span class="line">                cout &lt;&lt; &quot;not found&quot; &lt;&lt; endl;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>以上的例子，通过反射我们也可以在不知道字段的名字情况下，得到它的值和类型等信息。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/08/03/2019-08-03-protobuffer-extension/" data-id="clnfj559a00607eqx8zfe1ves" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ProtoBuffer/" rel="tag">ProtoBuffer</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2019-06-13-es-backup" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/13/2019-06-13-es-backup/" class="article-date">
+  <time datetime="2019-06-13T04:11:42.000Z" itemprop="datePublished">2019-06-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/13/2019-06-13-es-backup/">ElasticSearch 备份</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ElasticSearch 有 两种备份方法</p>
+<ul>
+<li>ES 快照备份</li>
+<li>ElasticDump 备份</li>
+</ul>
+<h3 id="ES-快照备份"><a href="#ES-快照备份" class="headerlink" title="ES 快照备份"></a>ES 快照备份</h3><p> ElasticSearch 自带备份的<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/backing-up-your-cluster.html">方法</a>，数据量大的时候，通常推荐这种方法。<br>集群的环境下，需要依赖 共享文件系统 NFS，AWS S3， HDFS 文件系统等，以下用HDFS 为例。</p>
+<p>备份到 HDFS 需要 <a target="_blank" rel="noopener" href="https://artifacts.elastic.co/downloads/elasticsearch-plugins/repository-hdfs/repository-hdfs-6.6.1.zip">repository-hdfs</a> 插件的支持。下载下来放在了 <code>/tmp</code> 并安装，重启 ES，变可享用了。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./elasticsearch-plugin install file:///tmp/repository-hdfs-6.2.1.zip </span><br></pre></td></tr></table></figure>
+
+
+<ol>
+<li>构建仓库，以下创建一个名为 hdfs_backup 的仓库, 我们计划将数据备份到 <code>hdfs://&lt;hadoop-domain.com&gt;:9000/data/es_backup</code> 下面，如无意外会返回 <code>&#123;&quot;acknowlege&quot;:&quot;true&quot;&#125;</code></li>
+</ol>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">curl -XPUT http://&lt;Port:IP&gt;/_snapshot/hdfs_backup -H &#x27;Content-Type:application/json&#x27; -d&#x27;</span><br><span class="line">&#123;  </span><br><span class="line">  &quot;type&quot;: &quot;hdfs&quot;,  </span><br><span class="line">  &quot;settings&quot;: &#123;</span><br><span class="line">    &quot;uri&quot;: &quot;hdfs://&lt;hadoop-domain.com&gt;:9000&quot;,</span><br><span class="line">    &quot;path&quot;: &quot;/data/es_backup&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;&#x27;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>选定索引备份，例如选择了 <code>student </code>索引，如无意外会返回 <code>&#123;&quot;acknowlege&quot;:&quot;true&quot;&#125;</code>，如果你希望命令阻塞直到备份完成。可以在 URL 尾部加上 wait_for_completion&#x3D;true</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl -XPUT http://&lt;Port:IP&gt;/_snapshot/hdfs_backup/snapshot_1 -H &#x27;ContentType:application/json&#x27; -d&#x27;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;indices&quot;: &quot;student&quot;</span><br><span class="line">&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="3">
+<li>可使用以下命令查看备份的进度:</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">curl -XGET &quot;http://&lt;Port:IP&gt;/_snapshot/hdfs_backup/*&quot; &#x27;</span><br><span class="line">&#123;</span><br><span class="line">  &quot;snapshots&quot; : [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;snapshot&quot; : &quot;snapshot_1&quot;,</span><br><span class="line">      &quot;uuid&quot; : &quot;kTdQRNs6RbO9LZ0LCfXLYg&quot;,</span><br><span class="line">      &quot;version_id&quot; : 6060199,</span><br><span class="line">      &quot;version&quot; : &quot;6.6.1&quot;,</span><br><span class="line">      &quot;indices&quot; : [</span><br><span class="line">        &quot;student&quot;</span><br><span class="line">      ],</span><br><span class="line">      &quot;include_global_state&quot; : true,</span><br><span class="line">      &quot;state&quot; : &quot;IN_PROGRESS&quot;,</span><br><span class="line">      &quot;start_time&quot; : &quot;2019-06-13T07:41:47.556Z&quot;,</span><br><span class="line">      &quot;start_time_in_millis&quot; : 1560411707556,</span><br><span class="line">      &quot;end_time&quot; : &quot;1970-01-01T00:00:00.000Z&quot;,</span><br><span class="line">      &quot;end_time_in_millis&quot; : 0,</span><br><span class="line">      &quot;duration_in_millis&quot; : -1560411707556,</span><br><span class="line">      &quot;failures&quot; : [ ],</span><br><span class="line">      &quot;shards&quot; : &#123;</span><br><span class="line">        &quot;total&quot; : 0,</span><br><span class="line">        &quot;failed&quot; : 0,</span><br><span class="line">        &quot;successful&quot; : 0</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>如何使用快照来恢复</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl -XPOST &quot;http://&lt;Port:IP&gt;/_snapshot/hdfs_backup/snapshot_1/_restore?wait_for_completion=true&quot; -H &#x27;Content-Type: application/json&#x27; -d&#x27;</span><br><span class="line">&#123;</span><br><span class="line">	&quot;indices&quot;: &quot;student&quot;,&quot;rename_replacement&quot;: &quot;student&quot;</span><br><span class="line">&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用-ElasticDump-来备份"><a href="#使用-ElasticDump-来备份" class="headerlink" title="使用 ElasticDump 来备份"></a>使用 ElasticDump 来备份</h3><p>  <a target="_blank" rel="noopener" href="https://github.com/taskrabbit/elasticsearch-dump">elasticdump</a> 需要 nodeJs 的环境，适用于小数量的备份。其原理是用了 ES 的 <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/scroll.html">Scroll</a> 接口</p>
+<ul>
+<li>将 mapping 和 数据备份，并 gzip 到本地盘</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">elasticdump --input=http://&lt;Port:IP&gt;/student  --type=data --limit=10000  --output=$ | gzip &gt; student.json.gz</span><br><span class="line">elasticdump --input=http://&lt;Port:IP&gt;/student --output=stduent_mapping.json --type=mapping </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>创建好mapping 之后，恢复数据， 如果是 gzip 格式的，需要先解压</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">elasticdump --input=./student.json --output=http://&lt;Port:IP&gt;/student</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/06/13/2019-06-13-es-backup/" data-id="clnfj559a005x7eqxbgln7m06" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/System/" rel="tag">System</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2019-05-04-groupcache-source-note" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/05/04/2019-05-04-groupcache-source-note/" class="article-date">
+  <time datetime="2019-05-04T04:11:42.000Z" itemprop="datePublished">2019-05-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/05/04/2019-05-04-groupcache-source-note/">groupCache 源码阅读</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>自从写了 C++，这一年多时间是没有再碰到 Go 代码，五一期间想通过阅读 Go 源码来找回熟悉的味道。选择了 GroupCache 仔细研读，收获颇丰，记下笔记以作备忘。</p>
+<h3 id="groupCache-简介"><a href="#groupCache-简介" class="headerlink" title="groupCache 简介"></a>groupCache 简介</h3><p><a target="_blank" rel="noopener" href="https://github.com/golang/groupcache">groupcache</a>是一个缓存库，需自己实现 main 函数，groupcache 既是服务器，也是客户端。作者称在某些方面替代 memcache，groupcache 只能 get，不能设置过期时间，只能通过lru淘汰最近最少访问的数据。</p>
+<p>当在本地 groupcache 缓存中没有查找的数据时，通过一致性哈希，查找到该 key 所对应的 peer 服务器，再通过HTTP 协议，从 peer 服务器上获取数据。</p>
+<p>过程中也做了一个优化：当多个客户端同时访问 cache 中不存在的 Key 时，会导致多个客户端从后端获取数据并同时插入 cache 中，相同 Key 情况下，groupcache 只会有一个客户端从后端获取数据，其他客户端阻塞，直到第一个客户端获取到数据之后，再返回给多个客户端。</p>
+<p><img src="/images/2019/groupcache.png"></p>
+<h3 id="GroupCache-源码组成"><a href="#GroupCache-源码组成" class="headerlink" title="GroupCache 源码组成"></a>GroupCache 源码组成</h3><p>groupCache 源码巧妙利用 Go 的Interface，将核心组件做了抽离：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/golang/groupcache/blob/master/lru/lru.go">lru</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/golang/groupcache/blob/master/singleflight/singleflight.go">SingleFlight</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/golang/groupcache/blob/master/consistenthash/consistenthash.go">consistenHash</a></li>
+<li>ByteView,Sink</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/golang/groupcache/blob/master/http.go">HTTPPool</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/golang/groupcache/blob/master/groupcache.go">groupcache.go</a> 中对这些核心组件搭积木，成就了这份精彩的代码。</li>
+</ul>
+<p>让我们先来探索各个组件，最后再做一次高屋建瓴的俯瞰。</p>
+<h4 id="内存-LRU"><a href="#内存-LRU" class="headerlink" title="内存 LRU"></a>内存 LRU</h4><p>Least Recently Used 的缩写，即最近最少使用的页面置换算法。借助内建容器 <code>container/list</code> 及 哈希表实现 <code>Cache</code> 结构，不保证并发安全。list 的元素 <code>Entry</code> 是一个结构体，也是实际承载键值对的载体，当列表容器元素个数达到最大数量，触发用户自定义的 <code>OnEvicted</code> 函数。 </p>
+<p>那 cache 是怎么做到 LRU？</p>
+<ul>
+<li>Add: 新增一个元素，先查找该元素是否在哈希表? 若不在，则将元素写入哈希表，并移动元素到 list 头部；如果列表长度超过 MaxEntries，则删除列表尾部元素。</li>
+<li>Get： 查找元素，如果找到则移动元素到 list 头部，始终保证最近使用的元素放在头部。</li>
+<li>Remove: 将元素从列表和哈希表一同删除, 并触发用户自定义 OnEvicted 函数。</li>
+</ul>
+<h4 id="一致性哈希"><a href="#一致性哈希" class="headerlink" title="一致性哈希"></a>一致性哈希</h4><p>目标是解决互联网中的server 的扩展和收缩，不至于导致大量的 Key 失效。核心数据结构是一个哈希表，键为Int，值为对应的 Key。</p>
+<p>通过哈希函数把元素映射到整型索引值，对索引值升序排列，返回的节点是与这个索引值最近的顺时针节点。<br>默认选择的哈希算法是 crc32.CheckSumIEEE，为了使得环形列表更平衡，加入了虚拟节点，其中<code>replicas</code></p>
+<p>执行虚拟节点个数 。</p>
+<p>我们来一窥其工作流程：</p>
+<ul>
+<li>Add: 添加节点到哈希表，对 Key 取 replicas 个 hash 值，将得到哈希值都映射到同个 Key，与此同时哈希值升序排列。</li>
+<li>Get：查找 Key 对应的节点，保证一致性，计算 Key 的 hash 值，然后在有序列表中二分查找，找到离他最近的顺时针的索引，在哈希表中返回此索引对应的 Key。</li>
+</ul>
+<h4 id="SingleFlight"><a href="#SingleFlight" class="headerlink" title="SingleFlight"></a>SingleFlight</h4><p><code>call</code> 存来调用的返回值和返回码。利用 sync.Wait 会阻塞的特性，控制并发性，直到所有任务完成才继续执行。结合 Group 结构来看就更明了，Group 有一个哈希表，其值是 <code>call </code>结构, 对于给定的 Key，保证同一时间只存在一个后端调用，这么设计的好处是在缓存穿透的时候只有一个请求访问后端，避免雪崩。</p>
+<h4 id="ByteView-Sink"><a href="#ByteView-Sink" class="headerlink" title="ByteView &amp; Sink"></a>ByteView &amp; Sink</h4><p>ByteView 是 groupCache 内部 value 的数据结构，结构体支持两种类型的元素，[]byte 或者 string 方式，并提供了 Copy 的方法。</p>
+<p>Sink 是一个接口类型，包含了 <code>SetString</code>, <code>SetBytes</code> <code>SetProto</code> <code>view</code> 四种方法，每个实现该接口的 Struct 也额外实现了 SetView ,通过他们，value 会被保存成 byteview 的格式。</p>
+<h4 id="Peer-HTTPPool"><a href="#Peer-HTTPPool" class="headerlink" title="Peer &amp; HTTPPool"></a>Peer &amp; HTTPPool</h4><p>peers.go 要与 http.go 结合起来看，不得不说抽象的很高级，或者说很绕。</p>
+<p>HTTPPool 是实现了 http.Handler 和 PeerPicker 接口的节点池。他的组成如下：</p>
+<ul>
+<li><code>peers</code> : 一致性哈希生成器，返回 Key 对应的服务器节点</li>
+<li><code>httpGetters map[string]*httpGetter</code> 对于每个服务器，均定义了 httpclient，用于获取远程服务器的数据<br>其中 httpGetter 就是一个ProtoGetter,  它实现了Get 方法</li>
+<li><code>BasePath</code> <code>指定外部服务器节点的请求的地址 默认是 &quot;/_groupcache/&quot;. 通过 http.Handle 在NewHTTPPool 中注册</code></li>
+<li><code>Replicas</code> ：一致性哈希虚拟节点的数量</li>
+</ul>
+<h4 id="groupcache-获取数据流程"><a href="#groupcache-获取数据流程" class="headerlink" title="groupcache 获取数据流程"></a>groupcache 获取数据流程</h4><p>当客户端连上 groupcache 获取数据</p>
+<ul>
+<li>如果本地有缓存，包括 mainCache (本机节点的缓存数据)，hotCache（属于其他节点的数据缓存的热数据）有所需要的数据，则直接返回。</li>
+<li>如果没有，则通过一致性哈希函数判断这个 key 所对应的节点( PickPeer(key) )，通过 http 从这个节点上获取数据( getFromPeer )，如果这个节点上有需要的数据，则通过 http 回复给之前的那个 groupcache。</li>
+<li>如果节点上也没有所需要的数据，则 groupcache 从后端数据源(数据库或者文件)获取数据，并将数据保存在本地 mainCache，并返回给客户端；其中 <code>getLocallly</code> 函数是利用 NewGroup 时传进去的 Getter，在调用这个 Getter 的 Get 函数从数据源获取数据。</li>
+<li>hotCache 存的是本节点没有的，但是访问频繁的数据， 避免多次网络请求， 热点数据采用10%随机概率，效果可能不理想。</li>
+<li>loadGroup 是singleFlight的实现，确保同一时间每个 Key 只有一次访问后端。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/05/04/2019-05-04-groupcache-source-note/" data-id="clnfj559a005v7eqx36q80csu" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/groupCache/" rel="tag">groupCache</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2019-02-22-ac-automachine" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/02/22/2019-02-22-ac-automachine/" class="article-date">
+  <time datetime="2019-02-22T08:11:42.000Z" itemprop="datePublished">2019-02-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/22/2019-02-22-ac-automachine/">AC 自动机</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>AC自动机算法， 全称 Aho–Corasick 算法， 是由 Alfred V. Aho 和 Margaret J.Corasick 发明的字符串搜索算法。<br>该算法主要依靠构造一个有限状态机，在一个 trie 树中添加失配指针来实现。这些额外的失配指针允许在查找字符串失败时进行回退，转向某前缀的其他分支，免于重复匹配前缀，提高算法效率。 当一个字典串集合是已知的情况下，算法的时间复杂度为输入字符串长度和匹配数量之和。</p>
+<p>现实中用到AC自动机的场景有如下：</p>
+<ul>
+<li>评论反垃圾：通过维护一个屏蔽词库，建立AC自动机，输入评论，如果命中了屏蔽词，就可以把它定性为反垃圾</li>
+<li>病毒检测：通过维护一个病毒码库，简历AC自动机，输入一串码，判断是否命中病毒</li>
+</ul>
+<p>算法关键是</p>
+<h3 id="构建失败指针"><a href="#构建失败指针" class="headerlink" title="构建失败指针:"></a>构建失败指针:</h3><ul>
+<li>将根结点的所有孩子结点的 failPtr 指向根结点，然后将根结点的所有孩子结点依次入列。</li>
+<li>若队列不为空：<ul>
+<li>A: 出列，出列结点记为 curr， failTo 表示 curr 的 fail 指向的结点，即 failTo &#x3D; curr.fail</li>
+<li>B: 判断 curr.child[i] &#x3D;&#x3D; failTo.child[i]是否成立，<ul>
+<li>成立：curr.child[i].fail &#x3D; failTo.child[i]，</li>
+<li>不成立：判断 failTo &#x3D;&#x3D; null是否成立<ul>
+<li>成立： curr.child[i].fail &#x3D;&#x3D; root</li>
+<li>不成立：执行failTo &#x3D; failTo.fail，继续执行 B</li>
+</ul>
+</li>
+<li>curr.child[i]入列，再次执行再次执行步骤 A</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>若队列为空:结束</li>
+</ul>
+<h3 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h3><p>遍历字符串的每个字符进行查找，从根结点开始，查看其孩子结点，看是否匹配，</p>
+<ul>
+<li>如果不匹配则沿着他的失败指针查找，直到失败指针是根节点就重启自动机，再次查找。</li>
+<li>如果经过的节点是模式字符串的结尾。意味着匹配到该模式串，并将该字符下标记录下来。</li>
+</ul>
+<h3 id="写了一个库"><a href="#写了一个库" class="headerlink" title="写了一个库"></a>写了一个库</h3><p>实现了AC自动机的 Go 语言版本。<a target="_blank" rel="noopener" href="https://github.com/zheng-ji/goAcAutoMachine">goAcAutoMachine</a>, 支持中文搜索。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/02/22/2019-02-22-ac-automachine/" data-id="clnfj5599005r7eqx2urge61f" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2019-03-08-es-skill" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/02/22/2019-03-08-es-skill/" class="article-date">
+  <time datetime="2019-02-22T08:11:42.000Z" itemprop="datePublished">2019-02-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/ElasticSearch/">ElasticSearch</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/22/2019-03-08-es-skill/">ElasticSearch 使用技巧</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>其实在几年前就接触 Eleasticsearch 了，当时作为一个SA，并没有好好了解它的用法。最近在做搜索的功能，才发觉曾经对力量一无所知。</p>
+<h3 id="Mapping-创建-Schema"><a href="#Mapping-创建-Schema" class="headerlink" title="Mapping 创建 Schema"></a>Mapping 创建 Schema</h3><p>ES 使用前需要定义 mapping，相当于 MySQL 的 TableSchema，在创建 mapping 的时候，配置 type 的dynamic&#x3D;strict，禁止未定义字段自动被添加到索引。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">curl -XPUT &quot;$URL/mall_goods_v1/?pretty&quot; -H &#x27;Content-Type:application/json&#x27; -d&#x27;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;mappings&quot; : &#123;</span><br><span class="line">        &quot;goods&quot;: &#123;</span><br><span class="line">            &quot;dynamic&quot;: &quot;strict&quot;,</span><br><span class="line">                &quot;properties&quot;: &#123;</span><br><span class="line">                    &quot;item_name&quot;: &#123;</span><br><span class="line">                        &quot;type&quot;: &quot;text&quot;,</span><br><span class="line">                        &quot;analyzer&quot;: &quot;ik_max_word&quot;,</span><br><span class="line">                        &quot;search_analyzer&quot;: &quot;ik_smart&quot;</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &quot;item_code&quot;: &#123;</span><br><span class="line">                        &quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &quot;status&quot;: &#123;</span><br><span class="line">                        &quot;type&quot;: &quot;integer&quot;</span><br><span class="line">                    &#125;, </span><br><span class="line">                    &quot;start_time&quot;:&#123;</span><br><span class="line">                        &quot;type&quot; : &quot;date&quot;</span><br><span class="line">                    &#125;, </span><br><span class="line">                    &quot;group_ids&quot;: &#123;</span><br><span class="line">                        &quot;type&quot;: &quot;text&quot;,</span><br><span class="line">                        &quot;analyzer&quot;: &quot;whitespace&quot;</span><br><span class="line">                    &#125;,</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;&#x27;;</span><br></pre></td></tr></table></figure>
+<h3 id="中文分词"><a href="#中文分词" class="headerlink" title="中文分词"></a>中文分词</h3><p>ES提供了IK分词器应对中文分词，它有两种分词模式：</p>
+<ul>
+<li>ik_max_word:会将文本做最细粒度的拆分</li>
+<li>ik_smart:会做最粗粒度的拆分<br>两种分词器使用的最佳实践是：索引时用ik_max_word，在搜索时用 ik_smart。<br>索引时最大化的将文章内容分词，搜索时更精确的搜索到想要的结果。</li>
+</ul>
+<h3 id="别名"><a href="#别名" class="headerlink" title="别名"></a>别名</h3><p>给 ES 的 Index 起一个别名(alias) 能优雅解决两个索引无缝切换的问题，此功能在某些场景下非常使用。<br>举个例子:<br>如果发现 student_v1 的 Index 有问题,需重建一个 student_v2 的 Index, 我们可以给 student_v1 赋予一个别名 student，外界使用别名访问这个索引， 建好 student_v2 之后，将这个 student 别名指向 student_v2, 这样就可在外部无感知的情况下完成切换。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -XPOST &quot;$URL/_aliases?pretty&quot; -H &#x27;Content-Type:application/json&#x27;  -d&#x27; </span><br><span class="line">&#123; &quot;actions&quot; : [ &#123; &quot;add&quot; : &#123; &quot;index&quot; : &quot;student_v2&quot;, &quot;alias&quot; : &quot;student&quot; &#125; &#125; ] &#125; &#x27;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="ES-查询技巧"><a href="#ES-查询技巧" class="headerlink" title="ES 查询技巧"></a>ES 查询技巧</h3><ul>
+<li><p>只要不是 text 类型的字段，尽量使用 filter 过滤，因为它支持结果缓存，性能最佳。全文检索必须使用 must 而不是 filter，否则将导致 filter 缓存失效。</p>
+</li>
+<li><p>自然语言检索应该用 “match” 查询，”term” 是不分词当成整体的。</p>
+</li>
+<li><p>通过 termvector 查看一个字段的切分状况，用来辅助我们的查询语句是否正确</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">curl -XGET -H &#x27;Content-Type:application/json&#x27; &quot;http://$URL/mall_goods/goods/12954895599938508532/_termvectors?pretty&quot; -d &#x27; &#123;</span><br><span class="line">    &quot;fields&quot; : [ &quot;item_name&quot;],</span><br><span class="line">    &quot;offsets&quot; : true,</span><br><span class="line">    &quot;payloads&quot; : true,</span><br><span class="line">    &quot;positions&quot; : true,</span><br><span class="line">    &quot;term_statistics&quot; : true,</span><br><span class="line">    &quot;field_statistics&quot; : true</span><br><span class="line">&#125; &#x27;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>版本号更新<br>Elasticsearch 是分布式的。当文档创建、更新或删除时， 新版本的文档必须复制到集群中的其他节点。Elasticsearch 也是异步和并发的，这意味着这些复制请求被并行发送，并且到达目的地时也许顺序是乱的 。 Elasticsearch 需要一种方法确保文档的旧版本不会覆盖新的版本。 检查当前 _version 是否 小于 指定的版本号。 如果请求成功，外部的版本号作为文档的新 _version 进行存储.<br>常见的方法是通过增加 version_type &#x3D; external , 然后使用时间戳做版本号更新来保证旧文档不会覆盖新文档。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PUT /website/blog/2?version=5&amp;version_type=external</span><br><span class="line">&#123;</span><br><span class="line">  &quot;title&quot;: &quot;My first external blog entry&quot;,</span><br><span class="line">  &quot;text&quot;:  &quot;Starting to get the hang of this...&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>提供排序权重<br>ES默认是按照 BM25 来计算分数的。比如以下例子，<br>用户输入qwe 我们需要搜索出名字中包含这些字符的记录</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">GET group_member_v1/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot;: &#123;</span><br><span class="line">        &quot;bool&quot;: &#123;</span><br><span class="line">            &quot;must&quot;: &#123;&quot;match&quot;: &#123;&quot;split_nickname&quot;: &#123;&quot;query&quot;: &quot;q w e&quot;,&quot;operator&quot;: &quot;and&quot;&#125;&#125;&#125;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;size&quot;: 100</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>实际上我们希望，qwe 连在一起的 nickname 权重可以更高，排序更前，于是引用进了<code> const_score</code> 和 <code>match_phrase</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">GET group_member_v1/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot;: &#123;</span><br><span class="line">        &quot;bool&quot;: &#123;</span><br><span class="line">            &quot;minimum_should_match&quot;: 1, </span><br><span class="line">            &quot;should&quot;: [</span><br><span class="line">                &#123;&quot;match&quot;: &#123;&quot;split_nickname&quot;: &#123;&quot;query&quot;: &quot;q w e&quot;,&quot;operator&quot;: &quot;and&quot;&#125;&#125;&#125;,</span><br><span class="line">                &#123; &quot;constant_score&quot;: &#123;&quot;boost&quot;: 1000,&quot;filter&quot;: &#123;&quot;match_phrase&quot;: &#123;&quot;split_nickname&quot;: &quot;q w e&quot;&#125;&#125;&#125;&#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;size&quot;: 100</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Suggester"><a href="#Suggester" class="headerlink" title="Suggester"></a>Suggester</h3><p>completion suggest，常叫做自动完成(auto completion) 也叫搜索推荐。<br>比如说我们在搜索歌曲，搜索”月亮”，百度自动给你提示 “月亮代表我的心”, “月亮之上”, 搜索引擎会自动提示补全，借助 ES 的 Suggester 也有这个功能。看如下的例子</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">PUT /songs_index</span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;mappings&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;songs&quot;</span> <span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;properties&quot;</span> <span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;title&quot;</span> <span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                    <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;text&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;analyzer&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ik_max_word&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;fields&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                            <span class="attr">&quot;suggest&quot;</span> <span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                                <span class="attr">&quot;type&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;completion&quot;</span><span class="punctuation">,</span> <span class="comment">// 这个特性就是我们想要的</span></span><br><span class="line">                                <span class="attr">&quot;analyzer&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ik_max_word&quot;</span></span><br><span class="line">                            <span class="punctuation">&#125;</span></span><br><span class="line">                    <span class="punctuation">&#125;</span></span><br><span class="line">                <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                    <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;text&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;analyzer&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ik_max_word&quot;</span></span><br><span class="line">                <span class="punctuation">&#125;</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>查询语句</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">GET /song_indexs/songs/_search</span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;suggest&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;my-suggest&quot;</span> <span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;text&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;华南&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;completion&quot;</span> <span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                    <span class="attr">&quot;field&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;title.suggest&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>删除指定记录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">POST school_rank_v1/rank/_delete_by_query</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot;: &#123;</span><br><span class="line">        &quot;constant_score&quot; : &#123;</span><br><span class="line">            &quot;filter&quot; : &#123;</span><br><span class="line">                 &quot;bool&quot; : &#123;</span><br><span class="line">                    &quot;must&quot; : [</span><br><span class="line">                    &#123;&quot;term&quot; : &#123; &quot;qs_rank&quot; : 0 &#125; &#125;</span><br><span class="line">                  ]</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/02/22/2019-03-08-es-skill/" data-id="clnfj5599005t7eqxfyi6dy6h" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2019-02-05-blocking-queue" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/02/05/2019-02-05-blocking-queue/" class="article-date">
+  <time datetime="2019-02-05T08:11:42.000Z" itemprop="datePublished">2019-02-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/05/2019-02-05-blocking-queue/">实现一个阻塞队列</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="STL-queue-的实现"><a href="#STL-queue-的实现" class="headerlink" title="STL queue 的实现"></a>STL queue 的实现</h3><p>STL queue 的 API </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">template &lt;typename T， typename Container = std::deque&lt;T&gt;&gt;</span><br><span class="line">class queue</span><br><span class="line">&#123;</span><br><span class="line">    T &amp; front();</span><br><span class="line">    void push(const T &amp;elem);</span><br><span class="line">    void pop();</span><br><span class="line">    bool empty() const; </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>API 看起来平淡自然，他的背后有设计的考量:</p>
+<ul>
+<li>用于存储元素的底层容器，容器须满足顺序容器，如 std::vector， std::list， std::dequeue</li>
+<li>在调用 front() 之前，需保证队列不为空， 即 <code>!empty()</code> ， 否则会出现未定义错误</li>
+</ul>
+<p>实际应用中，我们希望队列作为一个基础组件，可以像 Redis Queue 那样</p>
+<ul>
+<li>元素出列的操作将会阻塞，直到队列不为空， 在多线程环境下，我们通常不需要 front() 操作，而只是调用 pop() 将元素返回，操作是阻塞的</li>
+<li>允许并发访问队列</li>
+</ul>
+<h3 id="阻塞队列实现"><a href="#阻塞队列实现" class="headerlink" title="阻塞队列实现"></a>阻塞队列实现</h3><ul>
+<li>使用条件变量实现阻塞，要是队列是空的，则 pop() 操作将会阻塞队列</li>
+<li>提供了一个 <code>try_pop()</code> 操作，要是队列是空的， <code>try_pop()</code> 将会立即返回而不会阻塞</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;mutex&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;condition_variable&gt;</span></span></span><br><span class="line">template &lt;typename T, typename Container = <span class="built_in">std</span>::<span class="built_in">queue</span>&lt;T&gt;&gt;</span><br><span class="line">class ThreadQueue</span><br><span class="line">&#123;</span><br><span class="line">    public:</span><br><span class="line">        using container_type           = Container;</span><br><span class="line">        using value_type               = typename Container::value_type;</span><br><span class="line">        using reference                = typename Container::reference;</span><br><span class="line">        using const_reference          = typename Container::const_reference;</span><br><span class="line">        using size_type                = typename Container::size_type;</span><br><span class="line">        using mutex_type               = <span class="built_in">std</span>::mutex;</span><br><span class="line">        using condition_variable_type  = <span class="built_in">std</span>::condition_variable;</span><br><span class="line">    private:</span><br><span class="line">        Container                queue_;</span><br><span class="line">        mutable mutex_type       mutex_;</span><br><span class="line">        condition_variable_type  cond_;</span><br><span class="line"></span><br><span class="line">    public:</span><br><span class="line">        ThreadQueue() = <span class="keyword">default</span>;</span><br><span class="line">        ThreadQueue(<span class="type">const</span> ThreadQueue &amp;) = delete;</span><br><span class="line">        ThreadQueue &amp;operator= (<span class="type">const</span> ThreadQueue &amp;) = delete;</span><br><span class="line">        <span class="type">void</span> <span class="title function_">pop</span><span class="params">(reference elem)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">std</span>::unique_lock&lt;mutex_type&gt; <span class="title function_">lock</span><span class="params">( mutex_ )</span>;</span><br><span class="line">            cond_.wait( lock, [this]() &#123;  <span class="keyword">return</span> !queue_.empty();  &#125; );</span><br><span class="line">            elem = <span class="built_in">std</span>::move( queue_.front() );</span><br><span class="line">            queue_.pop();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">bool</span> <span class="title function_">try_pop</span><span class="params">( reference elem )</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">std</span>::unique_lock&lt;mutex_type&gt; <span class="title function_">lock</span><span class="params">( mutex_ )</span>;</span><br><span class="line">            <span class="keyword">if</span> ( queue_.empty() ) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            elem = <span class="built_in">std</span>::move( queue_.front() );</span><br><span class="line">            queue_.pop();</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">bool</span> <span class="title function_">empty</span><span class="params">()</span> <span class="type">const</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">std</span>::lock_guard&lt;mutex_type&gt; <span class="title function_">lock</span><span class="params">( mutex_ )</span>;</span><br><span class="line">            <span class="keyword">return</span> queue_.empty();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        size_type <span class="title function_">size</span><span class="params">()</span> <span class="type">const</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">std</span>::lock_guard&lt;mutex_type&gt; <span class="title function_">lock</span><span class="params">( mutex_ )</span>; </span><br><span class="line">            <span class="keyword">return</span> queue_.size();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">void</span> <span class="title function_">push</span><span class="params">( <span class="type">const</span> value_type &amp;elem )</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">std</span>::lock_guard&lt;mutex_type&gt; <span class="title function_">lock</span><span class="params">( mutex_ )</span>;</span><br><span class="line">            queue_.push( elem );</span><br><span class="line">            cond_.notify_one();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">void</span> <span class="title function_">push</span><span class="params">( value_type &amp;&amp;elem )</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">std</span>::lock_guard&lt;mutex_type&gt; <span class="title function_">lock</span><span class="params">( mutex_ )</span>;</span><br><span class="line">            queue_.push( <span class="built_in">std</span>::move( elem ) );</span><br><span class="line">            cond_.notify_one();</span><br><span class="line">        &#125;  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/02/05/2019-02-05-blocking-queue/" data-id="clnfj5598005o7eqx5ktjdcy1" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2018-09-08-edit-distance" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/08/2018-09-08-edit-distance/" class="article-date">
+  <time datetime="2018-09-08T02:11:42.000Z" itemprop="datePublished">2018-09-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NLP/">NLP</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/08/2018-09-08-edit-distance/">NLP - 最小编辑距离</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近工作中，需要求两个单词<code>最小编辑距离</code>，用于判断两个字符串的相近程度。</p>
+<ul>
+<li><a href="#%E7%AC%AC%E4%B8%80%E8%8A%82">最小编辑距离是什么</a></li>
+<li><a href="#%E7%AC%AC%E4%BA%8C%E8%8A%82">解决思路</a></li>
+<li><a href="#%E7%AC%AC%E4%B8%89%E8%8A%82">代码演示</a></li>
+</ul>
+<h3 id="最小编辑距离是什么"><a href="#最小编辑距离是什么" class="headerlink" title="最小编辑距离是什么"></a>最小编辑距离是什么</h3><p>允许一个字符串 A ，通过以下三种操作，变换成另一个字符串 B<br>插入一个字符，例如：ab -&gt; abc<br>删除一个字符，例如：abc -&gt; ab<br>替换一个字符，例如：abc -&gt; dbc<br>所需要的最短操作次数，称为最短编辑距离 D，又称 <code>Levenshtein 距离</code><br>故两个字符串的相识度 S &#x3D; D &#x2F; Max(len(A)， len(B))<br>使用场景：搜索引擎的单词纠错，扩召回等。</p>
+<h3 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h3><p>我发现这个问题，其实也是<a target="_blank" rel="noopener" href="https://leetcode.com/problems/edit-distance/">LeetCode</a>的一道题目， 以前有些枯燥的算法题，应用在工程领域上会显得如此可爱迷人。要解决这个问题，暴力枚举很快会让人绝望。直觉告诉我们要分而治之， 将复杂的问题分解为相似的子问题。</p>
+<p>假设字符串 A 共 m 位，从 A[1] 到 A[m]；字符串 B 共 n 位，从 B[1] 到 B[n]；D[i][j] 表示字符串 A[1]-A[i] 转换为 B[1]-B[j] 的编辑距离。</p>
+<ul>
+<li>规律一: 当 A[i] &#x3D;&#x3D; B[j] 时，D[i][j] &#x3D; D[i-1][j-1]，比如 hel -&gt; hal 的编辑距离 &#x3D; he -&gt; ha 的编辑距离</li>
+<li>规律二: 当 A[i] 不等于 B[j] 时，D[i][j] 等于如下 3 项的最小值:<ul>
+<li>D[i-1][j] + 1（删除 A[i]），比如 xyz  -&gt; abc  的编辑距离 &#x3D; xy -&gt; abc 的编辑距离 + 1</li>
+<li>D[i][j-1] + 1（插入 B[j])， 比如 xyz -&gt; abc 的编辑距离 &#x3D; xyzc -&gt; abc 的编辑距离 + 1; 根据规律一， xyzc-&gt;abc 由于最后一个字符是一样的， 所以它的编辑距离等于 xyz-&gt;ab， 因此xyz -&gt; abc 的编辑距离 &#x3D; xyzc -&gt; abc 的编辑距离 + 1 &#x3D; xyz-&gt;ab 的编辑距离 + 1。</li>
+<li>D[i-1][j-1] + 1（将 A[i] 替换为 B[j]）， 比如 xyz -&gt; abc 的编辑距离 &#x3D; xyc -&gt; abc 的编辑距离 + 1 &#x3D; xy -&gt; ab 的编辑距离 + 1 (根据规律一)</li>
+</ul>
+</li>
+<li>边界：<ul>
+<li>A[i][0] &#x3D; i， B 字符串为空，表示将 A[1]-A[i] 全部删除，所以编辑距离为 i</li>
+<li>B[0][j] &#x3D; j， A 字符串为空，表示 A 插入 B[1]-B[j]，所以编辑距离为 j<br>翻译成代码<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">int distance(char *a, char *b, int i, int j)</span><br><span class="line">&#123;</span><br><span class="line">    if (j == 0) return i;</span><br><span class="line">    else if (i == 0) return j;</span><br><span class="line">    else if (a[i-1] == b[j-1]) </span><br><span class="line">        return edit_distance(a, b, i - 1, j - 1);</span><br><span class="line">    else</span><br><span class="line">        return Min3(edit_distance(a, b, i - 1, j) + 1，</span><br><span class="line">                edit_distance(a, b, i, j - 1) + 1，</span><br><span class="line">                edit_distance(a, b, i - 1, j - 1) + 1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h2 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h2><p>递归被人诟病的就是性能不行，时间复杂度是指数增长的，很多相同的子问题其实是经过了多次求解，用动态规划可以解决这类问题。 而此问题需用一个二维数组来记忆状态图，俗称打表。<br>翻译成代码如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">int distance(char *a, char *b)</span><br><span class="line">&#123;</span><br><span class="line">    int lena = strlen(a);</span><br><span class="line">    int lenb = strlen(b);</span><br><span class="line">    int d[lena+1][lenb+1];</span><br><span class="line">    int i, j;</span><br><span class="line">    for (i = 0; i &lt;= lena; i++)</span><br><span class="line">        d[i][0] = i;</span><br><span class="line">    for (j = 0; j &lt;= lenb; j++)</span><br><span class="line">        d[0][j] = j;</span><br><span class="line">    for (i = 1; i &lt;= lena; i++) </span><br><span class="line">    &#123;</span><br><span class="line">        for (j = 1; j &lt;= lenb; j++) </span><br><span class="line">        &#123;</span><br><span class="line">            if (a[i-1] == b[j-1]) </span><br><span class="line">            &#123;</span><br><span class="line">                d[i][j] = d[i-1][j-1];</span><br><span class="line">            &#125; </span><br><span class="line">            else </span><br><span class="line">            &#123;</span><br><span class="line">                d[i][j] = min_of_three(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+1);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return d[lena][lenb];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/09/08/2018-09-08-edit-distance/" data-id="clnfj5598005m7eqxbwt4d19u" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2018-07-14-libco-study" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/07/14/2018-07-14-libco-study/" class="article-date">
+  <time datetime="2018-07-14T08:46:46.000Z" itemprop="datePublished">2018-07-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/14/2018-07-14-libco-study/">Libco</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>Libco 是 微信出品的 C&#x2F;C++ 的协程库, 通过仅有的几个函数接口 co_create&#x2F;co_resume&#x2F;co_yield 再配合 co_poll，可以支持同步或者异步的写法</p>
+</blockquote>
+<p>让我们用官方的 <a target="_blank" rel="noopener" href="https://github.com/Tencent/libco/blob/master/example_cond.cpp">example_cond.cpp</a> 来开启学习之旅</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;co_routine.h&quot;</span></span></span><br><span class="line">using namespace <span class="built_in">std</span>;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">stTask_t</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="type">int</span> id;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">stEnv_t</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    stCoCond_t* cond;</span><br><span class="line">    <span class="built_in">queue</span>&lt;stTask_t*&gt; task_queue;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="type">void</span>* <span class="title function_">Producer</span><span class="params">(<span class="type">void</span>* args)</span></span><br><span class="line">&#123;</span><br><span class="line">    co_enable_hook_sys();</span><br><span class="line">    stEnv_t* env = (stEnv_t*)args;</span><br><span class="line">    <span class="type">int</span> id = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        stTask_t* task = (stTask_t*)<span class="built_in">calloc</span>(<span class="number">1</span>, <span class="keyword">sizeof</span>(stTask_t));</span><br><span class="line">        task-&gt;id = id++;</span><br><span class="line">        env-&gt;task_queue.push(task);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s:%d produce task %d\n&quot;</span>, __func__, __LINE__, task-&gt;id);</span><br><span class="line">        co_cond_signal(env-&gt;cond);</span><br><span class="line">        poll(<span class="literal">NULL</span>, <span class="number">0</span>, <span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span>* <span class="title function_">Consumer</span><span class="params">(<span class="type">void</span>* args)</span></span><br><span class="line">&#123;</span><br><span class="line">    co_enable_hook_sys();</span><br><span class="line">    stEnv_t* env = (stEnv_t*)args;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (env-&gt;task_queue.empty())</span><br><span class="line">        &#123;</span><br><span class="line">            co_cond_timedwait(env-&gt;cond, <span class="number">-1</span>);</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        stTask_t* task = env-&gt;task_queue.front();</span><br><span class="line">        env-&gt;task_queue.pop();</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s:%d consume task %d\n&quot;</span>, __func__, __LINE__, task-&gt;id);</span><br><span class="line">        <span class="built_in">free</span>(task);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    stEnv_t* env = new stEnv_t;</span><br><span class="line">    env-&gt;cond = co_cond_alloc();</span><br><span class="line"></span><br><span class="line">    stCoRoutine_t* consumer_routine;</span><br><span class="line">    co_create(&amp;consumer_routine, <span class="literal">NULL</span>, Consumer, env);</span><br><span class="line">    co_resume(consumer_routine);</span><br><span class="line"></span><br><span class="line">    stCoRoutine_t* producer_routine;</span><br><span class="line">    co_create(&amp;producer_routine, <span class="literal">NULL</span>, Producer, env);</span><br><span class="line">    co_resume(producer_routine);</span><br><span class="line"></span><br><span class="line">    co_eventloop(co_get_epoll_ct(), <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过以下命令编译就可以执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/Tencent/libco</span><br><span class="line">cd libco</span><br><span class="line">make</span><br><span class="line">// 需要-ldl -lpthread</span><br><span class="line">g++ example_cond.cpp -o main  -L./lib -lcolib -lpthread -ldl</span><br><span class="line">./main </span><br></pre></td></tr></table></figure>
+
+<p>重点函数如下</p>
+<ul>
+<li>co_create 是协程创建函数, 原型如下<br>co 是协程控制块，attr 创建协程属性，一般用来设置共享栈模式和栈空间大小，默认为 NULL，routine 是协程的入口函数，arg 是函数的参数</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int co_create(stCoRoutine_t** co, const stCoRoutineAttr_t* attr,</span><br><span class="line">void* (*routine)(void*), void* arg);</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>co_resume</li>
+</ul>
+<p>切换到指定的协程 co，操作系统对协程是无感知的，切换调度都是由协程自己来完成</p>
+<ul>
+<li>co_eventloop</li>
+</ul>
+<p>co_eventloop 是主协程的调度函数，函数的主要作用就是通过 epoll 负责各个协程的时间监控，如果有网络事件到了或者等待时间超时了，就切换到相应的协程处理。ctx 是库函数 co_get_epoll_ct()，pfn 是一个钩子函数，用户自定义，在函数 co_eventloop 的最后会执行，arg 是 pfn的参数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void co_eventloop(stCoEpoll_t *ctx, pfn_co_eventloop_t pfn, void *arg)</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>co_enable_hook_sys()</li>
+</ul>
+<p>co_enable_hook_sys 函数是用来打开 libco 的钩子标示，进行系统 io 函数的时候才会调用到 libco 的函数而不是原系统函数</p>
+<ul>
+<li>poll 相当于我们平时用到的 sleep 函数。<br>如果用 sleep 作用到的是整个线程，通过 poll 来实现协程的挂起，协程环境下实际调用的函数是 co_poll，主要是完成回调函数的设置，超时事件的挂入然后把自己切出去。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int poll(struct pollfd fds[], nfds_t nfds, int timeout)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>涉及到同步的接口有</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">co_cond_alloc</span><br><span class="line">co_cond_signal</span><br><span class="line">co_cond_broadcast</span><br><span class="line">co_cond_timedwait</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/07/14/2018-07-14-libco-study/" data-id="clnfj5597005i7eqx5ht84drz" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2018-07-27-valgrind-sanitize" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/07/14/2018-07-27-valgrind-sanitize/" class="article-date">
+  <time datetime="2018-07-14T08:46:46.000Z" itemprop="datePublished">2018-07-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/14/2018-07-27-valgrind-sanitize/">C++ 调试 - Valgrind, Sanitizer, GDB</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文介绍各种 C++ 的调试方法</p>
+<ul>
+<li>valgrind</li>
+<li>sanitizer</li>
+<li>gdb</li>
+</ul>
+<p><code>valgrind</code> 可用来检测 C&#x2F;C++ 代码是否内存泄漏。Valgrind 使用起来不需修改目标程序源码。</p>
+<p>用一个明显有内存泄漏的代码来演示</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">int main(void) &#123;</span><br><span class="line">    int *p = NULL;</span><br><span class="line">    p = malloc(10 * sizeof(int));</span><br><span class="line">    free(p);</span><br><span class="line">    *p = 3;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译成二进制, 然后用 valgrind 检测</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">g++ -g -o bug main.c</span><br><span class="line">valgrind --tool=memcheck --leak-check=full --log-file=memchk.log ./bug</span><br></pre></td></tr></table></figure>
+
+<p>valgrind 会做一次 <code>全身检查</code>, 如果有内存泄漏， 我们要关注的是 LeakSummary:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">LeakSummary</span><br><span class="line">definitely lost: 确定有内存泄漏，表示在程序退出时，该内存无法回收.</span><br><span class="line">indirectly lost: 间接内存泄漏，比如结构体中定义的指针指向的内存无法回收；</span><br><span class="line">possibly lost： 可能出现内存泄漏，比如程序退出时，没有指针指向一块内存的首地址了</span><br><span class="line">still reachable: 程序没主动释放内存，在退出时候该内存仍能访问到，比如全局 new 的对象没 delete，操作系统会回收</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>再推荐另一个工具 <a target="_blank" rel="noopener" href="https://github.com/google/sanitizers">sanitizer</a>, 同样是上面的示例代码，</p>
+<p>用 <code>-fsanitize=address</code> 编译, 然后执行二进制，会打印出错的地址空间。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gcc -fsanitize=address -g -o bug main.c</span><br><span class="line">./bug</span><br></pre></td></tr></table></figure>
+
+<p>显示出错的地址空间</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">==8035== ERROR: AddressSanitizer: heap-use-after-free on address 0x60080000bfd0 at pc 0x4007e1 bp 0x7ffeb17cf780 sp 0x7ffeb17cf778</span><br><span class="line">WRITE of size 4 at 0x60080000bfd0 thread T0</span><br><span class="line">    #0 0x4007e0 (/data1/mm64/levizheng/QQMail/study/test_debug/a+0x4007e0)</span><br><span class="line">    #1 0x7f6808337c04 (/usr/lib64/libc-2.17.so+0x21c04)</span><br><span class="line">    #2 0x4006b8 (/data1/mm64/levizheng/QQMail/study/test_debug/a+0x4006b8)</span><br></pre></td></tr></table></figure>
+
+<p>然后用命令指定二进制来查看地址空间, <code>address2line -e bug</code>, 输入出错的地址空间，比如 <code>0x4007e0</code>,<br>就可以看到他对应的代码了。 </p>
+<p>如果用 addr2line<br>addr2line -C -f -e <executable_bin> 0xffc3b7</p>
+<hr>
+<p>说回 GDB，大多数时候用的还是最多的。</p>
+<p>用 GDB 调试一个程序</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb &lt;execute_binary&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如需传入启动参数，使用 <code>set args</code>，例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set args -i config.file</span><br></pre></td></tr></table></figure>
+
+<p>开始运行则输入 <code>run</code></p>
+<p>当发生异常时，输入 <code>bt</code>, 就可以看到堆栈信息了。<br><code>f #num</code> 可以指定 具体frame 查看信息，<code>p arg</code> 用来打印变量值。<br>下面例子中, 就是查看变量的。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">p __str</span><br><span class="line">p *this</span><br></pre></td></tr></table></figure>
+
+<p>再次展现完整的例子:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Program received signal SIGSEGV, Segmentation fault.</span><br><span class="line">std::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;::basic_string (this=0x7fffffffdd40, __str=...) at /data1/gcc-4.8.2_build/x86_64-unknown-linux-gnu/libstdc++-v3/include/bits/basic_string.tcc:173</span><br><span class="line">173    /data1/gcc-4.8.2_build/x86_64-unknown-linux-gnu/libstdc++-v3/include/bits/basic_string.tcc: No such file or directory.</span><br><span class="line">(gdb) bt</span><br><span class="line">#0  std::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;::basic_string (this=0x7fffffffdd40, __str=...) at /data1/gcc-4.8.2_build/x86_64-unknown-linux-gnu/libstdc++-v3/include/bits/basic_string.tcc:173</span><br><span class="line">#1  0x00000000006476d6 in GetBinLogSynShmPath (this=&lt;optimized out&gt;) at mmux/mmuxstatbf/mmuxstatbfconfig.h:95</span><br><span class="line">#2  BinLogSyncMgr::InitShmData (this=0x1fbee80) at mmux/mmuxstatbf/binlogsyncmgr.cpp:112</span><br><span class="line">#3  0x0000000000641b80 in GetMetaPtr (this=0x1fbee80) at mmux/mmuxstatbf/binlogsyncmgr.h:68</span><br><span class="line">#4  MMUxStatBFServer::BeforeMasterRun (this=0x7fffffffe1d0, pvProcArgs=&lt;optimized out&gt;) at mmux/mmuxstatbf/mmuxstatbfserver.h:75</span><br><span class="line">(gdb) p __str</span><br><span class="line">$1 = (const std::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; &amp;) @0x20: &lt;error reading variable&gt;</span><br><span class="line">(gdb) f 1</span><br><span class="line">#1  0x00000000006476d6 in GetBinLogSynShmPath (this=&lt;optimized out&gt;) at mmux/mmuxstatbf/mmuxstatbfconfig.h:95</span><br><span class="line">95    mmux/mmuxstatbf/mmuxstatbfconfig.h: No such file or directory.</span><br><span class="line">(gdb) p  *this</span><br><span class="line">(gdb) f 2</span><br><span class="line">#2  BinLogSyncMgr::InitShmData (this=0x1fbee80) at mmux/mmuxstatbf/binlogsyncmgr.cpp:112</span><br><span class="line">112    mmux/mmuxstatbf/binlogsyncmgr.cpp: No such file or directory.</span><br><span class="line">(gdb) info locals</span><br><span class="line">is_new = 0</span><br><span class="line">__func__ = &quot;InitShmData&quot;</span><br><span class="line">(gdb) f 1</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/07/14/2018-07-27-valgrind-sanitize/" data-id="clnfj5597005k7eqxcini1l6a" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/4/">Next &amp;raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DataBase/">DataBase</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ElasticSearch/">ElasticSearch</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Life/">Life</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NLP/">NLP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork/">NetWork</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Product/">Product</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Program/">Program</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Redis/">Redis</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/System/">System</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/grpc/">grpc</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/mq/">mq</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-11/" rel="tag">C++11</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DataBase/" rel="tag">DataBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LRU/" rel="tag">LRU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MQ/" rel="tag">MQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ProtoBuffer/" rel="tag">ProtoBuffer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/" rel="tag">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupCache/" rel="tag">groupCache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grpc/" rel="tag">grpc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s-basic/" rel="tag">k8s basic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx-grpc/" rel="tag">nginx grpc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 10px;">Algorithm</a> <a href="/tags/C-11/" style="font-size: 10px;">C++11</a> <a href="/tags/DataBase/" style="font-size: 10px;">DataBase</a> <a href="/tags/Go/" style="font-size: 10px;">Go</a> <a href="/tags/Kafka/" style="font-size: 10px;">Kafka</a> <a href="/tags/LRU/" style="font-size: 10px;">LRU</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/ProtoBuffer/" style="font-size: 10px;">ProtoBuffer</a> <a href="/tags/Redis/" style="font-size: 16.67px;">Redis</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/groupCache/" style="font-size: 10px;">groupCache</a> <a href="/tags/grpc/" style="font-size: 13.33px;">grpc</a> <a href="/tags/k8s/" style="font-size: 20px;">k8s</a> <a href="/tags/k8s-basic/" style="font-size: 10px;">k8s basic</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/nginx-grpc/" style="font-size: 10px;">nginx grpc</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/07/">July 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">May 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/03/">March 2012</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/10/20/2021-10-20-why-docker-supervisor/"> Docker里使用 supervisor 管理多个程序</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/14/2021-10-14-binary-tree-algo/">二叉树相关的递归算法题</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/13/2021-10-13-go-channel/">Go Channel 笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/12/2021-10-12-why-kafka-so-fast/">Kafka 吞吐量大的原因</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/11/2021-10-11-redis-pipeline/">Redis Pipline 与事务</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2023 zheng-ji<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

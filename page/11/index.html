@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>织网</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="织网">
+<meta property="og:url" content="http://yoursite.com/page/11/index.html">
+<meta property="og:site_name" content="织网">
+<meta property="og:locale">
+<meta property="article:author" content="zheng-ji">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="织网" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">织网</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-2013-09-15-jsonpjie-jue-kua-yu-qing-qiu" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/09/15/2013-09-15-jsonpjie-jue-kua-yu-qing-qiu/" class="article-date">
+  <time datetime="2013-09-15T13:50:00.000Z" itemprop="datePublished">2013-09-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NetWork/">NetWork</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/09/15/2013-09-15-jsonpjie-jue-kua-yu-qing-qiu/">Jsonp解决跨域请求</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>昨天搞了一整天js,遇到了各种我从没遇到的问题,真心觉得前端工程师是很厉害的。想不出为什么会有人说所谓的前端“无技术含量”的源论.前端要考虑的东西实在是多，也有其架构设计。特别是js. 我用的是phonegap + jqtouch做移动App</p>
+<p>场景是：<br>客户端使用Ajax技术向服务器发送请求，然后拉取数据</p>
+<p>Server端代码是php写的,</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$arr</span> = <span class="keyword">array</span>(</span><br><span class="line">        <span class="string">&#x27;user&#x27;</span>=&gt;<span class="string">&#x27;123&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;friends&#x27;</span> =&gt; <span class="number">234</span></span><br><span class="line">        )</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">json_encode</span>(<span class="variable">$arr</span>);</span><br></pre></td></tr></table></figure>
+
+<p>js代码,使用jquery发起get 请求,文件路径E:&#x2F;mytest&#x2F;test.html</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    url = <span class="string">&quot;http://127.0.0.1/test.php&quot;</span></span><br><span class="line">    $.<span class="title function_">get</span>(url,<span class="title function_">funtion</span>(<span class="params">result</span>) &#123;</span><br><span class="line">        <span class="title function_">alert</span>(result);</span><br><span class="line">    &#125;)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>看过jquery文档之后，我以为这样会返回我要的数据，真是图样图森破，chrome的控制台返回：不是同一个源，不允许跨域发请求。 </p>
+<p>#####什么是跨域请求<br>简单来说：a.com 域名下的js无法操作b.com或是c.a.com域名下的对象,上述场景中，<a target="_blank" rel="noopener" href="http://127.0.0.1/test.php">http://127.0.0.1/test.php</a> 和 E：&#x2F;mytest&#x2F;test.html本身就不属于同一个域下，因此不能访问。浏览器本身有同源策略，当初设计是出于安全考虑，百度给出了解释是：</p>
+<blockquote>
+<p>　同源策略，它是由Netscape提出的一个著名的安全策略。现在所有支持JavaScript 的浏览器都会使用这个策略。所谓同源是指，域名，协议，端口相同。当一个浏览器的两个tab页中分别打开来 百度和谷歌的页面当一个百度浏览器执行一个脚本的时候会检查这个脚本是属于哪个页面的，即检查是否同源，只有和百度同源的脚本才会被执行。</p>
+</blockquote>
+<p>我最后是通过查阅资料,采用jsonp的方式解决</p>
+<p>#####什么是jsonp</p>
+<blockquote>
+<p>　JSONP是JSON with Padding的略称。它是一个非官方的协议，它允许在服务器端集成Script tags返回至客户端，通过javascript callback的形式实现跨域访问（这仅仅是JSONP简单的实现形式） - 百度</p>
+</blockquote>
+<p>因此最后的Server端代码是php写的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$arr = array(</span><br><span class="line">        <span class="string">&#x27;user&#x27;</span>=&gt;<span class="string">&#x27;123&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;friends&#x27;</span> =&gt; <span class="number">234</span></span><br><span class="line">        )</span><br><span class="line">$callback = $_GET[<span class="string">&#x27;callback&#x27;</span>]; //新加</span><br><span class="line">echo $callback.json_encode($arr);</span><br></pre></td></tr></table></figure>
+
+<p>js代码,请求的时候，加入一个参数callback,通过javascripte callback形式调用服务器的scrpt tags的返回值</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    url = <span class="string">&quot;http://127.0.0.1/test.php?callback=?&quot;</span></span><br><span class="line">    $.<span class="title function_">get</span>(url,<span class="title function_">funtion</span>(<span class="params">result</span>) &#123;</span><br><span class="line">        <span class="title function_">alert</span>(result);</span><br><span class="line">    &#125;));</span><br></pre></td></tr></table></figure>
+
+<p>调用成功<br>这个东西纠结我大半天。但是有收获的 ：）</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/09/15/2013-09-15-jsonpjie-jue-kua-yu-qing-qiu/" data-id="clnfj558800177eqx2dfx51wl" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2013-09-12-nginx-plus-luaying-dui-zai-xian-zhuang-tai-fu-wu" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/09/12/2013-09-12-nginx-plus-luaying-dui-zai-xian-zhuang-tai-fu-wu/" class="article-date">
+  <time datetime="2013-09-12T15:12:00.000Z" itemprop="datePublished">2013-09-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Server/">Server</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/09/12/2013-09-12-nginx-plus-luaying-dui-zai-xian-zhuang-tai-fu-wu/">nginx+lua应对在线状态服务</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>几天前在@ideawu的博客上看到了其一篇文章中讲到的技术题.<br><a target="_blank" rel="noopener" href="http://www.ideawu.net/blog/archives/732.html">《在线状态服务在网站系统中的应用》</a> 。于是内心折腾的火焰便熊熊燃烧起来，连续几天晚上折腾到凌晨1点。感谢@agentzh 春哥与阿里巴巴的技术贡献,让我可以安心睡觉 :) </p>
+<p>在线状态服务这样的场景在互联网应用上比比皆是</p>
+<ul>
+<li>聊天系统中同时在线的人数</li>
+<li>游戏中同时在线玩家等</li>
+</ul>
+<p>文中所言,现实的在线状态应用场景是:<br>网页中用JavaScript启动一个定时器, 定期报告在线状态, 也就是向在线状态服务器发送心跳包.对某个同时在线100万人, 每天1亿PV的网站来说, 在线状态服务器一天接收到的心跳包大概是10亿个, 也即每秒10000个请求(10000qps).要实现这样的在线状态服务器, 也是一个挑战.</p>
+<p>好了，我当时真的很兴奋，感觉自己像接到了任务，立马打起了鸡血研究. 脑海中涌现出来的直觉是，使用tornado + Redis，这样的高并发组合应对这样的场景应该是无压力的，但是因为这样的事情我做过，想挑战自己非舒适的区域，挖掘新的知识大陆。<br>我们一直都说，没有经过打磨的想法一般都是廉价的。后来我想到的是Ngnix这样的服务器来抗如此高的请求，那么我们就自己写个拓展，查询内存数据库，这里我选择用redis来做kv内存数据库，</p>
+<p>文中谈到的自己设计精巧的kv数据库，甚至用C++写针对性的http服务，来提升通用服务器的性能。曾经写过一个KV数据库，其性能真的是渣渣。<a target="_blank" rel="noopener" href="https://github.com/zheng-ji/KvDb">源码链接</a>。欢迎吐槽.<br>一直以来听闻春哥的nginx lua模块拓展，可以为nginx定制业务。想想以前用c语言实现，简直就是痛苦,这一次可以使用lua，甚为欢悦，没有什么比探索新东西带来的乐趣更令人振奋了</p>
+<p>首先要有lua的运行环境。他是一种胶水粘合剂 ：） 还必须安装<strong>luajit</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#设置环境变量，后续安装需要</span><br><span class="line">shell&gt; export LUAJIT_LIB=/usr/local/lib</span><br><span class="line">shell&gt; export LUAJIT_INC=/usr/local/include/luajit-&lt;VERSION&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="需要安装的nginx-插件"><a href="#需要安装的nginx-插件" class="headerlink" title="需要安装的nginx 插件"></a>需要安装的nginx 插件</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ngx_devel_kit https://github.com/simpl/ngx_devel_kit</span><br><span class="line">set-misc-nginx-module https://github.com/agentzh/set-misc-nginx-module</span><br><span class="line">memc-nginx-module https://github.com/agentzh/memc-nginx-module </span><br><span class="line">lua-nginx-module https://github.com/chaoslawful/lua-nginx-module</span><br></pre></td></tr></table></figure>
+
+<h4 id="下载之后，安装nginx插件"><a href="#下载之后，安装nginx插件" class="headerlink" title="下载之后，安装nginx插件"></a>下载之后，安装nginx插件</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">./configure --prefix=/path/to/nginx_src --add-module=/path/to/ngx_devel_kit --add-module=set-misc-nginx-module \</span><br><span class="line">--add-module=/path/to/lua-nginx-module -add-module=ngx_devel_kit </span><br><span class="line">make </span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+<p>nginx.conf 文件                 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">location /echo &#123;  </span><br><span class="line">    default_type &#x27;text/plain&#x27;;  </span><br><span class="line">    echo &#x27;hello echo&#x27;;  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">location /lua &#123;  </span><br><span class="line">    default_type &#x27;text/plain&#x27;;  </span><br><span class="line">    content_by_lua &#x27;ngx.say(&quot;hello, lua&quot;)&#x27;;  </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+
+<p>也许你会遇到一些麻烦,执行如下命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; echo &quot;/usr/local/lib&quot; &gt; /etc/ld.so.conf.d/usr_local_lib.conf</span><br><span class="line">shell&gt; ldconfig</span><br></pre></td></tr></table></figure>
+
+<p>重启服务器之后，应该就可以看到hello,lua :) (到这里仅仅是开始，折腾了有点久)</p>
+<h3 id="好了，来完成ideawu的作业-：）"><a href="#好了，来完成ideawu的作业-：）" class="headerlink" title="好了，来完成ideawu的作业 ：）"></a>好了，来完成ideawu的作业 ：）</h3><blockquote>
+<p>在线状态服务, 是这样的一个服务, 它维护了网站当前的在线用户列表, 接受其它模块的查询. 是实现统计网站同时在线人数, 维护在线用户列表等功能的基础服务. 在Facebook的聊天系统中, 在线状态是为聊天系统服务的, 所以在线状态是一种”强”在线, 也即用户保持着和Comet服务器的连接, 可随时接受服务器推送(push)的消息.在高并发请求的情况下如何完成该需求呢</p>
+</blockquote>
+<p>使用 Lua 脚本语言操作 Redis。这里使用 content_by_lua_file （nginx_lua_module 模块具有）来引入 Lua 脚本文件。<br>agentzh 提供了一个很方便的开发包，如下：<a target="_blank" rel="noopener" href="https://github.com/agentzh/lua-resty-redis.git">lua-resty-redis</a></p>
+<p>该包中，有一个 lib 目录，将 lib 目录下的文件和子目录拷贝至目录 &#x2F;home&#x2F;zj&#x2F;soft&#x2F;data&#x2F;www&#x2F;lua&#x2F;<br>在 Nginx 配置文件中，需要加一行代码，以便引入 redis.lua。<br>注：加在 http 段里。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lua_package_path &quot;/home/zj/soft/data/www/lua//?.lua;;&quot;;  </span><br></pre></td></tr></table></figure>
+
+<p>为了使得 lua 脚本的修改能及时生效，需要加入一行代码，如下：注：在 server 段里，加入代码，如果不加此代码或者设置为 on 时，则需要重启 Nginx。 不过nginx 会报警</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lua_code_cache off;  </span><br></pre></td></tr></table></figure>
+
+<p>nginx.conf 里</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /getolNum &#123;</span><br><span class="line">    content_by_lua_file /conf/online.lua;  </span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<h5 id="online-lua-源码"><a href="#online-lua-源码" class="headerlink" title="online.lua 源码"></a>online.lua 源码</h5><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> redis = <span class="built_in">require</span> <span class="string">&quot;redis&quot;</span></span><br><span class="line"><span class="keyword">local</span> cache = redis.new()</span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> ok, err = cache.connect(cache, <span class="string">&#x27;127.0.0.1&#x27;</span>, <span class="string">&#x27;6379&#x27;</span>)</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> ok <span class="keyword">then</span></span><br><span class="line">    ngx.say(<span class="string">&quot;failed to connect:&quot;</span>, err)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">cache:set_timeout(<span class="number">30000</span>)</span><br><span class="line">args = ngx.req.get_uri_args()</span><br><span class="line">user = args[<span class="string">&quot;user&quot;</span>]</span><br><span class="line"><span class="comment">--设置用户 3 min 过期</span></span><br><span class="line">cache:setex(user,<span class="number">180</span>,<span class="number">23</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> res,err = cache:keys(<span class="string">&#x27;*&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">--count res num</span></span><br><span class="line">count = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">pairs</span>(res) <span class="keyword">do</span></span><br><span class="line">    count = count + <span class="number">1</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">ngx.say(count)</span><br><span class="line"><span class="keyword">local</span> ok, err = cache:<span class="built_in">close</span>()</span><br></pre></td></tr></table></figure>
+
+<p>结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl localhost/getOlnum?user=zj</span><br><span class="line">返回：1</span><br><span class="line">curl localhost/getOlnum?user=zhengji</span><br><span class="line">返回：2</span><br></pre></td></tr></table></figure>
+
+<p>Happy Hacking :)</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/09/12/2013-09-12-nginx-plus-luaying-dui-zai-xian-zhuang-tai-fu-wu/" data-id="clnfj5589001a7eqx2dnm6hmu" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2013-08-20-minigame-fu-wu-duan-she-ji" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/08/20/2013-08-20-minigame-fu-wu-duan-she-ji/" class="article-date">
+  <time datetime="2013-08-20T10:54:00.000Z" itemprop="datePublished">2013-08-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Server/">Server</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/08/20/2013-08-20-minigame-fu-wu-duan-she-ji/">MiniGame 服务端设计</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>  最近和小伙伴们在做一个游戏。有机会单挑服务端了。被信任是有压力也有动力 ：），可以尝试各种好玩的技术的感觉是很爽。Jerry 和Cat 所主导的客户端，Mzt的美术都很给力。作为云风的忠实粉，可以独立设计游戏服务器后台，我对这样的挑战期待已久。</p>
+<h4 id="逻辑架构图"><a href="#逻辑架构图" class="headerlink" title="逻辑架构图"></a>逻辑架构图</h4><img src="/images/2013/08/minigame.png" class="">
+
+<p>主要由三大逻辑层组成：</p>
+<ul>
+<li>连接（接入）服务器模块:   ConnServer</li>
+<li>游戏服务器模块 ：        GameServer</li>
+<li>缓存服务器模块：         CacheServer<br>(附：我们自己编写了静态资源的服务器功能，提供给用户下载Apk的功能)</li>
+</ul>
+<ul>
+<li><p>接入服务器模块<br>服务器Socket建立，建立玩家通讯连接，为每一位连上服务器的玩家建立一个线程。<br>服务器维护一个连接列表。采用map 的方式记录每一位玩家的连接信息。</p>
+</li>
+<li><p>游戏服务器模块：<br>  这是处理游戏业务逻辑的主要模块。它包括了消息包解析器服务（Parser），游戏大厅服务（GameRoom），账户体系服务（Account）,消息中心服务（MsgCenter）,心跳服务（Heartbeat）.日志功能模块（log）</p>
+</li>
+</ul>
+<ul>
+<li>消息包解析器服务（Parser）:主要实现了消息状态机。解析收到的客户端的数据包的协议号，然后将消息路由到不同功能模块去处理。</li>
+<li>账户体系服务（Account）：提供用户注册和登陆管理的模块</li>
+<li>游戏大厅服务（GameRoom）：采用Redis 内存数据库，构造消息队列。模拟游戏大厅，并对玩家进行配对筛选，构造set类型的匹配对完成1对1 的对战模式</li>
+<li>消息中心服务（MsgCenter）:完成游戏过程中玩家信息的交互。</li>
+<li>心跳服务（Heartbeat）：这是一个相对独立的进程，每7秒遍历用户信息，完成心跳检测，清理无效的过期数据，保持游戏数据的一致性.</li>
+<li>日志功能：打印程序中的日志。</li>
+<li>静态资源下载器（downloader）：采用tornado拓展编写web服务，提供Apk静态资源下载的模块</li>
+</ul>
+<ul>
+<li>缓存服务器模块<br>  现阶段游戏对服务的要求不需要做到持久化的保存，于是服务器没有采用mysql之类的范式数据库。我们的数据收发一直处于频繁状态，于是我们采用了Redis这种分布式的内存数据库来实现我们的数据缓存模块，后续会介绍数据的键值设计</li>
+</ul>
+<h4 id="类图"><a href="#类图" class="headerlink" title="类图"></a>类图</h4><img src="/images/2013/08/class.png" class="">
+
+<ul>
+<li>cache数据库的设计：<br>利用Redis的数据特性,新增一个用户保证用户ID的原子性。</li>
+</ul>
+<ul>
+<li>counter: 对新用户的注册执行自增操作，从而保证账号Id 唯一</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">说明 key value</span><br><span class="line">实例 counter 1</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>用户账号：<br>Key设计为 user：name:用户名’，Value用户ID，<br>为保证用户可以同时通过id 查找名字 ，也设计了 ‘user:id:ID值’值为用户名</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">说明 key                    value</span><br><span class="line">实例 User:name:zhengji         1</span><br><span class="line">实例 User:id:1                 zhengji</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>玩家通讯缓存设计：<br>Key值：user:用户名：msg: Value:‘分数，buff_id,时间戳’</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">说明 key              value</span><br><span class="line">实例 user:zhengji:msg 100, 2,   1324256778.89</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>玩家匹配对设计<br>在游戏大厅的功能里，我们采用了redis的list模拟了玩家等待队列的功能 在真正匹配到玩家对的时候，使用table_xx 来记录玩家匹配信息,它是一个set的类型,在游戏退出的时候会被驱动去清除该表的信息</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">说明   key      value</span><br><span class="line">实例 Table_1 ‘jerry,zhengji’</span><br></pre></td></tr></table></figure>
+<pre><code>   
+</code></pre>
+<p>为标志每个玩家的table号，我们使用了另外一个键值对<br>Table:玩家名：tableindex.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">说明   key       value</span><br><span class="line">实例 Table:zhengji 1</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/08/20/2013-08-20-minigame-fu-wu-duan-she-ji/" data-id="clnfj557q00017eqx4pojems5" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2013-08-30-jing-ran-ye-yong-dao-liao-oracle" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/08/16/2013-08-30-jing-ran-ye-yong-dao-liao-oracle/" class="article-date">
+  <time datetime="2013-08-16T12:25:00.000Z" itemprop="datePublished">2013-08-16</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/DataBase/">DataBase</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/08/16/2013-08-30-jing-ran-ye-yong-dao-liao-oracle/">竟然也用到了Oracle</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="Oracle初印象"><a href="#Oracle初印象" class="headerlink" title="Oracle初印象"></a>Oracle初印象</h4><p>曾经阿里的去O化搞得满城风雨，，随后很多企业也开始跟风去除Oracle，让Oracle这样的企业都为之咳嗽了一阵子。有兴趣的朋友可以看看王坚博士的文章。作为一个开源软件热爱者，首先接触到的一定是Mysql， 随后才是MongoDB,Redis,LevelDb。无论如何是怎么也想不到会去接触Oracle，就像我再也没有机会也不会去使用3.5英寸软盘的样子,因为这样会让我感觉到世界在倒退。</p>
+<p>先知言：”存在即合理”。也就为以后的遇见埋下伏笔。果然，由于历史原因，庞大的业务体系下，我终于还是遇见了它，带着对伟大数据库敬仰的心探索了一把。说实话，当你习惯了简单的Mysql之类的思维之后，接触Oracle就有点纠结了。我愿意称其为接触另一种新思维方式。没有比这更值得鼓舞人心的动力了 ：）</p>
+<img src="/images/2013/08/oracle.png" class="">
+
+<p>我做的事情是在游戏数据操作中做一个抽象的操作类。涉及框架代码的改造，这过程有点DT。我从事的工作大部分是C++开发这过程着实feel到了“生命太短，远离C++” 涉及到多重继承，虚析构函数，同个父类冲突，属性可见性,抽象类可用。Debug 了两天。还好有GDB这种家伙。<br>Oracle查询流程</p>
+<p>简单描述下普通的Oracle建立连接以及查询的顺序,使用的是OCCI （Oracle的C++接口）:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//创建enviroment变量</span><br><span class="line">Environment *env = Environment::createEnvironment( Environment::DEFAULT);</span><br><span class="line">//创建连接</span><br><span class="line">Connection *conn = env-&gt;createConnection( userName, password, connectString);</span><br><span class="line">//创建 查询描述符</span><br><span class="line">Statement *stmt = conn-&gt;createStatement( &quot;SELECT blobcol FROM mytable&quot;);</span><br><span class="line">//执行查询，返回结果集</span><br><span class="line">ResultSet *rs = stmt-&gt;executeQuery();</span><br><span class="line">//关闭查询，环境变量</span><br><span class="line">stmt-&gt;closeResultSet(rs);</span><br><span class="line">conn-&gt;terminateStatement(stmt);</span><br><span class="line">env-&gt;terminateConnection(conn);</span><br><span class="line">Environment::terminateEnvironment(env);</span><br></pre></td></tr></table></figure>
+
+<p>蛋蛋的疼</p>
+<p>期间遇到了Oracle 好多奇形怪状的问题。尽管如此，我喜欢这样折腾自己 :) 是不是有点变态。</p>
+<ul>
+<li>创建环境变量类指明多线程使用。该任务需要多线程执行的，如果不特别声明多线程执行，如果不特别指明的话会奔溃，我纠结了一天就是因为没有指明这个常量。这在Mysql是没有见到的吧</li>
+<li>连接管理。Oracle的连接关闭很重要。查询任务完成后要及时关闭连接。如果不关闭连接和环境句柄，程序就会有很大的潜在bug,程序执行期间也会奔溃。这过程中自己写了连接管理模块。特别处理了多线程处理时的构造与析构。</li>
+</ul>
+<p>以下是连接管理类的代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;string.h&gt;</span><br><span class="line">using namespace oracle::occi;</span><br><span class="line">class COraclconn</span><br><span class="line">&#123;</span><br><span class="line">    public :</span><br><span class="line"></span><br><span class="line">        COraclconn (const std::string &amp; user, const std:: string&amp; password,</span><br><span class="line">                const std:: string&amp; dbname)</span><br><span class="line">        &#123;</span><br><span class="line">            m_status = false;</span><br><span class="line">            env = NULL;</span><br><span class="line">            conn = NULL;</span><br><span class="line">            stmt = NULL;</span><br><span class="line">            env = Environment::createEnvironment( Environment::THREADED_MUTEXED);</span><br><span class="line">            if (! env)</span><br><span class="line">            &#123;</span><br><span class="line">                env = NULL;</span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line">            conn = env-&gt; createConnection(user, password, dbname);</span><br><span class="line">            if (! conn)</span><br><span class="line">            &#123;</span><br><span class="line">                conn = NULL;</span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line">            m_status = true;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ~COraclconn ()</span><br><span class="line">        &#123;</span><br><span class="line">            if ( conn &amp;&amp; stmt)</span><br><span class="line">                conn-&gt; terminateStatement( stmt);</span><br><span class="line">            if ( env &amp;&amp; conn)</span><br><span class="line">                env-&gt; terminateConnection( conn);</span><br><span class="line">            if ( env)</span><br><span class="line">                Environment:: terminateEnvironment( env);</span><br><span class="line">        &#125;</span><br><span class="line">        Statement * getstmt( const string&amp; sql)</span><br><span class="line">        &#123;</span><br><span class="line">            if (! m_status)</span><br><span class="line">                return NULL;</span><br><span class="line">            if ( stmt)</span><br><span class="line">            &#123;</span><br><span class="line">                conn-&gt; terminateStatement( stmt);</span><br><span class="line">                stmt = NULL;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">            stmt = conn-&gt; createStatement(sql);</span><br><span class="line">            if (! stmt)</span><br><span class="line">            &#123;</span><br><span class="line">                stmt = NULL;</span><br><span class="line">                m_status = false;</span><br><span class="line">            &#125;</span><br><span class="line">            return stmt;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    protected :</span><br><span class="line">        bool m_status;</span><br><span class="line">        Environment *env ;</span><br><span class="line">        Connection *conn ;</span><br><span class="line">        Statement *stmt ;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>还好我做的是封装SQL，对于其诡异的语法可以不用涉及到。相信每个热爱技术的人儿碰到写相对非业务的代码会感到充实愉快的吧。</p>
+<p>Happy Hacking ：）</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/08/16/2013-08-30-jing-ran-ye-yong-dao-liao-oracle/" data-id="clnfj558800157eqxd0e1ef9v" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2013-08-30-feng-pei-zhi-lu" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/07/15/2013-08-30-feng-pei-zhi-lu/" class="article-date">
+  <time datetime="2013-07-15T11:32:00.000Z" itemprop="datePublished">2013-07-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Life/">Life</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/07/15/2013-08-30-feng-pei-zhi-lu/">封培之旅</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>作为新入职的员工，参加了公司为期10天的封闭培训，此文记下这些日子的一些感悟。 因为 “思绪来地快，去地也快” by 云风。</p>
+<h4 id="遇到的人"><a href="#遇到的人" class="headerlink" title="遇到的人"></a>遇到的人</h4><p>因为缘分，我和其他6位同学组成了小组（肆无忌惮组），其中一位是武大的博士（windsunwang），一位是来广研微信的华工师兄(xiaochunguo)，有趣的是我们曾在网易面试的时候相遇，一位广研邮箱的中大师姐（vinajiang），琳琅天上的美术设计师（Mzt，鬼斧神功的画技，我们称之为大师），还有QQ空间的南大愤青，（杰哥），华科运维女（hazel）,大家一起完成每一天的任务，默契也在合作中慢慢养成。感受到了windsunwang的博学和严谨，xiaochunguo的冷静，Mzt的艺术家气息，vinajiang的细腻，hazel的积极。当然还少不了杰哥这个SB :) ，他说他封闭培训的收获就是大师学会画蜗牛，囧。在大伙身上感受到了久违的集体温暖</p>
+<p>我的室友：litten是位小清新的SNG前端工程师，毕业于华中科大，litten有想法也有激情，人很文静，很好相处，因为有着很多共同话题，每天晚上因为聊得太晚而导致早上起床很累。这样的日子，想必我今后会怀念这位短暂的室友吧。</p>
+<p>我们“班”里有很多个性鲜明的人，有的很主动高调，属于喜欢当领导的人，有的是很有实力的低调派，在需要的时候总是会一语惊人，腾讯的确是聚集了很多优秀的人才，大家的知识储备以及视野和专业度都很高。特别是两位产品经理。独特的视角和条理分明的逻辑，以及优秀的口才，让我钦佩。唯一有些遗憾的是，搞技术的人多少感觉不出。或许没有深入了解吧。</p>
+<h4 id="看到的事"><a href="#看到的事" class="headerlink" title="看到的事"></a>看到的事</h4><p>封闭培训讲了不少所谓的职场课程，尽管我认为有些厚黑，但在职场的确需要适应，调整心态去接受吧少年。《体验式培训课》，以及《互联网行业发展》让我获益匪浅。“目标，计划，确认，执行”（Target Plan Chect Action）的指导方针应该是我们需要具备的思维方式。合作，沟通，领导在团队极其重要,特别是团队的规模到了一定的规模。主动的人总是应势站出来承担了责任，积极的热情，敬业的态度使得他们成为了耀眼的角色。培训过程中还是克服不少羞涩，拿起了话筒，在队友需要我的时候挺身而出，但总归还是不能像某些同学一样很老练地去表达。只要你细心观察，便能吸收到周围同学的正能量，比如博士跟我讲问卷设计的时候，深切感受到真正做过研究的人，他们严谨的逻辑思维让你觉得是如此的靠谱。</p>
+<h4 id="震撼的产品体验报告会"><a href="#震撼的产品体验报告会" class="headerlink" title="震撼的产品体验报告会"></a>震撼的产品体验报告会</h4><p>我们做的是QQ空间的产品体验报告，最终只是得到了阳光普照奖。这次活动我细心观摩了真正的产品经理，或者有用心的同学是如何做这个Presentation的，其中一组同学的体验报告包涵了竟品分析，用户调研，原型设计，同时也用了很炫的展示手法，毫无悬念的拿走了第一名。用心做事的人是应该值得尊敬的。</p>
+<p>很多时候我们会感觉做产品其实只是耍耍花样，看到很多天花乱缀的文章为了一个小按钮而大书特书，有点没必要。如今看来，如果把握每一个需求，隐形要求你有丰富的知识储备，大量的用于调研（Custom Engagement）.如果你想你的方案令他人信服，你需要组织资源，撰写有料的报告，甚至做一个小Demo,如果可能的话做自些小测试。这些同学让我看到了很赞的能力。</p>
+<p>说到这里，我也看到了我们班有位微信的产品经理，在我与之交谈的过程中，由心的欣赏。除去淡定的临场发言的实力，更具闪光点的是其洞察力与组织能力，在谈及百度发展历程，以及产品发展定位，都能信手拈来，有理有据，中肯的道出个中要害，想必其阅读量很大。反思自己，虽然很多资料我也阅读过，但没有去总结形成自己的思想，只是在他人提及之后才恍然大悟。虽然我不是做产品的，“我只是了解了解就够了？”抱有这样的想法是可以么？如果程序员只是停留在代码中自娱自乐，没有思考产品，用户的东西，我想多半是没有灵魂的吧。以后要真的去沉淀才是。</p>
+<p>感觉腾讯能发展成今天这样子，的确是有其伟大之处。至少是招到了不少优秀的同学，曾经有人说腾讯是一个消耗人才的地方，不可否认大公司因流程体制都有通病，但我感受到，只有用心，通过不同的方式，可以开阔视野，如果你用心并去努力，还是能收获到。学习的涵义也应该慢慢变得多元化（沟通，情绪，产品），而不仅仅只是单一的技术。</p>
+<p>结尾想引用这次封陪之旅一位老师的话 “坚持是最好的美德” ：） 。问题很多，耐心勇敢去做你能尽到的改变吧,别泄气哈。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/07/15/2013-08-30-feng-pei-zhi-lu/" data-id="clnfj558700137eqxd2608fxf" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2013-08-29-hui-gu-zeromq" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/06/29/2013-08-29-hui-gu-zeromq/" class="article-date">
+  <time datetime="2013-06-29T15:25:00.000Z" itemprop="datePublished">2013-06-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NetWork/">NetWork</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/06/29/2013-08-29-hui-gu-zeromq/">回顾 ZeroMQ</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今日在整理曾经的学习笔记，看到了ZeroMQ，号称史上最快消息内核。曾经在一创业公司用其开发过一些<a target="_blank" rel="noopener" href="https://github.com/zheng-ji/log2aws">后端服务</a>。当时用Go语言实现 源代码,使用的便是<a target="_blank" rel="noopener" href="https://github.com/alecthomas/gozmq">gozmq库</a>.这个消息通信框架库的文章有很多，比较著名的当属<a href="www.searchtb.com/2012/08/zeromq-primer.html">一淘</a>的，（技术文章这样写，的确是让读者舒服 ：））还有官方文档</p>
+<h4 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h4><ul>
+<li><p>高度封装。<br>它处于会话层之上，应用层之下，你不需要自己写一行的socket函数调用就能完成复杂的网络通信工作。</p>
+</li>
+<li><p>点对点的消息传输上。<br>传统的消息队列都需要一个消息服务器来存储转发消息。而ZeroMQ则把侧重点放在了点对点的消息传输上。ZeroMQ能缓存消息，但是是在发送端缓存。ZeroMQ里有水位设置的相关接口来控制缓存量。当然，ZeroMQ也支持传统的消息队列（通过zmq_device来实现）。这样使得客户端在重启的时候可以重新发送上次未发送成功的消息</p>
+</li>
+<li><p>灵活的收发模式。<br>REQ-REP 请求响应模式，PUSH-PULL： 推拉模式， PUB-SUB： 发布订阅模式 等。 其中任何一方都可以作为服务端</p>
+</li>
+<li><p>以统一接口支持多种底层通信方式<br>支持线程间通信，进程间通信，跨主机通信，假如你想把本机多进程的软件放到跨主机的环境里去执行，通常要将IPC接口用套接字重写一遍。非常麻烦。而有了ZeroMQ就方便多了，只要把通信协议从”ipc:&#x2F;&#x2F;&#x2F;xxx”改为”tcp:&#x2F;&#x2F;<em>.</em>.<em>.</em>:****”就可以了，其他代码通通不需要改，如果这个是从配置文件里读的话，那么程序就完全不要动了，直接复制到其他机器上就可以了。</p>
+</li>
+<li><p>异步高效。<br>ZeroMQ为了高性能的消息发送而服务的，它发送消息是异步模式，通过单独出一个IO线程来实现，要把资源释放函数交给ZeroMQ让ZeroMQ发完消息自己释放，所以消息发送调用之后不要立刻释放相关资源。</p>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/06/29/2013-08-29-hui-gu-zeromq/" data-id="clnfj5585000u7eqx9aeah05k" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2013-08-30-fen-bu-shi-chu-li-kuang-jia-gearman" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/06/20/2013-08-30-fen-bu-shi-chu-li-kuang-jia-gearman/" class="article-date">
+  <time datetime="2013-06-19T16:00:00.000Z" itemprop="datePublished">2013-06-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Server/">Server</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/06/20/2013-08-30-fen-bu-shi-chu-li-kuang-jia-gearman/">分布式处理框架-Gearman</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>近日折腾Gearman.有兴趣可以参考阅读<a target="_blank" rel="noopener" href="http://www.gearman.org/">这个</a>,<a target="_blank" rel="noopener" href="http://pythonhosted.org/gearman/">这个</a>，还有<a target="_blank" rel="noopener" href="http://www.s135.com/dips/">这个</a></p>
+<p>官方说法：</p>
+<blockquote>
+<p>Gearman provides a generic application framework to farm out work to other machines or processes that are better suited to do the work. It allows you to do work in parallel, to load balance processing, and to call functions between languages. It can be used in a variety of applications, from high-availability web sites to the transport of database replication events. In other words, it is the nervous system for how distributed processing communicates. </p>
+</blockquote>
+<p>Gearman是一个提供机器与进程之间相互协作的通信框架。可以让你并行处理作业以及负载均衡，提供不同的语言接口使得不同语言可以互相协作。用处很广泛，从web站点到数据库Replication事件。换句话说，是一个分布式的通讯框架</p>
+<h4 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h4><ul>
+<li><p>开源：<br>  多语言支持：Gearman支持的语言种类非常丰富。让我们能够用一种语言来编写Worker程序，但是用另外一种语言编写Client程序。</p>
+</li>
+<li><p>灵活：不必拘泥于固定的形式。您可以采用你希望的任何形式，例如 Map&#x2F;Reduce。</p>
+</li>
+<li><p>快速：Gearman的协议非常简单，并且有一个用C语言实现的，经过优化的服务器，保证应用的负载在非常低的水平。</p>
+</li>
+<li><p>可植入：因为Gearman非常小巧、灵活置入到现有的任何系统中。</p>
+</li>
+<li><p>无单点故障：Gearman可扩展系统，可以避免系统的失败。</p>
+</li>
+</ul>
+<h4 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h4><p>听上去很诱惑的样子了。试想下：<br>我们的服务器有IO读写密集型，存储密集型，CPU使用不频繁，内存使用不频繁。如果我们能根据业务充分调动起各个服务器的特点。实现服务器的最大价值。Gearman可以登上舞台 ：）</p>
+<p>图解工作流</p>
+<img src="/images/2013/08/gearman.png" class="">
+
+<h4 id="Gearman-有三个角色"><a href="#Gearman-有三个角色" class="headerlink" title="Gearman 有三个角色"></a>Gearman 有三个角色</h4><ul>
+<li>Job Server:中央调度，消息中心，负载均衡</li>
+<li>Client：发起Job,可由任何语言编写</li>
+<li>Worker：负责执行Job，执行业务流</li>
+</ul>
+<p>实操安装Gearman（以ubuntu为例子）,默认的端口4730</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install gearman</span><br></pre></td></tr></table></figure>
+
+<p>安装python-gearman</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install python-gearman</span><br></pre></td></tr></table></figure>
+
+<p>用python编写<br>worker代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#worker.py</span><br><span class="line">import os</span><br><span class="line">import gearman</span><br><span class="line">import math </span><br><span class="line"> </span><br><span class="line">class CustomGearmanWorker(gearman.GearmanWorker):</span><br><span class="line">   def on_job_execute(self, current_job):</span><br><span class="line">          return super(CustomGearmanWorker, self).on_job_execute(current_job)</span><br><span class="line">def task_callback(gearman_worker, job):</span><br><span class="line">    print job.data</span><br><span class="line">    return job.data + &quot; has received&quot; </span><br><span class="line">                   </span><br><span class="line">new_worker = CustomGearmanWorker([&#x27;127.0.0.1:4730&#x27;])</span><br><span class="line">new_worker.register_task(&quot;ping&quot;, task_callback)</span><br><span class="line">new_worker.work()</span><br></pre></td></tr></table></figure>
+
+<p>client代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python2.7</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="comment"># # file: client.py</span></span><br><span class="line"><span class="keyword">from</span> gearman <span class="keyword">import</span> GearmanClient</span><br><span class="line">new_client = GearmanClient([<span class="string">&#x27;127.0.0.1:4730&#x27;</span>])</span><br><span class="line">current_request = new_client.submit_job(<span class="string">&#x27;ping&#x27;</span>, <span class="string">&#x27;foo&#x27;</span>)</span><br><span class="line">new_result = current_request.result</span><br><span class="line"><span class="built_in">print</span> new_resul</span><br></pre></td></tr></table></figure>
+
+<p>结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">foo has received</span><br></pre></td></tr></table></figure>
+
+<p>用Go测试下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#gearman的Go库,内有example</span><br><span class="line">go get https://github.com/mikespook/gearman-go</span><br></pre></td></tr></table></figure>
+
+<p>Happy Hacking!</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/06/20/2013-08-30-fen-bu-shi-chu-li-kuang-jia-gearman/" data-id="clnfj558600117eqxa8qua4ux" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2013-08-29-unix-domain-socket-ipctong-xin-ji-zhi" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/06/17/2013-08-29-unix-domain-socket-ipctong-xin-ji-zhi/" class="article-date">
+  <time datetime="2013-06-17T15:52:00.000Z" itemprop="datePublished">2013-06-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NetWork/">NetWork</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/06/17/2013-08-29-unix-domain-socket-ipctong-xin-ji-zhi/">Unix Domain Socket – IPC通信机制</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="什么是Unix-Domain-Socket"><a href="#什么是Unix-Domain-Socket" class="headerlink" title="什么是Unix Domain Socket"></a>什么是Unix Domain Socket</h4><p>基于socket的框架上发展出一种IPC机制，就是UNIX Domain Socket。虽然网络socket也可用于同一台主机的进程间通讯（通过loopback地址127.0.0.1），但是UNIX Domain Socket用于IPC更有效率：</p>
+<ul>
+<li>不需要经过网络协议栈</li>
+<li>不需要打包拆包、计算校验和、维护序号和应答等</li>
+</ul>
+<p>只是将应用层数据从一个进程拷贝到另一个进程。这是因为，IPC机制本质上是可靠的通讯，而网络协议是为不可靠的通讯设计的。UNIX Domain Socket也提供面向流和面向数据包两种API接口，类似于TCP和UDP，但是面向消息的UNIX Domain Socket也是可靠的，消息既不会丢失也不会顺序错乱。</p>
+<h4 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h4><p>UNIX Domain Socket是全双工的，API接口语义丰富，相比其它IPC机制有明显的优越性，目前已成为使用最广泛的IPC机制，比如X Window服务器和GUI程序之间就是通过UNIX Domain Socket通讯的。</p>
+<p>Nginx通过unix:&#x2F;socket与fastcgi连接，提升性能,比tcp socket要高效</p>
+<ul>
+<li>在nginx.conf中修改配置为：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fastcgi_pass unix:/tmp/php-cgi.sock;</span><br><span class="line">#fastcgi_pass 127.0.0.1:9000;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在php-fpm.conf中修改配置为：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/tmp/php-cgi.sock</span><br></pre></td></tr></table></figure>
+
+<p>通信过程</p>
+<img src="/images/2013/08/ipc_unix_socket-300x300.png" class="">
+
+<p>用Unix domain socket写的Demo</p>
+<p>使用UNIX Domain Socket的过程和网络socket十分相似，也要先调用socket()创建一个socket文件描述符，address family指定为AF_UNIX，type可以选择SOCK_DGRAM或SOCK_STREAM，protocol参数仍然指定为0即可。通常是指定&#x2F;tmp&#x2F;目录下的一个文件作为通信路径</p>
+<p>源码demo<a target="_blank" rel="noopener" href="https://github.com/zheng-ji/ToyCollection/tree/master/unix-sock">链接</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/06/17/2013-08-29-unix-domain-socket-ipctong-xin-ji-zhi/" data-id="clnfj5586000z7eqx2oad5zxi" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2013-08-29-dou-ban-xi-ai-wen-zhang-xia-zai-qi" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/06/12/2013-08-29-dou-ban-xi-ai-wen-zhang-xia-zai-qi/" class="article-date">
+  <time datetime="2013-06-12T15:31:00.000Z" itemprop="datePublished">2013-06-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/06/12/2013-08-29-dou-ban-xi-ai-wen-zhang-xia-zai-qi/">豆瓣喜爱文章下载器</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>收藏一些不错的文章</p>
+<p>在豆瓣阅读到一些好的文章，通常会点击加心喜爱。久而久之，就淡忘了，于是想把他们下载下来，用了一天的时间写了具有爬虫和分析功能的下载器。使用了BeautifulSoup,urllib模块.可以一次性抓取其他人的文章。</p>
+<p>使用方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="comment">#用户名,可以写入douban ID</span></span><br><span class="line">    usrnames = [<span class="string">&quot;laiyonghao&quot;</span>,<span class="string">&quot;fenng&quot;</span>]</span><br><span class="line">        <span class="keyword">for</span> name <span class="keyword">in</span> usrnames:</span><br><span class="line">                cwl = Crawler(name)</span><br><span class="line">        cwl.start()</span><br><span class="line">        parser = Parser(cwl)</span><br><span class="line">        parser.run()</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>运行 python main.py</p>
+</blockquote>
+<p>结果 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">tmp</span><br><span class="line">    ├── fenng</span><br><span class="line">    │   ├── Got talent?</span><br><span class="line">    │   ├── QCon Beijing 2013 乱记</span><br><span class="line">    │   ├── 北京生存指南</span><br><span class="line">    │   ├── 发现「讷客」</span><br><span class="line">    │   ├── 父亲谈创新</span><br><span class="line">    │   ├── 和菜头对豆瓣用户骂声的回应</span><br><span class="line">    │   ├── 胡扯两句</span><br><span class="line">    │   ├── 年会：公司人的新民俗</span><br><span class="line">    │   ├── 一个关于嘲笑的小故事</span><br><span class="line">    │   ├── 有些事，蹲在家里是永远实现不了的。</span><br><span class="line">    │   ├── 赞</span><br><span class="line">    │   └── 中国说唱教父--尹相杰&amp;lt;转&amp;gt;</span><br><span class="line">    └── laiyonghao</span><br><span class="line">        ├── Live Together, Hate Each Other</span><br><span class="line">        ├── 当初的愿望实现了么？</span><br><span class="line">        ├── 豆瓣阅读即将开售（已上线）</span><br><span class="line">        ├── 婚礼主题曲背后的故事</span><br><span class="line">        └── 科普也需严谨---对《数学之美》密码部分的评论</span><br></pre></td></tr></table></figure>
+
+<p>源代码<a target="_blank" rel="noopener" href="https://github.com/zheng-ji/douban-likes-crawler.git">链接</a><br>Happy Hacking : )</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/06/12/2013-08-29-dou-ban-xi-ai-wen-zhang-xia-zai-qi/" data-id="clnfj5583000n7eqx32g5cxl6" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2013-08-29-c-plus-plus-yu-pythonde-hun-he-bian-cheng-pythontuo-zhan-bian-xie" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/06/08/2013-08-29-c-plus-plus-yu-pythonde-hun-he-bian-cheng-pythontuo-zhan-bian-xie/" class="article-date">
+  <time datetime="2013-06-08T15:42:00.000Z" itemprop="datePublished">2013-06-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Program/">Program</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/06/08/2013-08-29-c-plus-plus-yu-pythonde-hun-he-bian-cheng-pythontuo-zhan-bian-xie/">C++与Python的混合编程</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="python拓展编写"><a href="#python拓展编写" class="headerlink" title="python拓展编写"></a>python拓展编写</h4><p>C++编写python的拓展。提高程序运行效率<br>我理解的一般流程:</p>
+<ul>
+<li>编写自己的业务逻辑代码本例子如</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string add(int a,int b)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>包装为python函数，用于解析python传进来的参数</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PyObject* <span class="title function_">wrap_add</span><span class="params">(PyObject* self,PyObject* args)</span>;</span><br><span class="line"><span class="comment">//解析参数</span></span><br><span class="line">PyArg_ParseTuple(args,<span class="string">&quot;i|i&quot;</span>,&amp;a,&amp;b);</span><br><span class="line"><span class="comment">//构建返回值</span></span><br><span class="line">Py_BuildValue(<span class="string">&quot;s&quot;</span>,add(a,b).c_str());</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>编写映射函数</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> PyMethodDef bintMethods[] =</span><br><span class="line">&#123;</span><br><span class="line">        &#123;<span class="string">&quot;add&quot;</span>, wrap_add, METH_VARARGS, <span class="string">&quot;For add&quot;</span>&#125;,</span><br><span class="line">            &#123;<span class="literal">NULL</span>, <span class="literal">NULL</span>,<span class="number">0</span>,<span class="literal">NULL</span>&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>*.模块初始化函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">initbint</span><span class="params">()</span> &#123;</span><br><span class="line">    PyObject* m;</span><br><span class="line">    m = Py_InitModule(<span class="string">&quot;bint&quot;</span>, bintMethods);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;BigNum.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;python2.7/Python.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="built_in">string</span> <span class="title function_">add</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span> &#123;</span><br><span class="line">    Bint <span class="title function_">num1</span><span class="params">(a)</span>;</span><br><span class="line">    Bint <span class="title function_">num2</span><span class="params">(b)</span>;</span><br><span class="line">    Bint ans = num1 + num2;</span><br><span class="line">    <span class="keyword">return</span> Bint::write(ans);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">string</span> <span class="title function_">multiple</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span> &#123;</span><br><span class="line">    Bint <span class="title function_">num1</span><span class="params">(a)</span>;</span><br><span class="line">    Bint <span class="title function_">num2</span><span class="params">(b)</span>;</span><br><span class="line">    Bint ans = num1 * num2;</span><br><span class="line">    <span class="keyword">return</span> Bint::write(ans);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PyObject* <span class="title function_">wrap_add</span><span class="params">(PyObject* self,PyObject* args)</span> &#123;</span><br><span class="line">    <span class="type">int</span> a,b;</span><br><span class="line">    <span class="keyword">if</span> (!PyArg_ParseTuple(args,<span class="string">&quot;i|i&quot;</span>,&amp;a,&amp;b))</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span> Py_BuildValue(<span class="string">&quot;s&quot;</span>,add(a,b).c_str());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PyObject* <span class="title function_">wrap_mul</span><span class="params">(PyObject* self,PyObject* args)</span> &#123;</span><br><span class="line">    <span class="type">int</span> a,b;</span><br><span class="line">    <span class="keyword">if</span> (!PyArg_ParseTuple(args,<span class="string">&quot;i|i&quot;</span>,&amp;a,&amp;b))</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span> Py_BuildValue(<span class="string">&quot;s&quot;</span>,multiple(a,b).c_str());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> PyMethodDef bintMethods[] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123;<span class="string">&quot;add&quot;</span>, wrap_add, METH_VARARGS, <span class="string">&quot;For add&quot;</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;mul&quot;</span>, wrap_mul, METH_VARARGS, <span class="string">&quot;For mul&quot;</span>&#125;,</span><br><span class="line">    &#123;<span class="literal">NULL</span>, <span class="literal">NULL</span>,<span class="number">0</span>,<span class="literal">NULL</span>&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span>              <span class="comment">//不加会导致找不到initbint</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">initbint</span><span class="params">()</span> &#123;</span><br><span class="line">    PyObject* m;</span><br><span class="line">    m = Py_InitModule(<span class="string">&quot;bint&quot;</span>, bintMethods);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译成动态链接库</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">all:</span><br><span class="line">    g++ -fPIC -shared BigNum.cpp -o Bint.so</span><br><span class="line">clean:</span><br><span class="line">    rm -rf bint.so</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> bint</span><br><span class="line">bint.mul(<span class="number">4000000</span>,<span class="number">5000000</span>)</span><br></pre></td></tr></table></figure>
+
+<p>GitHub上有<a target="_blank" rel="noopener" href="http://innerbrilliant.sinaapp.com/?p=515">源码</a></p>
+<h3 id="C-调用Python"><a href="#C-调用Python" class="headerlink" title="C++调用Python"></a>C++调用Python</h3><p>python的开发效率之高是毋庸置疑的，C++&#x2F;C的语言性能之快也是让人羡慕的。这一次，鱼和熊掌是可以兼得的 ：），混合编程，使得我们可以取之所长，游走在C与python之间。很多游戏开发中使用python来实现战斗脚本。</p>
+<ul>
+<li><p>初始化调用<br>Py_Initialize();</p>
+</li>
+<li><p>PyObject* PyImport_ImportModule (char *name)<br>一般都是通过(pmod &#x3D; PyImport_ImportModule (“zhengji.app_context”)先来<br>加载一个模块（py脚本),得到一个PyObject *pmod对象,失败返回NULL类型</p>
+</li>
+<li><p>获取某个方法或者类，PyObject * o是pmod<br>PyObject* PyObject_GetAttrString (PyObject *o, char *attr_name)</p>
+</li>
+</ul>
+<p><em>调用该方法 callable_object是第二步返回的指针<br>PyObject</em> PyObject_CallFunction (PyObject *callable_object, char *format, …)</p>
+<ul>
+<li><p>将PyObject* 返回char*<br>char* PyString_AsString (PyObject *string)</p>
+</li>
+<li><p>结束初始化<br>Py_Finalize();</p>
+</li>
+</ul>
+<p>下面是script.py的内容</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># Filename: script.py</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Student</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">SetName</span>(<span class="params">self,name</span>):</span><br><span class="line">        self._name = name</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">PrintName</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">print</span> self._name</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">hello</span>():</span><br><span class="line">        <span class="built_in">print</span> <span class="string">&quot;Hello World\n&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">world</span>(<span class="params">name</span>):</span><br><span class="line">        <span class="built_in">print</span> <span class="string">&quot;name&quot;</span> </span><br></pre></td></tr></table></figure>
+
+<h4 id="C-调用Script-py"><a href="#C-调用Script-py" class="headerlink" title="C++调用Script.py"></a>C++调用Script.py</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;python2.7/Python.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span> <span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//使用python之前，要调用Py_Initialize();这个函数进行初始化</span></span><br><span class="line">    Py_Initialize();</span><br><span class="line"></span><br><span class="line">    PyRun_SimpleString(<span class="string">&quot;import sys&quot;</span>);</span><br><span class="line">    PyRun_SimpleString(<span class="string">&quot;sys.path.append(&#x27;./&#x27;)&quot;</span>);</span><br><span class="line"></span><br><span class="line">    PyObject * pModule = <span class="literal">NULL</span>;</span><br><span class="line">    PyObject * pFunc = <span class="literal">NULL</span>;</span><br><span class="line">    PyObject * pClass = <span class="literal">NULL</span>;</span><br><span class="line">    PyObject * pInstance = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//这里是要调用的文件名</span></span><br><span class="line">    pModule = PyImport_ImportModule(<span class="string">&quot;script&quot;</span>);</span><br><span class="line">    <span class="comment">//这里是要调用的函数名</span></span><br><span class="line">    pFunc= PyObject_GetAttrString(pModule, <span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="comment">//调用函数</span></span><br><span class="line">    PyEval_CallObject(pFunc, <span class="literal">NULL</span>);</span><br><span class="line">    Py_DECREF(pFunc); </span><br><span class="line"></span><br><span class="line">    pFunc = PyObject_GetAttrString(pModule, <span class="string">&quot;world&quot;</span>);</span><br><span class="line">    PyObject_CallFunction(pFunc, <span class="string">&quot;s&quot;</span>, <span class="string">&quot;zhengji&quot;</span>);</span><br><span class="line">    Py_DECREF(pFunc); </span><br><span class="line"></span><br><span class="line">    <span class="comment">//测试调用python的类</span></span><br><span class="line">    pClass = PyObject_GetAttrString(pModule, <span class="string">&quot;Student&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (!pClass) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Can&#x27;t find Student class.\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    pInstance = PyInstance_New(pClass, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span> (!pInstance) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Can&#x27;t create Student instance.\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    PyObject_CallMethod(pInstance, <span class="string">&quot;SetName&quot;</span>, <span class="string">&quot;s&quot;</span>,<span class="string">&quot;my family&quot;</span>);</span><br><span class="line">    PyObject_CallMethod(pInstance, <span class="string">&quot;PrintName&quot;</span>,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line">    <span class="comment">//调用Py_Finalize，这个根Py_Initialize相对应的。</span></span><br><span class="line">    Py_Finalize();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译C++代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ zj.cpp -o zj -lpython2.7</span><br></pre></td></tr></table></figure>
+
+<p>输出结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zj@hp:~/tmp/CcalPy$ ./zj</span><br><span class="line">Hello World</span><br><span class="line">name</span><br><span class="line">my family</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/06/08/2013-08-29-c-plus-plus-yu-pythonde-hun-he-bian-cheng-pythontuo-zhan-bian-xie/" data-id="clnfj5582000k7eqx9wgk6d3p" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/10/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/12/">Next &amp;raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/DataBase/">DataBase</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ElasticSearch/">ElasticSearch</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Go/">Go</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Life/">Life</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NLP/">NLP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork/">NetWork</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Product/">Product</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Program/">Program</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Redis/">Redis</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server/">Server</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/System/">System</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/grpc/">grpc</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/mq/">mq</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-11/" rel="tag">C++11</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DataBase/" rel="tag">DataBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LRU/" rel="tag">LRU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MQ/" rel="tag">MQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ProtoBuffer/" rel="tag">ProtoBuffer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/" rel="tag">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupCache/" rel="tag">groupCache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grpc/" rel="tag">grpc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s-basic/" rel="tag">k8s basic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx-grpc/" rel="tag">nginx grpc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 10px;">Algorithm</a> <a href="/tags/C-11/" style="font-size: 10px;">C++11</a> <a href="/tags/DataBase/" style="font-size: 10px;">DataBase</a> <a href="/tags/Go/" style="font-size: 10px;">Go</a> <a href="/tags/Kafka/" style="font-size: 10px;">Kafka</a> <a href="/tags/LRU/" style="font-size: 10px;">LRU</a> <a href="/tags/MQ/" style="font-size: 10px;">MQ</a> <a href="/tags/ProtoBuffer/" style="font-size: 10px;">ProtoBuffer</a> <a href="/tags/Redis/" style="font-size: 16.67px;">Redis</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/groupCache/" style="font-size: 10px;">groupCache</a> <a href="/tags/grpc/" style="font-size: 13.33px;">grpc</a> <a href="/tags/k8s/" style="font-size: 20px;">k8s</a> <a href="/tags/k8s-basic/" style="font-size: 10px;">k8s basic</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/nginx-grpc/" style="font-size: 10px;">nginx grpc</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">September 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/07/">July 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">May 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/03/">March 2012</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/10/20/2021-10-20-why-docker-supervisor/"> Docker里使用 supervisor 管理多个程序</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/14/2021-10-14-binary-tree-algo/">二叉树相关的递归算法题</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/13/2021-10-13-go-channel/">Go Channel 笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/12/2021-10-12-why-kafka-so-fast/">Kafka 吞吐量大的原因</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/11/2021-10-11-redis-pipeline/">Redis Pipline 与事务</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2023 zheng-ji<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
