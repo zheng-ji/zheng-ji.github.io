@@ -400,7 +400,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
+      <time title="Modified: 2023-11-13 17:33:04" itemprop="dateModified" datetime="2023-11-13T17:33:04+08:00">2023-11-13</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -484,8 +484,8 @@
 <ul>
 <li>修改Label</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl label pod nginx env=debug --overwrite</span><br></pre></td></tr></table></figure>
-<p>pod&#x2F;nginx labeled</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl label pod nginx env=debug --overwrite</span><br><span class="line">pod/nginx labeled</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -773,6 +773,117 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/09/23/2021-09-25-k8s-basic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="zheng-ji">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="织网">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 织网">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/09/23/2021-09-25-k8s-basic/" class="post-title-link" itemprop="url">K8S 基本对象</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-09-23 12:11:42" itemprop="dateCreated datePublished" datetime="2021-09-23T12:11:42+08:00">2021-09-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><img src="/images/k8s/k8s-basic-object.png" alt="k8s object"></p>
+<ul>
+<li><p>Pod<br>Pod是Kubernetes创建或部署的最小单位。一个Pod封装一个或多个容器（container）、存储资源（volume）、一个独立的网络IP以及管理控制容器运行方式的策略选项。</p>
+</li>
+<li><p>Deployment<br>Deployment是对Pod的服务化封装。一个Deployment可以包含一个或多个Pod，每个Pod的角色相同，所以系统会自动为Deployment的多个Pod分发请求。</p>
+</li>
+<li><p>StatefulSet<br>StatefulSet是用来管理有状态应用的对象。和Deployment相同的是，StatefulSet管理了基于相同容器定义的一组Pod。但和Deployment不同的是，StatefulSet为它们的每个Pod维护了一个固定的ID。这些Pod是基于相同的声明来创建的，但是不能相互替换，无论怎么调度，每个Pod都有一个永久不变的ID。</p>
+</li>
+<li><p>Job<br>Job是用来控制批处理型任务的对象。批处理业务与长期伺服业务（Deployment）的主要区别是批处理业务的运行有头有尾，而长期伺服业务在用户不停止的情况下永远运行。Job管理的Pod根据用户的设置把任务成功完成就自动退出（Pod自动删除）。</p>
+</li>
+<li><p>CronJob<br>CronJob是基于时间控制的Job，类似于Linux系统的crontab，在指定的时间周期运行指定的任务。</p>
+</li>
+<li><p>DaemonSet<br>DaemonSet是这样一种对象（守护进程），它在集群的每个节点上运行一个Pod，且保证只有一个Pod，这非常适合一些系统层面的应用，例如日志收集、资源监控等，这类应用需要每个节点都运行，且不需要太多实例，一个比较好的例子就是Kubernetes的kube-proxy。</p>
+</li>
+<li><p>Service<br>Service是用来解决Pod访问问题的。Service有一个固定IP地址，Service将访问流量转发给Pod，而且Service可以给这些Pod做负载均衡。</p>
+</li>
+<li><p>Ingress<br>Service是基于四层TCP和UDP协议转发的，Ingress可以基于七层的HTTP和HTTPS协议转发，可以通过域名和路径做到更细粒度的划分。</p>
+</li>
+<li><p>ConfigMap<br>ConfigMap是一种用于存储应用所需配置信息的资源类型，用于保存配置数据的键值对。通过ConfigMap可以方便的做到配置解耦，使得不同环境有不同的配置。</p>
+</li>
+<li><p>Secret<br>Secret是一种加密存储的资源对象，您可以将认证信息、证书、私钥等保存在Secret中，而不需要把这些敏感数据暴露到镜像或者Pod定义中，从而更加安全和灵活。</p>
+</li>
+<li><p>PersistentVolume（PV）<br>PV指持久化数据存储卷，主要定义的是一个持久化存储在宿主机上的目录，比如一个NFS的挂载目录。</p>
+</li>
+<li><p>PersistentVolumeClaim（PVC）<br>Kubernetes提供PVC专门用于持久化存储的申请，PVC可以让您无需关心底层存储资源如何创建、释放等动作，而只需要申明您需要何种类型的存储资源、多大的存储空间。</p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/09/23/2021-09-23-lru-summary/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -866,117 +977,6 @@
 <li>缺点:忽略了recency, 可能会积累不再使用的数据 redis4.0开始支持了LFU,例如 volatile-lfu, allkeys-lfu 配置选项</li>
 </ul>
 <p><a target="_blank" rel="noopener" href="https://github.com/zheng-ji/source-note/blob/main/golang-lru/">Link</a> 我是通过这份 golang-lru 的代码完整的学习，干净的代码读起来也欣然。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/09/23/2021-09-25-k8s-basic/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="zheng-ji">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="织网">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 织网">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/09/23/2021-09-25-k8s-basic/" class="post-title-link" itemprop="url">K8S 基本对象</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2021-09-23 12:11:42" itemprop="dateCreated datePublished" datetime="2021-09-23T12:11:42+08:00">2021-09-23</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><img src="/images/k8s/k8s-basic-object.png" alt="k8s object"></p>
-<ul>
-<li><p>Pod<br>Pod是Kubernetes创建或部署的最小单位。一个Pod封装一个或多个容器（container）、存储资源（volume）、一个独立的网络IP以及管理控制容器运行方式的策略选项。</p>
-</li>
-<li><p>Deployment<br>Deployment是对Pod的服务化封装。一个Deployment可以包含一个或多个Pod，每个Pod的角色相同，所以系统会自动为Deployment的多个Pod分发请求。</p>
-</li>
-<li><p>StatefulSet<br>StatefulSet是用来管理有状态应用的对象。和Deployment相同的是，StatefulSet管理了基于相同容器定义的一组Pod。但和Deployment不同的是，StatefulSet为它们的每个Pod维护了一个固定的ID。这些Pod是基于相同的声明来创建的，但是不能相互替换，无论怎么调度，每个Pod都有一个永久不变的ID。</p>
-</li>
-<li><p>Job<br>Job是用来控制批处理型任务的对象。批处理业务与长期伺服业务（Deployment）的主要区别是批处理业务的运行有头有尾，而长期伺服业务在用户不停止的情况下永远运行。Job管理的Pod根据用户的设置把任务成功完成就自动退出（Pod自动删除）。</p>
-</li>
-<li><p>CronJob<br>CronJob是基于时间控制的Job，类似于Linux系统的crontab，在指定的时间周期运行指定的任务。</p>
-</li>
-<li><p>DaemonSet<br>DaemonSet是这样一种对象（守护进程），它在集群的每个节点上运行一个Pod，且保证只有一个Pod，这非常适合一些系统层面的应用，例如日志收集、资源监控等，这类应用需要每个节点都运行，且不需要太多实例，一个比较好的例子就是Kubernetes的kube-proxy。</p>
-</li>
-<li><p>Service<br>Service是用来解决Pod访问问题的。Service有一个固定IP地址，Service将访问流量转发给Pod，而且Service可以给这些Pod做负载均衡。</p>
-</li>
-<li><p>Ingress<br>Service是基于四层TCP和UDP协议转发的，Ingress可以基于七层的HTTP和HTTPS协议转发，可以通过域名和路径做到更细粒度的划分。</p>
-</li>
-<li><p>ConfigMap<br>ConfigMap是一种用于存储应用所需配置信息的资源类型，用于保存配置数据的键值对。通过ConfigMap可以方便的做到配置解耦，使得不同环境有不同的配置。</p>
-</li>
-<li><p>Secret<br>Secret是一种加密存储的资源对象，您可以将认证信息、证书、私钥等保存在Secret中，而不需要把这些敏感数据暴露到镜像或者Pod定义中，从而更加安全和灵活。</p>
-</li>
-<li><p>PersistentVolume（PV）<br>PV指持久化数据存储卷，主要定义的是一个持久化存储在宿主机上的目录，比如一个NFS的挂载目录。</p>
-</li>
-<li><p>PersistentVolumeClaim（PVC）<br>Kubernetes提供PVC专门用于持久化存储的申请，PVC可以让您无需关心底层存储资源如何创建、释放等动作，而只需要申明您需要何种类型的存储资源、多大的存储空间。</p>
-</li>
-</ul>
 
       
     </div>
