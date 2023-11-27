@@ -119,13 +119,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">122</span>
+          <span class="site-state-item-count">125</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -146,6 +146,333 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/09/30/2021-09-29-grpc-4-way/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="zheng-ji">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="织网">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 织网">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/09/30/2021-09-29-grpc-4-way/" class="post-title-link" itemprop="url">GRPC 通讯的四种方式</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-09-30 12:11:42" itemprop="dateCreated datePublished" datetime="2021-09-30T12:11:42+08:00">2021-09-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/grpc/" itemprop="url" rel="index"><span itemprop="name">grpc</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>GRPC 通讯的四种方式有</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">service Echo &#123;</span><br><span class="line">    // UnaryAPI</span><br><span class="line">    rpc UnaryEcho(EchoRequest) returns (EchoResponse) &#123;&#125;</span><br><span class="line">    // SServerStreaming</span><br><span class="line">    rpc ServerStreamingEcho(EchoRequest) returns (stream EchoResponse) &#123;&#125;</span><br><span class="line">    // ClientStreamingE</span><br><span class="line">    rpc ClientStreamingEcho(stream EchoRequest) returns (EchoResponse) &#123;&#125;</span><br><span class="line">    // BidirectionalStreaming</span><br><span class="line">    rpc BidirectionalStreamingEcho(stream EchoRequest) returns (stream EchoResponse) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>服务端与客户端普通的 Protobuf Message 通讯</p>
+</li>
+<li><p>客户端发起普通的 ProtoBuf Message, 服务端使用Stream 回应</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> Server 代码</span><br><span class="line">1. 获取stream</span><br><span class="line">2  接受客户端消息，然后不断发送</span><br><span class="line">3  返回 nil 表示结束</span><br><span class="line">*/</span><br><span class="line">func (e *Echo) ServerStreamingEcho(req *pb.EchoRequest, stream pb.Echo_ServerStreamingEchoServer) error &#123;</span><br><span class="line">	log.Printf(&quot;Recved %v&quot;, req.GetMessage())</span><br><span class="line">	// 具体返回多少个response根据业务逻辑调整</span><br><span class="line">	for i := 0; i &lt; 2; i++ &#123;</span><br><span class="line">		// 通过 send 方法不断推送数据</span><br><span class="line">		err := stream.Send(&amp;pb.EchoResponse&#123;Message: req.GetMessage()&#125;)</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			log.Fatalf(&quot;Send error:%v&quot;, err)</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	// 返回nil表示已经完成响应</span><br><span class="line">	return nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> Client 代码</span><br><span class="line">1. 获取stream, 并发送 HelloWorld</span><br><span class="line">2. for 循环获取服务端推送的消息,  err == io.EOF 则表示服务端关闭stream了 退出</span><br><span class="line">*/</span><br><span class="line">func serverStream(client pb.EchoClient) &#123;</span><br><span class="line">    // 获取stream</span><br><span class="line">	stream, err := client.ServerStreamingEcho(context.Background(), &amp;pb.EchoRequest&#123;Message: &quot;Hello World&quot;&#125;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalf(&quot;could not echo: %v&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	// for 循环获取服务端推送的消息</span><br><span class="line">	for &#123;</span><br><span class="line">	    // 通过 Recv() 不断获取服务端send()推送的消息</span><br><span class="line">	    resp, err := stream.Recv()</span><br><span class="line">	    // err==io.EOF 则表示服务端关闭stream了 退出</span><br><span class="line">	    if err == io.EOF &#123;</span><br><span class="line">			log.Println(&quot;server closed&quot;)</span><br><span class="line">			break</span><br><span class="line">	    &#125;   </span><br><span class="line">	    if err != nil &#123;</span><br><span class="line">			log.Printf(&quot;Recv error:%v&quot;, err)</span><br><span class="line">			continue</span><br><span class="line">	    &#125;   </span><br><span class="line">	    log.Printf(&quot;Recv data:%v&quot;, resp.GetMessage())</span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>客户端端发起 Stream 流式请求, 服务端使用 Protobuf Message 回应</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">	Server代码</span><br><span class="line">	for 循环中通过 stream.Recv() 不断接收client传来的数据</span><br><span class="line">	err == io.EOF表示客户端已经发送完毕关闭连接了,此时在等待服务端处理完并返回消息</span><br><span class="line">	stream.SendAndClose() 发送消息并关闭连接</span><br><span class="line">*/</span><br><span class="line">func (e *Echo) ClientStreamingEcho(stream pb.Echo_ClientStreamingEchoServer) error &#123;</span><br><span class="line">	for &#123;</span><br><span class="line">		req, err := stream.Recv() </span><br><span class="line">		if err == io.EOF &#123;</span><br><span class="line">			log.Println(&quot;client closed&quot;)</span><br><span class="line">			// 4.SendAndClose 返回并关闭连接, 在客户端发送完毕后服务端即可返回响应</span><br><span class="line">			return stream.SendAndClose(&amp;pb.EchoResponse&#123;Message: &quot;ok&quot;&#125;)</span><br><span class="line">		&#125;</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line">		log.Printf(&quot;Recved %v&quot;, req.GetMessage())</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">Client 代码</span><br><span class="line">	1. 建立连接并获取client</span><br><span class="line">	2. 获取 stream 并通过 Send 方法不断推送数据到服务端</span><br><span class="line">	3. 发送完成后通过 stream.CloseAndRecv() 关闭steam并接收服务端返回结果</span><br><span class="line">*/</span><br><span class="line">func clientStream(client pb.EchoClient) &#123;</span><br><span class="line">	stream, err := client.ClientStreamingEcho(context.Background())</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalf(&quot;Sum() error: %v&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	for i := int64(0); i &lt; 2; i++ &#123;</span><br><span class="line">		err := stream.Send(&amp;pb.EchoRequest&#123;Message: &quot;hello world&quot;&#125;)</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			log.Printf(&quot;send error: %v&quot;, err)</span><br><span class="line">			continue</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	resp, err := stream.CloseAndRecv()</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalf(&quot;CloseAndRecv() error: %v&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Printf(&quot;sum: %v&quot;, resp.GetMessage())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>客户端服务端 双向流式通讯。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">Server 代码</span><br><span class="line">	1. 建立连接 获取client</span><br><span class="line">	2. 通过client调用方法获取stream</span><br><span class="line">	3. 开两个goroutine（使用 chan 传递数据） 分别用于Recv()和Send()</span><br><span class="line">		一直Recv()到err==io.EOF(即客户端关闭stream), Send()则自己控制什么时候Close, 服务端stream没有Close 只要跳出循环就算close了</span><br><span class="line">*/</span><br><span class="line">func (e *Echo) BidirectionalStreamingEcho(stream pb.Echo_BidirectionalStreamingEchoServer) error &#123;</span><br><span class="line">	var (</span><br><span class="line">		waitGroup sync.WaitGroup</span><br><span class="line">		msgCh     = make(chan string)</span><br><span class="line">	)</span><br><span class="line">	waitGroup.Add(1)</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer waitGroup.Done()</span><br><span class="line"></span><br><span class="line">		for v := range msgCh &#123;</span><br><span class="line">			err := stream.Send(&amp;pb.EchoResponse&#123;Message: v&#125;)</span><br><span class="line">			if err != nil &#123;</span><br><span class="line">				fmt.Println(&quot;Send error:&quot;, err)</span><br><span class="line">				continue</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	waitGroup.Add(1)</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer waitGroup.Done()</span><br><span class="line">		for &#123;</span><br><span class="line">			req, err := stream.Recv()</span><br><span class="line">			if err == io.EOF &#123;</span><br><span class="line">				break</span><br><span class="line">			&#125;</span><br><span class="line">			if err != nil &#123;</span><br><span class="line">				log.Fatalf(&quot;recv error:%v&quot;, err)</span><br><span class="line">			&#125;</span><br><span class="line">			fmt.Printf(&quot;Recved :%v \n&quot;, req.GetMessage())</span><br><span class="line">			msgCh &lt;- req.GetMessage()</span><br><span class="line">		&#125;</span><br><span class="line">		close(msgCh)</span><br><span class="line">	&#125;()</span><br><span class="line">	waitGroup.Wait()</span><br><span class="line"></span><br><span class="line">	// 返回nil表示已经完成响应</span><br><span class="line">	return nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> Client 代码</span><br><span class="line">	1. 建立连接 获取client</span><br><span class="line">	2. 通过client获取stream</span><br><span class="line">	3. 开两个goroutine 分别用于Recv()和Send()</span><br><span class="line">		3.1 一直Recv()到err==io.EOF(即服务端关闭stream)</span><br><span class="line">		3.2 Send()则由自己控制</span><br><span class="line">	4. 发送完毕调用 stream.CloseSend()关闭stream 必须调用关闭 否则Server会一直尝试接收数据</span><br><span class="line">*/</span><br><span class="line">func bidirectionalStream(client pb.EchoClient) &#123;</span><br><span class="line">	var wg sync.WaitGroup</span><br><span class="line">	stream, err := client.BidirectionalStreamingEcho(context.Background())</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		panic(err)</span><br><span class="line">	&#125;</span><br><span class="line">	wg.Add(1)</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer wg.Done()</span><br><span class="line">		for &#123;</span><br><span class="line">			req, err := stream.Recv()</span><br><span class="line">			if err == io.EOF &#123;</span><br><span class="line">				fmt.Println(&quot;Server Closed&quot;)</span><br><span class="line">				break</span><br><span class="line">			&#125;</span><br><span class="line">			if err != nil &#123;</span><br><span class="line">				continue</span><br><span class="line">			&#125;</span><br><span class="line">			fmt.Printf(&quot;Recved:%v \n&quot;, req.GetMessage())</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	wg.Add(1)</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer wg.Done()</span><br><span class="line"></span><br><span class="line">		for i := 0; i &lt; 2; i++ &#123;</span><br><span class="line">			err := stream.Send(&amp;pb.EchoRequest&#123;Message: &quot;hello world&quot;&#125;)</span><br><span class="line">			if err != nil &#123;</span><br><span class="line">				log.Printf(&quot;send error:%v\n&quot;, err)</span><br><span class="line">			&#125;</span><br><span class="line">			time.Sleep(time.Second)</span><br><span class="line">		&#125;</span><br><span class="line">		// 4. 发送完毕关闭stream</span><br><span class="line">		err := stream.CloseSend()</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			log.Printf(&quot;Send error:%v\n&quot;, err)</span><br><span class="line">			return</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述完整代码 <a target="_blank" rel="noopener" href="https://github.com/zheng-ji/grpc-example/blob/main/stream">Link</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/09/28/2021-09-28-grpc-gateway/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="zheng-ji">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="织网">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 织网">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/09/28/2021-09-28-grpc-gateway/" class="post-title-link" itemprop="url">GRPC Gateway 入门</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-09-28 12:11:42" itemprop="dateCreated datePublished" datetime="2021-09-28T12:11:42+08:00">2021-09-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/grpc/" itemprop="url" rel="index"><span itemprop="name">grpc</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>在某些情况下，即使我们写了 gRPC 服务，但我们仍然想提供传统的 HTTP&#x2F;JSON API。但是仅仅为了公开 HTTP&#x2F;JSON API 而编写另一个服务有点不友好。<br>有什么方法可以只编写一次代码，却可以同时在 gRPC 和 HTTP&#x2F;JSON 中提供 API？ </p>
+<p>gRPC-gateway 可以帮我们做到，它读取 protobuf service 定义并生成反向代理服务器( reverse-proxy server) ，根据服务定义中的 <code>google.api.http annotations</code> 将 RESTful HTTP API 转换为 gRPC。</p>
+<p><img src="/images/grpc/grpc-gateway.png"></p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>在这之前需要先安装好 protoc, </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install protoc</span><br><span class="line">$ go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.26</span><br><span class="line">$ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1</span><br><span class="line">$ go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.16.0 </span><br><span class="line">$ export PATH=&quot;$PATH:$(go env GOPATH)/bin&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="编写-ProtoBuf"><a href="#编写-ProtoBuf" class="headerlink" title="编写 ProtoBuf"></a>编写 ProtoBuf</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">|~proto/</span><br><span class="line">| |~api/</span><br><span class="line">| | |-hello.proto</span><br><span class="line">| `~google/</span><br><span class="line">|   `~api/</span><br><span class="line">|     |-annotations.proto</span><br><span class="line">|     `-http.proto</span><br></pre></td></tr></table></figure>
+
+<p>在根目录执行 <code>go mod init grpc-gateway-exp</code>, 创建 <code>proto</code> 目录，从 <code>https://github.com/googleapis/googleapis/tree/master/google/api</code> 下载 <code>annotation.proto</code> 和 <code>http.proto</code> 放置于 <code>proto/google/api</code> 目录下, 主要是用于 http 服务的注解，比如:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">syntax = &quot;proto3&quot;;</span><br><span class="line">package grpc_gateway_exp;</span><br><span class="line">option go_package = &quot;grpc_gateway_exp&quot;;</span><br><span class="line">import &quot;google/api/annotations.proto&quot;; // 会在当前根目录开始搜索</span><br><span class="line"></span><br><span class="line">service HelloService</span><br><span class="line">&#123;</span><br><span class="line">    rpc Hello(HelloMessage) returns (HelloResponse)</span><br><span class="line">    &#123;</span><br><span class="line">        # 魔法发生的地方</span><br><span class="line">        option (google.api.http) = &#123;</span><br><span class="line">            get: &quot;/hello&quot;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message HelloMessage </span><br><span class="line">&#123;</span><br><span class="line">    string message = 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message HelloResponse </span><br><span class="line">&#123;</span><br><span class="line">    string result = 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="借助-buf-生成-ProtoBuf-所需代码"><a href="#借助-buf-生成-ProtoBuf-所需代码" class="headerlink" title="借助 buf 生成 ProtoBuf 所需代码"></a>借助 <a target="_blank" rel="noopener" href="https://github.com/bufbuild/buf">buf</a> 生成 ProtoBuf 所需代码</h3><p>安装 <code>buf</code> 的命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">BIN=&quot;/usr/local/bin&quot; &amp;&amp; \</span><br><span class="line">VERSION=&quot;1.0.0-rc2&quot; &amp;&amp; \</span><br><span class="line">BINARY_NAME=&quot;buf&quot; &amp;&amp; \</span><br><span class="line">curl -sSL \</span><br><span class="line">     &quot;https://github.com/bufbuild/buf/releases/download/v$&#123;VERSION&#125;/$&#123;BINARY_NAME&#125;-$(uname -s)-$(uname -m)&quot; \</span><br><span class="line">     -o &quot;$&#123;BIN&#125;/$&#123;BINARY_NAME&#125;&quot; &amp;&amp; \</span><br><span class="line">chmod +x &quot;$&#123;BIN&#125;/$&#123;BINARY_NAME&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>在项目根目录创建 <code>buf.yaml</code>，<code>buf.gen.yaml</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">version: v1beta1</span><br><span class="line">build:</span><br><span class="line">  roots:</span><br><span class="line">    - proto # proto的目录</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">version: v1beta1</span><br><span class="line">plugins:</span><br><span class="line">  - name: go</span><br><span class="line">    out: proto</span><br><span class="line">    opt: paths=source_relative</span><br><span class="line">  - name: go-grpc   # go-grpc plugin</span><br><span class="line">    out: proto</span><br><span class="line">    opt: paths=source_relative,require_unimplemented_servers=false # 相对路径引用</span><br><span class="line">  - name: grpc-gateway # grpc-gateway plugin</span><br><span class="line">    out: proto</span><br><span class="line">    opt: paths=source_relative # 相对路径引用</span><br></pre></td></tr></table></figure>
+
+<p>执行 <code>buf generate</code> 之后就生成了。</p>
+<h3 id="Go-Mod-的使用"><a href="#Go-Mod-的使用" class="headerlink" title="Go Mod 的使用"></a>Go Mod 的使用</h3><p>项目运用了 <code>Go Module</code> , 以期读者何时何地的下载，都能直接使用。<br>项目分了子 package, 诸如 server, service, proto。<br>由于在根目录执行了 go mod init grpc-gateway-exp 所以对子 package 的引用, 可以用如下的写法。这个经典的写法应该引起注意。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import (</span><br><span class="line">	pb &quot;grpc-gateway-exp/proto/api&quot; // 看这里</span><br><span class="line">	&quot;grpc-gateway-exp/service&quot; // 看这里</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="写-grpc-gateway"><a href="#写-grpc-gateway" class="headerlink" title="写 grpc-gateway"></a>写 grpc-gateway</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">package server</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;context&quot;</span><br><span class="line">	&quot;log&quot;</span><br><span class="line">	&quot;net/http&quot;</span><br><span class="line">	&quot;github.com/grpc-ecosystem/grpc-gateway/runtime&quot;</span><br><span class="line">	&quot;google.golang.org/grpc&quot;</span><br><span class="line">	pb &quot;grpc-gateway-exp/proto/api&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func StartGwServer() &#123;</span><br><span class="line">	conn, err := grpc.DialContext(</span><br><span class="line">		context.Background(),</span><br><span class="line">		&quot;0.0.0.0:9090&quot;, // 背后的RPC Server</span><br><span class="line">		grpc.WithBlock(),</span><br><span class="line">		grpc.WithInsecure(),</span><br><span class="line">	)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalln(&quot;Failed to dial server: &quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	mux := runtime.NewServeMux()</span><br><span class="line">	err = pb.RegisterHelloServiceHandler(context.Background(), mux, conn)</span><br><span class="line"></span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalln(&quot;Failed to register gateway: &quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	server := &amp;http.Server&#123;</span><br><span class="line">		Addr:    &quot;:8090&quot;,</span><br><span class="line">		Handler: mux,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	log.Println(&quot;Start gRPC Gateway Server on http://0.0.0.0:8090&quot;)</span><br><span class="line">	err = server.ListenAndServe()</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalln(&quot;Start Gateway Server failed: &quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>效果<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl localhost:8090/hello?message=world</span><br><span class="line">$ hello world</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>上述完整代码 <a target="_blank" rel="noopener" href="https://github.com/zheng-ji/grpc-gateway-exp">Link</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/09/26/2021-09-26-k8s-configmap-secret/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="zheng-ji">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="织网">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 织网">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/09/26/2021-09-26-k8s-configmap-secret/" class="post-title-link" itemprop="url">K8S ConfigMap & Secret</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-09-26 12:11:42" itemprop="dateCreated datePublished" datetime="2021-09-26T12:11:42+08:00">2021-09-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h3 id="ConfigMap"><a href="#ConfigMap" class="headerlink" title="ConfigMap"></a>ConfigMap</h3><p>是一种用于存储应用所需配置信息的资源类型，用于保存配置数据的键值对，可以用来保存单个属性，也可以用来保存配置文件。</p>
+<p>通过ConfigMap可以方便的做到配置解耦，使得不同环境有不同的配置。</p>
+<h3 id="创建ConfigMap"><a href="#创建ConfigMap" class="headerlink" title="创建ConfigMap"></a>创建ConfigMap</h3><p>下面示例创建了一个名为configmap-test的ConfigMap，ConfigMap的配置数据在data字段下定义。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: ConfigMap</span><br><span class="line">metadata:</span><br><span class="line">  name: configmap-test</span><br><span class="line">data:                     # 配置数据</span><br><span class="line">  property_1: Hello</span><br><span class="line">  property_2: World</span><br></pre></td></tr></table></figure>
+
+<h3 id="在Volume中引用ConfigMap"><a href="#在Volume中引用ConfigMap" class="headerlink" title="在Volume中引用ConfigMap"></a>在Volume中引用ConfigMap</h3><p>在Volume中引用ConfigMap，就是通过文件的方式直接将ConfigMap的每条数据填入Volume，每条数据是一个文件，键就是文件名，键值就是文件内容。</p>
+<p>如下示例中，创建一个名为vol-configmap的Volume，这个Volume引用名为“configmap-test”的ConfigMap，再将Volume挂载到容器的“&#x2F;tmp”路径下。<br>Pod创建成功后，在容器的“&#x2F;tmp”路径下，就有两个文件property_1和property_2，它们的值分别为“Hello”和“World”。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - image: nginx:alpine</span><br><span class="line">    name: container-0</span><br><span class="line">    resources:</span><br><span class="line">      limits:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">      requests:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">    volumeMounts:</span><br><span class="line">    - name: vol-configmap           # 挂载名为vol-configmap的Volume</span><br><span class="line">      mountPath: &quot;/tmp&quot;</span><br><span class="line">  volumes:</span><br><span class="line">  - name: vol-configmap</span><br><span class="line">    configMap:                      # 引用ConfigMap</span><br></pre></td></tr></table></figure>
+
+<h3 id="Secret-是什么"><a href="#Secret-是什么" class="headerlink" title="Secret 是什么"></a>Secret 是什么</h3><p>Secret是一种加密存储的资源对象，您可以将认证信息、证书、私钥等保存在Secret中，而不需要把这些敏感数据暴露到镜像或者Pod定义中，从而更加安全和灵活。</p>
+<p>Secret与ConfigMap非常像，都是key-value键值对形式，使用方式也相同，不同的是Secret会加密存储，所以适用于存储敏感信息。<br>创建secret</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Secret</span><br><span class="line">metadata:</span><br><span class="line">  name: mysecret</span><br><span class="line">data:</span><br><span class="line">  key1: aGVsbG8gd29ybGQ=   # &quot;hello world&quot; Base64编码后的值</span><br><span class="line">  key2: MzMwNg==           # &quot;3306&quot; Base64编码后的值</span><br></pre></td></tr></table></figure>
+
+<h3 id="在Volume中引用Secret"><a href="#在Volume中引用Secret" class="headerlink" title="在Volume中引用Secret"></a>在Volume中引用Secret</h3><p>通过文件的方式直接将Secret的每条数据填入Volume，每条数据是一个文件，键就是文件名，键值就是文件内容。<br>创建一个名为vol-secret的Volume，这个Volume引用名为“mysecret”的Secret，再将Volume挂载到容器的“&#x2F;tmp”路径下。Pod创建成功后，在容器的“&#x2F;tmp”路径下，就有两个文件key1和key2。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - image: nginx:alpine</span><br><span class="line">    name: container-0</span><br><span class="line">    resources:</span><br><span class="line">      limits:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">      requests:</span><br><span class="line">        cpu: 100m</span><br><span class="line">        memory: 200Mi</span><br><span class="line">    volumeMounts:</span><br><span class="line">    - name: vol-secret              # 挂载名为vol-secret的Volume</span><br><span class="line">      mountPath: &quot;/tmp&quot;</span><br><span class="line">  imagePullSecrets:</span><br><span class="line">  - name: default-secret</span><br><span class="line">  volumes:</span><br><span class="line">  - name: vol-secret</span><br><span class="line">    secret:                         # 引用Secret</span><br><span class="line">      secretName: mysecret</span><br></pre></td></tr></table></figure>
+
+<p>进入Pod容器中，可以在&#x2F;tmp目录下发现key1和key2两个文件，并看到文件中的值是base64解码后的值，分别为“hello world”和“3306”。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -977,344 +1304,6 @@
 <li>缺点:忽略了recency, 可能会积累不再使用的数据 redis4.0开始支持了LFU,例如 volatile-lfu, allkeys-lfu 配置选项</li>
 </ul>
 <p><a target="_blank" rel="noopener" href="https://github.com/zheng-ji/source-note/blob/main/golang-lru/">Link</a> 我是通过这份 golang-lru 的代码完整的学习，干净的代码读起来也欣然。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/09/23/2021-09-25-k8s-volumn/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="zheng-ji">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="织网">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 织网">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/09/23/2021-09-25-k8s-volumn/" class="post-title-link" itemprop="url">K8S Volumen 与 VPC</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2021-09-23 12:11:42" itemprop="dateCreated datePublished" datetime="2021-09-23T12:11:42+08:00">2021-09-23</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>容器中的文件在磁盘上是临时存放的，当容器重建时，容器中的文件将会丢失，另外当在一个Pod中同时运行多个容器时，常常需要在这些容器之间共享文件，Kubernetes抽象出了Volume来解决这两个问题，也就是存储卷，Kubernetes的Volume是Pod的一部分，Volume不是单独的对象，不能独立创建，只能在Pod中定义。</p>
-<p>Pod中的所有容器都可以访问Volume，但必须要挂载，且可以挂载到容器中任何目录。</p>
-<p>Volume的生命周期与挂载它的Pod相同，但是Volume里面的文件可能在Volume消失后仍然存在，这取决于Volume的类型。</p>
-<p>Volume的类型</p>
-<ul>
-<li>emptyDir：一种简单的空目录，主要用于临时存储。</li>
-<li>hostPath：将主机某个目录挂载到容器中。</li>
-<li>ConfigMap、Secret：特殊类型，将Kubernetes特定的对象类型挂载到Pod，</li>
-<li>PV&#x2F;PVC</li>
-</ul>
-<h3 id="EmptyDir"><a href="#EmptyDir" class="headerlink" title="EmptyDir"></a>EmptyDir</h3><p>EmptyDir是最简单的一种Volume类型，根据名字就能看出，这个Volume挂载后就是一个空目录，应用程序可以在里面读写文件，emptyDir Volume的生命周期与Pod相同，Pod删除后Volume的数据也同时删除掉。</p>
-<p>emptyDir的一些用途： 缓存空间，例如基于磁盘的归并排序。 为耗时较长的计算任务提供检查点，emptyDir配置示例如下。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - image: nginx:alpine</span><br><span class="line">    name: test-container</span><br><span class="line">    volumeMounts:</span><br><span class="line">    - mountPath: /cache</span><br><span class="line">      name: cache-volume</span><br><span class="line">  volumes:</span><br><span class="line">  - name: cache-volume</span><br><span class="line">    emptyDir: &#123;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>emptyDir实际是将Volume的内容写在Pod所在节点的磁盘上，另外emptyDir也可以设置存储介质为内存，如下所示，medium设置为Memory。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">volumes:</span><br><span class="line">  - name: html</span><br><span class="line">    emptyDir:</span><br><span class="line">      medium: Memory</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="HostPath"><a href="#HostPath" class="headerlink" title="HostPath"></a>HostPath</h3><p>HostPath是一种持久化存储，emptyDir里面的内容会随着Pod的删除而消失，但HostPath不会，如果对应的Pod删除，HostPath Volume里面的内容依然存在于节点的目录中，如果后续重新创建Pod并调度到同一个节点，挂载后依然可以读取到之前Pod写的内容。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: test-hostpath</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - image: nginx:alpine</span><br><span class="line">    name: hostpath-container</span><br><span class="line">    volumeMounts:</span><br><span class="line">    - mountPath: /test-pd</span><br><span class="line">      name: test-volume</span><br><span class="line">  volumes:</span><br><span class="line">  - name: test-volume</span><br><span class="line">    hostPath:</span><br><span class="line">      path: /data</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="PV"><a href="#PV" class="headerlink" title="PV"></a>PV</h3><p>如果要求Pod重新调度后仍然能使用之前读写过的数据，就只能使用网络存储了，网络存储种类非常多且有不同的使用方法，通常一个云服务提供商至少有块存储、文件存储、对象存储三种，Kubernetes解决这个问题的方式是抽象了 PV（PersistentVolume）和PVC（PersistentVolumeClaim）来解耦这个问题。从而让使用者不用关心具体的基础设施，当需要存储资源的时候，只要像CPU和内存一样，声明要多少即可。</p>
-<ul>
-<li>PV：PV 描述的是持久化存储卷，主要定义的是一个持久化存储在宿主机上的目录，比如一个NFS的挂载目录。</li>
-<li>PVC：PVC 描述的是Pod所希望使用的持久化存储的属性，比如，Volume存储的大小、可读写权限等等。</li>
-</ul>
-<p>管理员设置好网络存储的类型，提供对应的PV描述符配置到Kubernetes，使用者需要存储的时候只需要创建PVC，然后在Pod中使用Volume关联PVC，即可让Pod使用到存储资源，RECLAIM POLICY 是指 PV 的回收策略，Retain表示PVC被释放后PV继续保留。STATUS值为Available，表示PV处于可用的状态。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: pv-example</span><br><span class="line">spec:</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteMany                      # 读写模式</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 10Gi                      # 定义PV的大小</span><br><span class="line">  csi:</span><br><span class="line">    driver: nas.csi.everest.io         # 声明使用的驱动                   </span><br><span class="line">    fsType: nfs                        # 存储类型</span><br><span class="line">    volumeAttributes:</span><br><span class="line">      everest.io/share-export-location: sfs-nas01.cn-north-4b.myhuaweicloud.com:/share-96314776   # 挂载地址</span><br><span class="line">    volumeHandle: 68e4a4fd-d759-444b-8265-20dc66c8c502                                            # 存储ID</span><br></pre></td></tr></table></figure>
-
-<p>创建 PV </p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f pv.yaml</span><br><span class="line">persistentvolume/pv-example created</span><br><span class="line"></span><br><span class="line">$ kubectl get pv</span><br><span class="line">NAME                 CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM    STORAGECLASS   REASON   AGE</span><br><span class="line">pv-example           10Gi       RWX            Retain           Available                                    4s</span><br></pre></td></tr></table></figure>
-
-<h3 id="PVC"><a href="#PVC" class="headerlink" title="PVC"></a>PVC</h3><p>PVC可以绑定一个PV，示例如下。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name: pvc-example</span><br><span class="line">spec:</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteMany</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 10Gi              # 声明存储的大小</span><br><span class="line">  volumeName: pv-example         # PV的名称</span><br></pre></td></tr></table></figure>
-
-<p>创建 PVC 并查看。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f pvc.yaml</span><br><span class="line">persistentvolumeclaim/pvc-example created</span><br><span class="line"></span><br><span class="line">$ kubectl get pvc</span><br><span class="line">NAME          STATUS   VOLUME       CAPACITY   ACCESS MODES   STORAGECLASS   AGE</span><br><span class="line">pvc-example   Bound    pv-example   10Gi       RWX                           9s</span><br></pre></td></tr></table></figure>
-
-<p>这里可以看到状态是 Bound，VOLUME 是 pv-example，表示PVC已经绑定了PV。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get pv</span><br><span class="line">NAME          CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                  STORAGECLASS   REASON   AGE</span><br><span class="line">pv-example    10Gi       RWX            Retain           Bound    default/pvc-example                            50s</span><br></pre></td></tr></table></figure>
-<p>可以看到状态也变成了Bound，CLAIM是default&#x2F;pvc-example，表示这个PV绑定了default命名空间下的pvc-example这个PVC。 PV是集群级别的资源，并不属于某个命名空间，而PVC是命名空间级别的资源，PV可以与任何命名空间的PVC资源绑定。</p>
-<h3 id="StorageClass"><a href="#StorageClass" class="headerlink" title="StorageClass"></a>StorageClass</h3><p>管理员可以部署PV配置器（provisioner），然后定义对应的StorageClass，这样开发者在创建PVC的时候就可以选择需要创建存储的类型，PVC会把StorageClass传递给PV provisioner，由provisioner自动创建PV。如CCE就提供csi-disk、csi-nas、csi-obs等StorageClass，在声明PVC时加上StorageClassName，就可以自动创建PV，并自动创建底层的存储资源</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name:  pvc-sfs-auto-example</span><br><span class="line">spec:</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteMany</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 10Gi</span><br><span class="line">  storageClassName: csi-nas        # StorageClass</span><br></pre></td></tr></table></figure>
-
-<p>创建PVC并查看PVC和PV。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f pvc2.yaml</span><br><span class="line">persistentvolumeclaim/pvc-sfs-auto-example created</span><br><span class="line"></span><br><span class="line">$ kubectl get pvc</span><br><span class="line">NAME                   STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE</span><br><span class="line">pvc-sfs-auto-example   Bound    pvc-1f1c1812-f85f-41a6-a3b4-785d21063ff3   10Gi       RWX            csi-nas        29s</span><br><span class="line"></span><br><span class="line">$ kubectl get pv</span><br><span class="line">NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                         STORAGECLASS   REASON   AGE</span><br><span class="line">pvc-1f1c1812-f85f-41a6-a3b4-785d21063ff3   10Gi       RWO            Delete           Bound    default/pvc-sfs-auto-example  csi-nas                 20s</span><br></pre></td></tr></table></figure>
-
-<p>这可以看到使用StorageClass后，不仅创建了PVC，而且创建了PV，并且将二者绑定了。<br>定义了StorageClass后，就可以减少创建并维护PV的工作，PV变成了自动创建，作为使用者，只需要在声明PVC时指定StorageClassName即可，这就大大减少工作量。<br>再次说明，StorageClassName的类型在不同厂商的产品上各不相同， 在Pod中使用PVC, 有了PVC后，在Pod中使用持久化存储就非常方便了，在Pod Template中的Volume直接关联PVC的名称，然后挂载到容器之中即可</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-deployment</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx</span><br><span class="line">  replicas: 2</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx</span><br><span class="line">    spec:</span><br><span class="line">      containers: </span><br><span class="line">      - image: nginx:alpine</span><br><span class="line">        name: container-0 </span><br><span class="line">        volumeMounts: </span><br><span class="line">        - mountPath: /tmp                                # 挂载路径</span><br><span class="line">          name: pvc-sfs-example </span><br><span class="line">      restartPolicy: Always </span><br><span class="line">      volumes: </span><br><span class="line">      - name: pvc-sfs-example </span><br><span class="line">        persistentVolumeClaim: </span><br><span class="line">          claimName:  pvc-example                       # PVC的名称</span><br></pre></td></tr></table></figure>
-
-
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/10/2020-02-10-deducting-inventory-with-mysql/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="zheng-ji">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="织网">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 织网">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/02/10/2020-02-10-deducting-inventory-with-mysql/" class="post-title-link" itemprop="url">MySQL 扣减库存的笔记</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-02-10 12:11:42" itemprop="dateCreated datePublished" datetime="2020-02-10T12:11:42+08:00">2020-02-10</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Program/" itemprop="url" rel="index"><span itemprop="name">Program</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h3 id="一个思考"><a href="#一个思考" class="headerlink" title="一个思考"></a>一个思考</h3><p>电商网站有一个场景是：用户购买一个商品，库存会做扣减。如果用 MySQL 做商品存储，会遇到什么坑，该怎么避免。</p>
-<p>简化的商品表如下。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `goods` (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT COMMENT <span class="string">&#x27;自增id&#x27;</span>,</span><br><span class="line">  `name` <span class="type">varchar</span>(<span class="number">256</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;&#x27;</span> COMMENT <span class="string">&#x27;商品名称&#x27;</span>,</span><br><span class="line">  `available` <span class="type">int</span>(<span class="number">11</span>)  <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;0&#x27;</span> COMMENT <span class="string">&#x27;库存剩余量&#x27;</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8</span><br></pre></td></tr></table></figure>
-
-
-<p>在阅读网上的解决方法之前，脑海会迸发一个解决方法是：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> goods <span class="keyword">SET</span> available <span class="operator">=</span> available <span class="operator">-</span> <span class="number">1</span> <span class="keyword">WHERE</span> id <span class="operator">=</span> xxx </span><br></pre></td></tr></table></figure>
-
-<p>如果是这么简单的话，那就没有必要讨论了。实际上在并发请求的业务场景下，有可能出现 available 变量变成负数。</p>
-<p>虽然我们可以将 available 变量设计成 int unsigned 字段来避免，但是在不同的 MySQL 版本下，会出现 available 溢出成为一个非常大的数。</p>
-<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><ul>
-<li>悲观锁的方案：SELECT FOR UPDATE</li>
-</ul>
-<p>当我们查询 goods 信息后就把当前的数据锁定，直到我们修改完毕后再解锁。不过 FOR UPDATE 仅适用于 InnoDB，且必须在事务区块中才能生效。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">set autocommit = 0; // 设置MySQL为非autocommit模式：</span><br><span class="line">begin trans;// 开始事务</span><br><span class="line">select avaliable from goods where id = xxx for update; //1.查询出商品信息</span><br><span class="line">if (avaliable &gt;= 0) &#123;</span><br><span class="line">   affectNum = udpate goods set available = available - 1 where id = xx ;</span><br><span class="line">   commit ; // 4.提交事务</span><br><span class="line">&#125; else &#123;</span><br><span class="line">   rollback ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>弊端：<br>悲观锁是排他锁，会阻塞其他写请求，如果上述代码有异常，导致 Commit&#x2F;Rollback 没有执行，就会造成所有请求都在等待锁。</p>
-<ul>
-<li>乐观锁的方案</li>
-</ul>
-<p>乐观锁假设数据一般情况下不会冲突，在数据提交更新的时候，才会对检测数据的冲突与，如果发现冲突了，则让返回用户错误的信息，让用户决定。<br>通常做法是记录加一个 <code>Version</code> 字段。读取记录时，连同 <code>Version</code> 一同读出。数据每次更新时候，Version + 1， 更新时判断记录的当前版本与之前取出来的 Version 值比对，<br>如果当前版本号与第一次取出来的 Version 值相等，则予以更新，否则认为是过期数据。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> avaiable ,version <span class="keyword">from</span> goods <span class="keyword">where</span> id<span class="operator">=</span>xxx limit <span class="number">1</span>; <span class="operator">/</span><span class="operator">/</span> 查询version</span><br><span class="line">if (available <span class="operator">&gt;</span> <span class="number">0</span>) &#123;</span><br><span class="line">	<span class="keyword">update</span> goods <span class="keyword">set</span> avaiable<span class="operator">=</span>avaiable<span class="number">-1</span> <span class="keyword">where</span> id <span class="operator">=</span>xx <span class="keyword">and</span> version<span class="operator">=</span> <span class="operator">&lt;</span>刚查出来的 Version<span class="operator">&gt;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>弊端： 这样虽然保证安全，但是需要执行2次 SQL</p>
-<ul>
-<li>Update 时增加 available 查询条件</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">udpate goods <span class="keyword">set</span> available <span class="operator">=</span> available <span class="operator">-</span> <span class="number">1</span> <span class="keyword">where</span> id <span class="operator">=</span> xx <span class="keyword">and</span> available <span class="operator">-</span> <span class="number">1</span> <span class="operator">&gt;=</span> <span class="number">0</span> ;</span><br></pre></td></tr></table></figure>
-
-<p>Innodb 的 Update 语句，对于 id 是主键索引的情况下会执行行锁。该语句在 MySQL中是先读后更新，串行且原子的。单条语句，实际上也是一个事务。这个方法效率更快，且安全。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/22/2019-10-22-nginx-grpc/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="zheng-ji">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="织网">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 织网">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/10/22/2019-10-22-nginx-grpc/" class="post-title-link" itemprop="url">Nginx 支持 GRPC 负载均衡</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2019-10-22 12:11:42" itemprop="dateCreated datePublished" datetime="2019-10-22T12:11:42+08:00">2019-10-22</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/System/" itemprop="url" rel="index"><span itemprop="name">System</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>接触 grpc，从它的 <a target="_blank" rel="noopener" href="https://github.com/grpc/grpc-go/tree/master/examples/helloworld">example-GreetHelloWorld</a> 开始, client 指定了 Server 监听的IP和端口，然后直接访问.就完成了一次 RPC 请求。</p>
-<p>那时候我就在想，这里是否能指定代理转发，做负载均衡呢。比如 http访问下，我们会用 proxy_pass + upstream 来代理服务端，这样来实现服务端的负载均衡，以及灰度发布。</p>
-<p>今日偶然发现 nginx 1.13 已经 支持 grpc 协议， 实操上我们可以像使用 proxy_pass 一样使用 grpc_pass </p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80 http2;</span><br><span class="line">    access_log logs/access.log main;</span><br><span class="line">    location / &#123;</span><br><span class="line">        // Your Server Address</span><br><span class="line">        grpc_pass grpc://localhost:50051;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>

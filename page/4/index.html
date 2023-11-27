@@ -119,13 +119,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">122</span>
+          <span class="site-state-item-count">125</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -146,6 +146,364 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/08/2018-09-08-edit-distance/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="zheng-ji">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="织网">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 织网">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/09/08/2018-09-08-edit-distance/" class="post-title-link" itemprop="url">NLP - 最小编辑距离</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-09-08 10:11:42" itemprop="dateCreated datePublished" datetime="2018-09-08T10:11:42+08:00">2018-09-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>最近工作中，需要求两个单词<code>最小编辑距离</code>，用于判断两个字符串的相近程度。</p>
+<ul>
+<li><a href="#%E7%AC%AC%E4%B8%80%E8%8A%82">最小编辑距离是什么</a></li>
+<li><a href="#%E7%AC%AC%E4%BA%8C%E8%8A%82">解决思路</a></li>
+<li><a href="#%E7%AC%AC%E4%B8%89%E8%8A%82">代码演示</a></li>
+</ul>
+<h3 id="最小编辑距离是什么"><a href="#最小编辑距离是什么" class="headerlink" title="最小编辑距离是什么"></a>最小编辑距离是什么</h3><p>允许一个字符串 A ，通过以下三种操作，变换成另一个字符串 B<br>插入一个字符，例如：ab -&gt; abc<br>删除一个字符，例如：abc -&gt; ab<br>替换一个字符，例如：abc -&gt; dbc<br>所需要的最短操作次数，称为最短编辑距离 D，又称 <code>Levenshtein 距离</code><br>故两个字符串的相识度 S &#x3D; D &#x2F; Max(len(A)， len(B))<br>使用场景：搜索引擎的单词纠错，扩召回等。</p>
+<h3 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h3><p>我发现这个问题，其实也是<a target="_blank" rel="noopener" href="https://leetcode.com/problems/edit-distance/">LeetCode</a>的一道题目， 以前有些枯燥的算法题，应用在工程领域上会显得如此可爱迷人。要解决这个问题，暴力枚举很快会让人绝望。直觉告诉我们要分而治之， 将复杂的问题分解为相似的子问题。</p>
+<p>假设字符串 A 共 m 位，从 A[1] 到 A[m]；字符串 B 共 n 位，从 B[1] 到 B[n]；D[i][j] 表示字符串 A[1]-A[i] 转换为 B[1]-B[j] 的编辑距离。</p>
+<ul>
+<li>规律一: 当 A[i] &#x3D;&#x3D; B[j] 时，D[i][j] &#x3D; D[i-1][j-1]，比如 hel -&gt; hal 的编辑距离 &#x3D; he -&gt; ha 的编辑距离</li>
+<li>规律二: 当 A[i] 不等于 B[j] 时，D[i][j] 等于如下 3 项的最小值:<ul>
+<li>D[i-1][j] + 1（删除 A[i]），比如 xyz  -&gt; abc  的编辑距离 &#x3D; xy -&gt; abc 的编辑距离 + 1</li>
+<li>D[i][j-1] + 1（插入 B[j])， 比如 xyz -&gt; abc 的编辑距离 &#x3D; xyzc -&gt; abc 的编辑距离 + 1; 根据规律一， xyzc-&gt;abc 由于最后一个字符是一样的， 所以它的编辑距离等于 xyz-&gt;ab， 因此xyz -&gt; abc 的编辑距离 &#x3D; xyzc -&gt; abc 的编辑距离 + 1 &#x3D; xyz-&gt;ab 的编辑距离 + 1。</li>
+<li>D[i-1][j-1] + 1（将 A[i] 替换为 B[j]）， 比如 xyz -&gt; abc 的编辑距离 &#x3D; xyc -&gt; abc 的编辑距离 + 1 &#x3D; xy -&gt; ab 的编辑距离 + 1 (根据规律一)</li>
+</ul>
+</li>
+<li>边界：<ul>
+<li>A[i][0] &#x3D; i， B 字符串为空，表示将 A[1]-A[i] 全部删除，所以编辑距离为 i</li>
+<li>B[0][j] &#x3D; j， A 字符串为空，表示 A 插入 B[1]-B[j]，所以编辑距离为 j<br>翻译成代码<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">int distance(char *a, char *b, int i, int j)</span><br><span class="line">&#123;</span><br><span class="line">    if (j == 0) return i;</span><br><span class="line">    else if (i == 0) return j;</span><br><span class="line">    else if (a[i-1] == b[j-1]) </span><br><span class="line">        return edit_distance(a, b, i - 1, j - 1);</span><br><span class="line">    else</span><br><span class="line">        return Min3(edit_distance(a, b, i - 1, j) + 1，</span><br><span class="line">                edit_distance(a, b, i, j - 1) + 1，</span><br><span class="line">                edit_distance(a, b, i - 1, j - 1) + 1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h2 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h2><p>递归被人诟病的就是性能不行，时间复杂度是指数增长的，很多相同的子问题其实是经过了多次求解，用动态规划可以解决这类问题。 而此问题需用一个二维数组来记忆状态图，俗称打表。<br>翻译成代码如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">int distance(char *a, char *b)</span><br><span class="line">&#123;</span><br><span class="line">    int lena = strlen(a);</span><br><span class="line">    int lenb = strlen(b);</span><br><span class="line">    int d[lena+1][lenb+1];</span><br><span class="line">    int i, j;</span><br><span class="line">    for (i = 0; i &lt;= lena; i++)</span><br><span class="line">        d[i][0] = i;</span><br><span class="line">    for (j = 0; j &lt;= lenb; j++)</span><br><span class="line">        d[0][j] = j;</span><br><span class="line">    for (i = 1; i &lt;= lena; i++) </span><br><span class="line">    &#123;</span><br><span class="line">        for (j = 1; j &lt;= lenb; j++) </span><br><span class="line">        &#123;</span><br><span class="line">            if (a[i-1] == b[j-1]) </span><br><span class="line">            &#123;</span><br><span class="line">                d[i][j] = d[i-1][j-1];</span><br><span class="line">            &#125; </span><br><span class="line">            else </span><br><span class="line">            &#123;</span><br><span class="line">                d[i][j] = min_of_three(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+1);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return d[lena][lenb];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/14/2018-07-14-libco-study/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="zheng-ji">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="织网">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 织网">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/07/14/2018-07-14-libco-study/" class="post-title-link" itemprop="url">Libco</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-07-14 16:46:46" itemprop="dateCreated datePublished" datetime="2018-07-14T16:46:46+08:00">2018-07-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Program/" itemprop="url" rel="index"><span itemprop="name">Program</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>Libco 是 微信出品的 C&#x2F;C++ 的协程库, 通过仅有的几个函数接口 co_create&#x2F;co_resume&#x2F;co_yield 再配合 co_poll，可以支持同步或者异步的写法</p>
+</blockquote>
+<p>让我们用官方的 <a target="_blank" rel="noopener" href="https://github.com/Tencent/libco/blob/master/example_cond.cpp">example_cond.cpp</a> 来开启学习之旅</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;co_routine.h&quot;</span></span></span><br><span class="line">using namespace <span class="built_in">std</span>;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">stTask_t</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="type">int</span> id;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">stEnv_t</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    stCoCond_t* cond;</span><br><span class="line">    <span class="built_in">queue</span>&lt;stTask_t*&gt; task_queue;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="type">void</span>* <span class="title function_">Producer</span><span class="params">(<span class="type">void</span>* args)</span></span><br><span class="line">&#123;</span><br><span class="line">    co_enable_hook_sys();</span><br><span class="line">    stEnv_t* env = (stEnv_t*)args;</span><br><span class="line">    <span class="type">int</span> id = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        stTask_t* task = (stTask_t*)<span class="built_in">calloc</span>(<span class="number">1</span>, <span class="keyword">sizeof</span>(stTask_t));</span><br><span class="line">        task-&gt;id = id++;</span><br><span class="line">        env-&gt;task_queue.push(task);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s:%d produce task %d\n&quot;</span>, __func__, __LINE__, task-&gt;id);</span><br><span class="line">        co_cond_signal(env-&gt;cond);</span><br><span class="line">        poll(<span class="literal">NULL</span>, <span class="number">0</span>, <span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span>* <span class="title function_">Consumer</span><span class="params">(<span class="type">void</span>* args)</span></span><br><span class="line">&#123;</span><br><span class="line">    co_enable_hook_sys();</span><br><span class="line">    stEnv_t* env = (stEnv_t*)args;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (env-&gt;task_queue.empty())</span><br><span class="line">        &#123;</span><br><span class="line">            co_cond_timedwait(env-&gt;cond, <span class="number">-1</span>);</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        stTask_t* task = env-&gt;task_queue.front();</span><br><span class="line">        env-&gt;task_queue.pop();</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s:%d consume task %d\n&quot;</span>, __func__, __LINE__, task-&gt;id);</span><br><span class="line">        <span class="built_in">free</span>(task);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    stEnv_t* env = new stEnv_t;</span><br><span class="line">    env-&gt;cond = co_cond_alloc();</span><br><span class="line"></span><br><span class="line">    stCoRoutine_t* consumer_routine;</span><br><span class="line">    co_create(&amp;consumer_routine, <span class="literal">NULL</span>, Consumer, env);</span><br><span class="line">    co_resume(consumer_routine);</span><br><span class="line"></span><br><span class="line">    stCoRoutine_t* producer_routine;</span><br><span class="line">    co_create(&amp;producer_routine, <span class="literal">NULL</span>, Producer, env);</span><br><span class="line">    co_resume(producer_routine);</span><br><span class="line"></span><br><span class="line">    co_eventloop(co_get_epoll_ct(), <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过以下命令编译就可以执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/Tencent/libco</span><br><span class="line">cd libco</span><br><span class="line">make</span><br><span class="line">// 需要-ldl -lpthread</span><br><span class="line">g++ example_cond.cpp -o main  -L./lib -lcolib -lpthread -ldl</span><br><span class="line">./main </span><br></pre></td></tr></table></figure>
+
+<p>重点函数如下</p>
+<ul>
+<li>co_create 是协程创建函数, 原型如下<br>co 是协程控制块，attr 创建协程属性，一般用来设置共享栈模式和栈空间大小，默认为 NULL，routine 是协程的入口函数，arg 是函数的参数</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int co_create(stCoRoutine_t** co, const stCoRoutineAttr_t* attr,</span><br><span class="line">void* (*routine)(void*), void* arg);</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>co_resume</li>
+</ul>
+<p>切换到指定的协程 co，操作系统对协程是无感知的，切换调度都是由协程自己来完成</p>
+<ul>
+<li>co_eventloop</li>
+</ul>
+<p>co_eventloop 是主协程的调度函数，函数的主要作用就是通过 epoll 负责各个协程的时间监控，如果有网络事件到了或者等待时间超时了，就切换到相应的协程处理。ctx 是库函数 co_get_epoll_ct()，pfn 是一个钩子函数，用户自定义，在函数 co_eventloop 的最后会执行，arg 是 pfn的参数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void co_eventloop(stCoEpoll_t *ctx, pfn_co_eventloop_t pfn, void *arg)</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>co_enable_hook_sys()</li>
+</ul>
+<p>co_enable_hook_sys 函数是用来打开 libco 的钩子标示，进行系统 io 函数的时候才会调用到 libco 的函数而不是原系统函数</p>
+<ul>
+<li>poll 相当于我们平时用到的 sleep 函数。<br>如果用 sleep 作用到的是整个线程，通过 poll 来实现协程的挂起，协程环境下实际调用的函数是 co_poll，主要是完成回调函数的设置，超时事件的挂入然后把自己切出去。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int poll(struct pollfd fds[], nfds_t nfds, int timeout)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>涉及到同步的接口有</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">co_cond_alloc</span><br><span class="line">co_cond_signal</span><br><span class="line">co_cond_broadcast</span><br><span class="line">co_cond_timedwait</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/14/2018-07-27-valgrind-sanitize/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="zheng-ji">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="织网">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 织网">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/07/14/2018-07-27-valgrind-sanitize/" class="post-title-link" itemprop="url">C++ 调试 - Valgrind, Sanitizer, GDB</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-07-14 16:46:46" itemprop="dateCreated datePublished" datetime="2018-07-14T16:46:46+08:00">2018-07-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Program/" itemprop="url" rel="index"><span itemprop="name">Program</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>本文介绍各种 C++ 的调试方法</p>
+<ul>
+<li>valgrind</li>
+<li>sanitizer</li>
+<li>gdb</li>
+</ul>
+<p><code>valgrind</code> 可用来检测 C&#x2F;C++ 代码是否内存泄漏。Valgrind 使用起来不需修改目标程序源码。</p>
+<p>用一个明显有内存泄漏的代码来演示</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">int main(void) &#123;</span><br><span class="line">    int *p = NULL;</span><br><span class="line">    p = malloc(10 * sizeof(int));</span><br><span class="line">    free(p);</span><br><span class="line">    *p = 3;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译成二进制, 然后用 valgrind 检测</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">g++ -g -o bug main.c</span><br><span class="line">valgrind --tool=memcheck --leak-check=full --log-file=memchk.log ./bug</span><br></pre></td></tr></table></figure>
+
+<p>valgrind 会做一次 <code>全身检查</code>, 如果有内存泄漏， 我们要关注的是 LeakSummary:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">LeakSummary</span><br><span class="line">definitely lost: 确定有内存泄漏，表示在程序退出时，该内存无法回收.</span><br><span class="line">indirectly lost: 间接内存泄漏，比如结构体中定义的指针指向的内存无法回收；</span><br><span class="line">possibly lost： 可能出现内存泄漏，比如程序退出时，没有指针指向一块内存的首地址了</span><br><span class="line">still reachable: 程序没主动释放内存，在退出时候该内存仍能访问到，比如全局 new 的对象没 delete，操作系统会回收</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>再推荐另一个工具 <a target="_blank" rel="noopener" href="https://github.com/google/sanitizers">sanitizer</a>, 同样是上面的示例代码，</p>
+<p>用 <code>-fsanitize=address</code> 编译, 然后执行二进制，会打印出错的地址空间。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gcc -fsanitize=address -g -o bug main.c</span><br><span class="line">./bug</span><br></pre></td></tr></table></figure>
+
+<p>显示出错的地址空间</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">==8035== ERROR: AddressSanitizer: heap-use-after-free on address 0x60080000bfd0 at pc 0x4007e1 bp 0x7ffeb17cf780 sp 0x7ffeb17cf778</span><br><span class="line">WRITE of size 4 at 0x60080000bfd0 thread T0</span><br><span class="line">    #0 0x4007e0 (/data1/mm64/levizheng/QQMail/study/test_debug/a+0x4007e0)</span><br><span class="line">    #1 0x7f6808337c04 (/usr/lib64/libc-2.17.so+0x21c04)</span><br><span class="line">    #2 0x4006b8 (/data1/mm64/levizheng/QQMail/study/test_debug/a+0x4006b8)</span><br></pre></td></tr></table></figure>
+
+<p>然后用命令指定二进制来查看地址空间, <code>address2line -e bug</code>, 输入出错的地址空间，比如 <code>0x4007e0</code>,<br>就可以看到他对应的代码了。 </p>
+<p>如果用 addr2line<br>addr2line -C -f -e <executable_bin> 0xffc3b7</p>
+<hr>
+<p>说回 GDB，大多数时候用的还是最多的。</p>
+<p>用 GDB 调试一个程序</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb &lt;execute_binary&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如需传入启动参数，使用 <code>set args</code>，例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set args -i config.file</span><br></pre></td></tr></table></figure>
+
+<p>开始运行则输入 <code>run</code></p>
+<p>当发生异常时，输入 <code>bt</code>, 就可以看到堆栈信息了。<br><code>f #num</code> 可以指定 具体frame 查看信息，<code>p arg</code> 用来打印变量值。<br>下面例子中, 就是查看变量的。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">p __str</span><br><span class="line">p *this</span><br></pre></td></tr></table></figure>
+
+<p>再次展现完整的例子:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Program received signal SIGSEGV, Segmentation fault.</span><br><span class="line">std::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;::basic_string (this=0x7fffffffdd40, __str=...) at /data1/gcc-4.8.2_build/x86_64-unknown-linux-gnu/libstdc++-v3/include/bits/basic_string.tcc:173</span><br><span class="line">173    /data1/gcc-4.8.2_build/x86_64-unknown-linux-gnu/libstdc++-v3/include/bits/basic_string.tcc: No such file or directory.</span><br><span class="line">(gdb) bt</span><br><span class="line">#0  std::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;::basic_string (this=0x7fffffffdd40, __str=...) at /data1/gcc-4.8.2_build/x86_64-unknown-linux-gnu/libstdc++-v3/include/bits/basic_string.tcc:173</span><br><span class="line">#1  0x00000000006476d6 in GetBinLogSynShmPath (this=&lt;optimized out&gt;) at mmux/mmuxstatbf/mmuxstatbfconfig.h:95</span><br><span class="line">#2  BinLogSyncMgr::InitShmData (this=0x1fbee80) at mmux/mmuxstatbf/binlogsyncmgr.cpp:112</span><br><span class="line">#3  0x0000000000641b80 in GetMetaPtr (this=0x1fbee80) at mmux/mmuxstatbf/binlogsyncmgr.h:68</span><br><span class="line">#4  MMUxStatBFServer::BeforeMasterRun (this=0x7fffffffe1d0, pvProcArgs=&lt;optimized out&gt;) at mmux/mmuxstatbf/mmuxstatbfserver.h:75</span><br><span class="line">(gdb) p __str</span><br><span class="line">$1 = (const std::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; &amp;) @0x20: &lt;error reading variable&gt;</span><br><span class="line">(gdb) f 1</span><br><span class="line">#1  0x00000000006476d6 in GetBinLogSynShmPath (this=&lt;optimized out&gt;) at mmux/mmuxstatbf/mmuxstatbfconfig.h:95</span><br><span class="line">95    mmux/mmuxstatbf/mmuxstatbfconfig.h: No such file or directory.</span><br><span class="line">(gdb) p  *this</span><br><span class="line">(gdb) f 2</span><br><span class="line">#2  BinLogSyncMgr::InitShmData (this=0x1fbee80) at mmux/mmuxstatbf/binlogsyncmgr.cpp:112</span><br><span class="line">112    mmux/mmuxstatbf/binlogsyncmgr.cpp: No such file or directory.</span><br><span class="line">(gdb) info locals</span><br><span class="line">is_new = 0</span><br><span class="line">__func__ = &quot;InitShmData&quot;</span><br><span class="line">(gdb) f 1</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -793,282 +1151,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2017/02/22/2017-02-22-zheng-xiang-yu-fan-xiang-dai-li/">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/02/2016-12-02-cgroupxian-zhi-ji-suan-zi-yuan/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="zheng-ji">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="织网">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 织网">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2016/12/02/2016-12-02-cgroupxian-zhi-ji-suan-zi-yuan/" class="post-title-link" itemprop="url">cgroup 限制计算资源</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2016-12-02 15:41:00" itemprop="dateCreated datePublished" datetime="2016-12-02T15:41:00+08:00">2016-12-02</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/System/" itemprop="url" rel="index"><span itemprop="name">System</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>cgroup</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2016/12/02/2016-12-02-cgroupxian-zhi-ji-suan-zi-yuan/">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/09/28/2016-09-28-ji-yi-ci-redis-server-bug/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="zheng-ji">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="织网">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 织网">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2016/09/28/2016-09-28-ji-yi-ci-redis-server-bug/" class="post-title-link" itemprop="url">记一次使用 redis 协议诡异的bug</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2016-09-28 08:21:00" itemprop="dateCreated datePublished" datetime="2016-09-28T08:21:00+08:00">2016-09-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>Redis 协议</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2016/09/28/2016-09-28-ji-yi-ci-redis-server-bug/">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/09/25/2016-09-25-gong-xiang-nei-cun-yu-xin-hao-liang/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="zheng-ji">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="织网">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 织网">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2016/09/25/2016-09-25-gong-xiang-nei-cun-yu-xin-hao-liang/" class="post-title-link" itemprop="url">共享内存与信号量</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2016-09-25 23:37:00" itemprop="dateCreated datePublished" datetime="2016-09-25T23:37:00+08:00">2016-09-25</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-10-07 12:09:04" itemprop="dateModified" datetime="2023-10-07T12:09:04+08:00">2023-10-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/System/" itemprop="url" rel="index"><span itemprop="name">System</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>共享内存 信号量</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2016/09/25/2016-09-25-gong-xiang-nei-cun-yu-xin-hao-liang/">
                 Read more &raquo;
               </a>
             </div>
